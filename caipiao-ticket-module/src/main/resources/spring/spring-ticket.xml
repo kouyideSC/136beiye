@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="false"
+	   xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	   http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task-3.2.xsd"
+	   xmlns:task="http://www.springframework.org/schema/task">
+
+	<context:component-scan base-package="com.caipiao.ticket" />
+	<task:scheduler id="ticketTask" pool-size="50" />
+	<task:scheduled-tasks scheduler="ticketTask">
+		<!-- 拆票、分票任务 -->
+		<task:scheduled ref="splitTicket" method="orderSplitTicket" fixed-delay="3000" />
+
+		<!-- 糯米出票 -->
+		<!--<task:scheduled ref="nuoMiCastTicketTask" method="jcCastTicketTask" fixed-delay="5000" />
+		<task:scheduled ref="nuoMiCastTicketTask" method="jcQueryTicketTask" fixed-delay="30000" />
+		<task:scheduled ref="nuoMiCastTicketTask" method="jcAwardTicketTask" fixed-delay="600000" />
+		-->
+		<!-- 华盈出票 -->
+		<!--<task:scheduled ref="huaYingCastTicketTask" method="jcCastTicketTask" fixed-delay="5000" />
+		<task:scheduled ref="huaYingCastTicketTask" method="jcQueryTicketTask" fixed-delay="30000" />
+		<task:scheduled ref="huaYingCastTicketTask" method="jcAwardTicketTask" fixed-delay="600000" />
+		<task:scheduled ref="huaYingCastTicketTask" method="queryAccountBalance" fixed-delay="60000" />
+		-->
+		<!-- 吉米出票 -->
+		<task:scheduled ref="jiMiCastTicketTask" method="jcCastTicketTask" fixed-delay="5000" />
+		<task:scheduled ref="jiMiCastTicketTask" method="jcQueryTicketTask" fixed-delay="30000" />
+		<task:scheduled ref="jiMiCastTicketTask" method="jcAwardTicketTask" fixed-delay="600000" />
+		<task:scheduled ref="jiMiCastTicketTask" method="mpCastTicketTask" fixed-delay="5100" />
+		<task:scheduled ref="jiMiCastTicketTask" method="mpQueryTicketTask" fixed-delay="30000" />
+		<task:scheduled ref="jiMiCastTicketTask" method="mpAwardTicketTask" fixed-delay="600000" />
+		<!-- 华阳出票 -->
+		<!--<task:scheduled ref="huaYangCastTicketTask" method="jcCastTicketTask" fixed-delay="5100" />
+		<task:scheduled ref="huaYangCastTicketTask" method="jcQueryTicketTask" fixed-delay="30000" />
+		<task:scheduled ref="huaYangCastTicketTask" method="jcAwardTicketTask" fixed-delay="600000" />
+		<task:scheduled ref="huaYangCastTicketTask" method="mpCastTicketTask" fixed-delay="5200" />
+		<task:scheduled ref="huaYangCastTicketTask" method="mpQueryTicketTask" fixed-delay="30000" />
+		<task:scheduled ref="huaYangCastTicketTask" method="mpAwardTicketTask" fixed-delay="600000" />
+		<task:scheduled ref="huaYangCastTicketTask" method="kpCastTicketTask" fixed-delay="3000" />
+		<task:scheduled ref="huaYangCastTicketTask" method="kpQueryTicketTask" fixed-delay="20000" />
+		<task:scheduled ref="huaYangCastTicketTask" method="kpAwardTicketTask" fixed-delay="600000" />
+		-->
+		<!-- 欧克出票 -->
+		<task:scheduled ref="ouKeCastTicketTask" method="jcCastTicketTask" fixed-delay="5000" />
+		<task:scheduled ref="ouKeCastTicketTask" method="jcQueryTicketTask" fixed-delay="30000" />
+		<task:scheduled ref="ouKeCastTicketTask" method="jcAwardTicketTask" fixed-delay="600000" />
+		<!--查询快频开奖号码-->
+		<task:scheduled ref="huaYangCastTicketTask" method="queryPeriodDrawCode" fixed-delay="20000" />
+	</task:scheduled-tasks>
+</beans>
