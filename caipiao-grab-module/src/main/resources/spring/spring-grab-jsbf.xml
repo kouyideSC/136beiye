@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="false" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+    
+	<task:scheduler id="bfTask" pool-size="50" />
+	<task:scheduled-tasks scheduler="bfTask">
+		<!-- 抓取当前期对阵数据 -->
+		<task:scheduled ref="jsbfTask" method="grabHaoCaiMatch" fixed-delay="30000" />
+		<!-- 生成当前期赛事文件 -->
+		<task:scheduled ref="jsbfTask" method="createCurrentJsbfMatch" fixed-delay="5000" />
+		<!-- 抓取未来期赛事文件 -->
+		<task:scheduled ref="jsbfTask" method="grabHaoCaiNextMatch" fixed-delay="600000" />
+		<!-- 即时比分期次文件-->
+		<task:scheduled ref="jsbfTask" method="createJsbfPeriod" fixed-delay="600000" />
+		<!-- 抓取比分直播文件 -->
+		<task:scheduled ref="jsbfTask" method="grabHaoCaiJsbfChange" fixed-delay="5000" />
+	</task:scheduled-tasks>
+</beans>

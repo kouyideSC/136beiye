@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="false" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+    
+	<task:scheduler id="grabTask" pool-size="100" />
+	<task:scheduled-tasks scheduler="grabTask">
+		<!-- 抓取竞彩足球对阵数据 -->
+		<task:scheduled ref="jczqMatchTask" method="grabGwJczqMatch" fixed-delay="900000" />
+		<!-- 抓取竞彩足球赔率数据 -->
+		<task:scheduled ref="jczqMatchTask" method="grabGwJczqMatchSp" fixed-delay="120000" />
+		<!-- 抓取竞彩足球赛果数据 -->
+		<task:scheduled ref="jczqMatchTask" method="grabGwJczqMatchResult" fixed-delay="600000" />
+
+		<!-- 执行竞彩足球对阵更新任务-生成文件 -->
+		<task:scheduled ref="createUpdateDataTask" method="jczqMatchFileTask" fixed-delay="3000" />
+		<!-- 执行竞彩足球赛果更新任务-生成文件 -->
+		<task:scheduled ref="createUpdateDataTask" method="jczqResultFileTask" fixed-delay="3000" />
+
+		<!-- 抓取竞彩篮球对阵数据 -->
+		<task:scheduled ref="jclqMatchTask" method="grabGwJclqMatch" fixed-delay="900000" />
+		<!-- 抓取竞彩篮球赔率数据 -->
+		<task:scheduled ref="jclqMatchTask" method="grabGwJclqMatchSp" fixed-delay="120000" />
+		<!-- 抓取竞彩篮球赛果数据 -->
+		<task:scheduled ref="jclqMatchTask" method="grabGwJclqMatchResult" fixed-delay="600000" />
+
+		<!-- 执行竞彩篮球对阵更新任务-生成文件 -->
+		<task:scheduled ref="createUpdateDataTask" method="jclqMatchFileTask" fixed-delay="3000" />
+		<!-- 执行竞彩篮球赛果更新任务-生成文件 -->
+		<task:scheduled ref="createUpdateDataTask" method="jclqResultFileTask" fixed-delay="3000" />
+
+		<!-- 抓取冠亚军对阵数据 -->
+		<!--<task:scheduled ref="gyjMatchTask" method="grabGwGjMatch" fixed-delay="300000" />
+		<task:scheduled ref="gyjMatchTask" method="grabGwGyjMatch" fixed-delay="300000" />-->
+
+		<!-- 执行冠亚军对阵更新任务-生成文件 -->
+		<!--<task:scheduled ref="createUpdateDataTask" method="gjMatchFileTask" fixed-delay="3000" />
+		<task:scheduled ref="createUpdateDataTask" method="gyjMatchFileTask" fixed-delay="3000" />-->
+		<!-- 抓取胜负彩任九期次和对阵数据 -->
+		<task:scheduled ref="sfcPeriodTask" method="grabGwSfcMatch" fixed-delay="300000" />
+
+	</task:scheduled-tasks>
+</beans>
