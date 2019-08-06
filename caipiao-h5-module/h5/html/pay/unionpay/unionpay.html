@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>银联在线充值</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+<style type="text/css">
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 2px;
+}
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+    /*outline: thin dotted;*/
+    /*outline: 5px auto -webkit-focus-ring-color;*/
+    /*outline-offset: -2px;*/
+}
+.btn:hover,
+.btn:focus,
+.btn.focus {
+    color: #333;
+    text-decoration: none;
+}
+.btn:active,
+.btn.active {
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+}
+.btn-success {
+    color: #fff;
+    background-color: #26bf8c;
+    border-color: #4cae4c;
+}
+.btn-success:hover,
+.btn-success:focus,
+.btn-success.focus,
+.btn-success:active,
+.btn-success.active,
+.open > .dropdown-toggle.btn-success {
+    color: #fff;
+    background-color: #2bd99f;
+    border-color: #398439;
+}
+.btn-success:active,
+.btn-success.active,
+.open > .dropdown-toggle.btn-success {
+    background-image: none;
+}
+.btn-success.disabled,
+.btn-success[disabled],
+fieldset[disabled] .btn-success,
+.btn-success.disabled:hover,
+.btn-success[disabled]:hover,
+fieldset[disabled] .btn-success:hover,
+.btn-success.disabled:focus,
+.btn-success[disabled]:focus,
+fieldset[disabled] .btn-success:focus,
+.btn-success.disabled.focus,
+.btn-success[disabled].focus,
+fieldset[disabled] .btn-success.focus,
+.btn-success.disabled:active,
+.btn-success[disabled]:active,
+fieldset[disabled] .btn-success:active,
+.btn-success.disabled.active,
+.btn-success[disabled].active,
+fieldset[disabled] .btn-success.active {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+.btn-success .badge {
+    color: #5cb85c;
+    background-color: #fff;
+}
+</style>
+<script src="http://mobile.szmpyd.com/js/jquery.min.js"></script>
+</head>
+<body>
+<form method="post" id="unionpayForm">
+    <input type="hidden" name="appId" id="appId">
+    <input type="hidden" name="sign" id="sign">
+    <input type="hidden" name="token" id="token">
+    <input type="hidden" name="key" id="key">
+    <!--<input type="hidden" name="device" id="device">-->
+    <input type="hidden" name="pid" id="pid">
+    <input type="hidden" name="smoney" id="smoney">
+    <div style="width: 100%;margin-top: 10px;font-size: 14px;text-align: center">
+        <span style="margin-right: 10px;">选择银行</span><br>
+        <select name="bankCode" style="width: 88%;height: 30px;margin-top: 15px;" id="bankCodeSelect">
+            <option value="ICBC">工商银行</option>
+            <option value="CMBCHINA">招商银行</option>
+            <option value="ABC">农业银行</option>
+            <option value="CCB">建设银行</option>
+            <option value="POST">中国邮政</option>
+            <option value="BOC">中国银行</option>
+            <option value="BOCO">交通银行</option>
+            <option value="CMBC">民生银行</option>
+            <option value="CEB">光大银行</option>
+            <option value="CIB">兴业银行</option>
+            <option value="PINGANBANK">平安银行</option>
+            <option value="ECITIC">中信银行</option>
+            <option value="BCCB">北京银行</option>
+            <option value="NJCB">南京银行</option>
+            <option value="CGB">广发银行</option>
+            <option value="GDFZYH">广东发展银行</option>
+            <option value="SHB">上海银行</option>
+            <option value="SPDB">上海浦东发展银行</option>
+            <option value="NBCB">宁波银行</option>
+            <option value="BJRCB">北京农村商业银行</option>
+            <option value="HXB">华夏银行</option>
+            <option value="CZ">浙商银行</option>
+            <option value="HZBANK">杭州银行</option>
+            <option value="NCBBANK">南洋商业银行</option>
+            <option value="SCCB">河北银行</option>
+            <option value="BOCDBANK">成都银行</option>
+            <option value="HKB">汉口银行</option>
+            <!--<option value="SPDP">浦发银行</option>-->
+            <option value="JSCB">江苏银行</option>
+            <option value="SRCB">上海农商银行</option>
+            <!--<option value="UNION">银联在线支付</option>-->
+            <!--<option value="OTHER">其他</option>-->
+        </select><br>
+        <span class="btn btn-success" style="margin-top: 25px;width: 80%;" id="nextBtn">下一步</span>
+    </div>
+</form>
+</body>
+<script type="text/javascript">
+//提取参数
+var url = location.href;
+url = url.substring(url.indexOf("?") + 1);
+var appId = unescape(url.match(new RegExp("(^|&)appId=([^&]*)(&|$)"))[2]);//提取客户端来源
+var sign = unescape(url.match(new RegExp("(^|&)sign=([^&]*)(&|$)"))[2]);//提取签名串
+var token = unescape(url.match(new RegExp("(^|&)token=([^&]*)(&|$)"))[2]);//提取token
+var key = unescape(url.match(new RegExp("(^|&)key=([^&]*)(&|$)"))[2]);//提取key
+//var device = unescape(url.match(new RegExp("(^|&)device=([^&]*)(&|$)"))[2]);//提取设备号
+var pid = unescape(url.match(new RegExp("(^|&)pid=([^&]*)(&|$)"))[2]);//提取充值方式编号
+var smoney = unescape(url.match(new RegExp("(^|&)smoney=([^&]*)(&|$)"))[2]);//提取充值金额
+$('#appId').val(appId);
+$('#sign').val(sign);
+$('#token').val(token);
+$('#key').val(key);
+//$('#device').val(device);
+$('#pid').val(pid);
+$('#smoney').val(smoney);
+
+//初始化
+$(function()
+{
+    //点击下一步
+    $('#nextBtn').on('click',function()
+    {
+        if($('#bankCodeSelect').val() == '')
+        {
+            alert('请先选择银行');
+            return false;
+        }
+        //提交表单
+        $.ajax({
+            url : 'http://api.szmpyd.com/api/pay/unionpay/create',
+            type : 'post',
+            dataType : 'json',
+            data : $("#unionpayForm").serializeArray(),
+            success : function(json)
+            {
+                if(json.errorCode == 200)
+                {
+                    document.write(json.data.actions);
+                }
+                else
+                {
+                    alert(json.errorDesc);
+                }
+            }
+        });
+    });
+});
+</script>
+</html>
