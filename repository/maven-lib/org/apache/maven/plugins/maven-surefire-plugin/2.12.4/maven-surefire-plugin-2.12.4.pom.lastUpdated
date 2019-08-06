@@ -1,0 +1,5 @@
+#NOTE: This is an internal implementation file, its format can be changed without prior notice.
+#Fri Sep 22 09:52:31 CST 2017
+@default-central-https\://repo.maven.apache.org/maven2/.lastUpdated=1505610156241
+http\://maven.aliyun.com/nexus/content/groups/public/.lastUpdated=1506045151600
+https\://repo.maven.apache.org/maven2/.error=Could not transfer artifact org.apache.maven.plugins\:maven-surefire-plugin\:pom\:2.12.4 from/to central (https\://repo.maven.apache.org/maven2)\: repo.maven.apache.org

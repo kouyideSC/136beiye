@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>caipiao</groupId>
+  <artifactId>caipiao-common-module</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20190801024821</lastUpdated>
+  </versioning>
+</metadata>

@@ -1,0 +1,4 @@
+#NOTE: This is an internal implementation file, its format can be changed without prior notice.
+#Mon Sep 18 11:48:18 CST 2017
+default-http\://maven.aliyun.com/nexus/content/groups/public/.lastUpdated=1505706498887
+http\://maven.aliyun.com/nexus/content/groups/public/.error=Could not transfer artifact redis.clients\:jedis\:jar\:2.9.0 from/to alimaven (http\://maven.aliyun.com/nexus/content/groups/public/)\: GET request of\: redis/clients/jedis/2.9.0/jedis-2.9.0.jar from alimaven failed

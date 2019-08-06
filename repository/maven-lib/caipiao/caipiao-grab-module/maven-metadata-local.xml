@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>caipiao</groupId>
+  <artifactId>caipiao-grab-module</artifactId>
+  <versioning>
+    <versions>
+      <version>1.0-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20190801024945</lastUpdated>
+  </versioning>
+</metadata>
