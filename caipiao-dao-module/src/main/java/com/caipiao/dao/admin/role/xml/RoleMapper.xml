@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caipiao.dao.admin.role.RoleMapper">
+
+	<!-- 查询角色信息 -->
+	<select id="queryRoles" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t1.id,
+		t1.name,
+		t1.description,
+		date_format(t1.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+		date_format(t1.modified_time,'%Y-%m-%d %H:%i:%s') modifiedTime
+		from tb_cpadmin_role t1 where 1 = 1
+		<choose>
+			<when test="id != null and id != ''">
+				and t1.id = #{id}
+			</when>
+			<otherwise>
+				<if test="name != null and name != ''">
+					and t1.name = #{name}
+				</if>
+				and t1.delete_flag != 1
+				order by t1.create_time desc
+				<if test="psize != null and psize != ''">
+					limit ${pstart},${psize}
+				</if>
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询角色总记录条数 -->
+	<select id="queryRolesCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+		select count(0) from tb_cpadmin_role t1 where 1 = 1
+		<choose>
+			<when test="id != null and id != ''">
+				and t1.id = #{id}
+			</when>
+			<otherwise>
+				<if test="name != null and name != ''">
+					and t1.name = #{name}
+				</if>
+				and t1.delete_flag != 1
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询角色模块信息 -->
+	<select id="queryRoleModules" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select 
+		mt.id,
+		mt.module_name moduleName,
+		mt.module_code moduleCode,
+		mt.module_type moduleType,
+		mt.description,
+		mt.parent_module_id parentModuleId,
+		mt.module_url moduleUrl,
+		mt.sort,
+		mt.delete_flag deleteFlag,
+		mt.iconfont
+		from
+		tb_cpadmin_module mt,tb_cpadmin_role_module rm
+		where
+		mt.id = rm.module_id
+		and rm.role_id = #{roleId}
+		and mt.delete_flag != 1
+		order by mt.module_type,mt.sort
+	</select>
+
+    <!-- 新增角色 -->
+    <insert id="addRole" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		<selectKey keyProperty="id" resultType="java.lang.Long">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+        insert into tb_cpadmin_role (name,description,creator,create_time) values (#{name},#{description},#{creator},now())
+    </insert>
+
+    <!-- 更新角色 -->
+    <update id="updateRole" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_cpadmin_role set modifier = #{opaccountId},modified_time = now()
+        <if test="name != null">
+            ,name = #{name}
+        </if>
+        <if test="description != null">
+            ,description = #{description}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 删除角色 -->
+    <delete id="deleteRole" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        delete from tb_cpadmin_role where id = #{id}
+    </delete>
+
+    <!-- 新增角色功能模块 -->
+    <insert id="addRoleModule" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        insert into tb_cpadmin_role_module (role_id,module_id) values (#{roleId},#{moduleId})
+    </insert>
+
+    <!-- 删除角色功能模块 -->
+    <delete id="deleteRoleModule" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        delete from tb_cpadmin_role_module where role_id = #{roleId}
+    </delete>
+
+	<!-- 查询功能模块信息 -->
+	<select id="queryModules" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t1.id,
+		t1.module_name moduleName,
+		t1.module_code moduleCode,
+		t1.module_type moduleType,
+		t1.description,
+		t1.parent_module_id parentModuleId,
+		t1.module_url moduleUrl,
+		t1.sort,
+		t1.delete_flag deleteFlag,
+		t1.iconfont
+		from tb_cpadmin_module t1 where t1.delete_flag != 1
+	</select>
+
+	<!-- 查询角色用户信息 -->
+	<select id="queryRoleUsers" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t1.account_name accountName,
+		t1.personal_name personalName,
+		t2.role_id roleId,
+		t2.account_id accountId
+		from tb_cpadmin_account t1,tb_cpadmin_account_role t2
+		where t2.account_id = t1.id and t2.role_id = #{roleId}
+	</select>
+
+</mapper>

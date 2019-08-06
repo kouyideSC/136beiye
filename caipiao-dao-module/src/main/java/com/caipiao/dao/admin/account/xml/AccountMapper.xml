@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caipiao.dao.admin.account.AccountMapper">
+
+	<!-- 查询帐户所属角色信息 -->
+	<select id="queryAccountRoles" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t2.id,
+		t2.name,
+		t2.description
+		from tb_cpadmin_account_role t1,tb_cpadmin_role t2
+		where t2.id = t1.role_id
+		and t1.account_id = #{accountId}
+	</select>
+
+	<!-- 查询帐户信息 -->
+	<select id="queryAccounts" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t1.id,
+	    t1.account_name accountName,
+	    t1.personal_name personalName,
+	    t1.is_lock isLock,
+	    t1.organization_id organizationId,
+	    t1.job_type_id jobTypeId,
+	    t1.is_superuser isSuperuser,
+	    t1.idcard,
+	    t1.email,
+	    t1.weixin,
+	    t1.qq,
+	    t1.mobile,
+	    t1.avatar,
+	    t1.work_status workStatus,
+	    t1.receive_todo_byemail receiveTodoByemail,
+	    t1.receive_msg_byemail receiveMsgByemail,
+	    t1.receive_notice_byemail receiveNoticeByemail,
+	    t1.creator creator,
+	    date_format(t1.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+	    t1.modifier,
+	    date_format(t1.modified_time,'%Y-%m-%d %H:%i:%s') modifiedTime,
+	    t1.delete_flag deleteFlag,
+	    t1.token,
+	    date_format(t1.last_login_time,'%Y-%m-%d %H:%i:%s') lastLoginTime,
+	    t1.last_login_ip lastLoginIp,
+	    t2.organization_name organizationName,
+	    t3.job_name jobName,
+	    (select group_concat(m1.name) from tb_cpadmin_role m1,tb_cpadmin_account_role m2 where m2.role_id = m1.id and m2.account_id = t1.id) roleNames
+	    from tb_cpadmin_account t1 left join tb_cpadmin_organization t2 on t2.id = t1.organization_id
+	    left join tb_cpadmin_job_type t3 on t3.id = t1.job_type_id
+	    where t1.is_superuser != 1
+	    <choose>
+			<when test="id != null and id != ''">
+				and t1.id = #{id}
+			</when>
+			<otherwise>
+				<if test="organizationId != null and organizationId != ''">
+					and t1.organization_id = #{organizationId}
+				</if>
+				<if test="jobTypeId != null and jobTypeId != ''">
+					and t1.job_type_id = #{jobTypeId}
+				</if>
+				<if test="accountName != null and accountName != ''">
+					and t1.account_name = #{accountName}
+				</if>
+				<if test="personalName != null and personalName != ''">
+					and t1.personal_name = #{personalName}
+				</if>
+				<if test="workStatus != null and workStatus != ''">
+					and t1.work_status = #{workStatus}
+				</if>
+				<if test="isLock != null and isLock != ''">
+					and t1.is_lock = #{isLock}
+				</if>
+				<choose>
+					<when test="sorts != null and sorts != ''">
+						order by ${sorts}
+					</when>
+					<otherwise>
+						order by t1.create_time desc,t1.work_status asc,t1.is_lock asc
+					</otherwise>
+				</choose>
+				<if test="psize != null and psize != ''">
+					limit ${pstart},${psize}
+				</if>
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询帐户信息总记录数 -->
+	<select id="queryAccountsCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+		select count(0) from tb_cpadmin_account t1 where t1.is_superuser != 1
+		<choose>
+			<when test="id != null and id != ''">
+				and t1.id = #{id}
+			</when>
+			<otherwise>
+				<if test="organizationId != null and organizationId != ''">
+					and t1.organization_id = #{organizationId}
+				</if>
+				<if test="jobTypeId != null and jobTypeId != ''">
+					and t1.job_type_id = #{jobTypeId}
+				</if>
+				<if test="accountName != null and accountName != ''">
+					and t1.account_name = #{accountName}
+				</if>
+				<if test="personalName != null and personalName != ''">
+					and t1.personal_name = #{personalName}
+				</if>
+				<if test="workStatus != null and workStatus != ''">
+					and t1.work_status = #{workStatus}
+				</if>
+				<if test="isLock != null and isLock != ''">
+					and t1.is_lock = #{isLock}
+				</if>
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 新增帐户信息 -->
+	<insert id="addAccount" parameterType="com.caipiao.domain.common.Account">
+		<selectKey keyProperty="id" resultType="java.lang.Long">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+		insert into tb_cpadmin_account
+		(account_name,password,personal_name,organization_id,job_type_id,idcard,email,weixin,qq,mobile,creator,create_time)
+		values
+		(#{accountName},#{password},#{personalName},#{organizationId},#{jobTypeId},#{idcard},#{email},#{weixin},#{qq},#{mobile},#{creator},now())
+	</insert>
+
+	<!-- 新增帐户角色信息 -->
+	<insert id="addAccountRole" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		insert into tb_cpadmin_account_role (role_id,account_id) values (#{roleId},#{accountId})
+	</insert>
+
+	<!-- 更新帐户信息 -->
+	<update id="updateAccount" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		update tb_cpadmin_account set modifier = #{opaccountId},modified_time = now()
+		<if test="personalName != null">
+			,personal_name = #{personalName}
+		</if>
+		<if test="isLock != null">
+			,is_lock = #{isLock}
+		</if>
+		<if test="organizationId != null">
+			,organization_id = #{organizationId}
+		</if>
+		<if test="jobTypeId != null">
+			,job_type_id = #{jobTypeId}
+		</if>
+		<if test="idcard != null">
+			,idcard = #{idcard}
+		</if>
+		<if test="email != null">
+			,email = #{email}
+		</if>
+		<if test="weixin != null">
+			,weixin = #{weixin}
+		</if>
+		<if test="qq != null">
+			,qq = #{qq}
+		</if>
+		<if test="mobile != null">
+			,mobile = #{mobile}
+		</if>
+		<if test="avatar != null">
+			,avatar = #{avatar}
+		</if>
+		<if test="workStatus != null">
+			,work_status = #{workStatus}
+		</if>
+		<if test="receiveTodoByemail != null">
+			,receive_todo_byemail = #{receiveTodoByemail}
+		</if>
+		<if test="receiveMsgByemail != null">
+			,receive_msg_byemail = #{receiveMsgByemail}
+		</if>
+		<if test="receiveNoticeByemail != null">
+			,receive_notice_byemail = #{receiveNoticeByemail}
+		</if>
+		<if test="token != null">
+			,token = #{token}
+		</if>
+		<if test="lastLoginTime != null">
+			,last_login_time = #{lastLoginTime}
+		</if>
+		<if test="lastLoginIp != null">
+			,last_login_ip = #{lastLoginIp}
+		</if>
+		where id = #{id}
+	</update>
+
+	<!-- 修改帐户密码 -->
+	<update id="updateAccountForPwd" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		update tb_cpadmin_account set password = #{password},modified_time = now(),modifier = #{opaccountId} where id = #{id}
+	</update>
+
+	<!-- 锁定/解锁帐户 -->
+	<update id="updateAccountForLock" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		update tb_cpadmin_account set is_lock = #{isLock},modified_time = now(),modifier = #{opaccountId} where id = #{id}
+	</update>
+
+	<!-- 离职/复职帐户 -->
+	<update id="updateAccountForWorkStatus" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		update tb_cpadmin_account set work_status = #{workStatus},modified_time = now(),modifier = #{opaccountId} where id = #{id}
+	</update>
+
+	<!-- 删除帐户 -->
+	<delete id="deleteAccount" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		delete from tb_cpadmin_account where id = #{id}
+	</delete>
+
+	<!-- 删除帐户角色信息 -->
+	<delete id="deleteAccountRoles" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		delete from tb_cpadmin_account_role where account_id = #{accountId}
+	</delete>
+
+	<!-- 查询组织信息 -->
+	<select id="queryOrganizations" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t1.id,
+  		t1.organization_name organizationName,
+  		t1.parent_id parentId,
+  		t1.organization_code organizationCode,
+  		t1.remarks,
+  		t1.creator,
+  		date_format(t1.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+  		t1.modifier,
+  		date_format(t1.modified_time,'%Y-%m-%d %H:%i:%s') modifiedTime,
+  		t1.delete_flag deleteFlag
+  		from tb_cpadmin_organization t1 where t1.delete_flag != 1
+	</select>
+
+	<!-- 查询岗位信息 -->
+	<select id="queryJobtypes" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t1.id,
+  		t1.job_name jobName,
+  		t1.remarks,
+  		t1.creator,
+  		date_format(t1.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+  		t1.modifier,
+  		date_format(t1.modified_time,'%Y-%m-%d %H:%i:%s') modifiedTime,
+  		t1.delete_flag deleteFlag
+  		from tb_cpadmin_job_type t1 where t1.delete_flag != 1
+	</select>
+
+</mapper>

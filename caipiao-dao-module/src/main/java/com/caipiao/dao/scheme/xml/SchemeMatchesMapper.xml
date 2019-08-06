@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.scheme.SchemeMatchesMapper" >
+
+  <!--插入方案对应的场次信息-->
+  <insert id="insertSchemeMatches">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_scheme_matches (
+      schemeId, lotteryId, matchCode, createTime
+    )
+    values (
+      #{schemeid}, #{lotteryid}, #{matchcode}, #{createtime}
+    )
+  </insert>
+  
+</mapper>

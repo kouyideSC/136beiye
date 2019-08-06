@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.match.MatchGyjMapper" >
+    
+  <!--根据竞彩场次号-查询冠亚军对阵信息-->
+  <select id="queryGyjMatchInfo" resultType="com.caipiao.domain.match.GyjMatch">
+    select * from tb_match_gyj where lotteryId = #{lotteryId} and matchCode = #{matchCode}
+  </select>
+
+  <!--查询冠亚军对阵列表-->
+  <select id="queryGyjMatchList" resultType="com.caipiao.domain.match.GyjMatch">
+    select * from tb_match_gyj where status != 2
+    <if test="lotteryId != null">
+       and lotteryId = #{lotteryId}
+    </if>
+    <if test="matchCode != null">
+       and matchCode = #{matchCode}
+    </if>
+    <if test="period != null and period != ''">
+      and period = #{period}
+    </if>
+  </select>
+
+  <!-- 查询冠亚军对阵列表 -->
+  <select id="queryGyjMatchInfos" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.lotteryId,
+    t1.period,
+    t1.leagueName,
+    t1.matchCode,
+    t1.teamImg,
+    t1.teamId,
+    t1.teamName,
+    t1.guestTeamImg,
+    t1.guestTeamId,
+    t1.guestTeamName,
+    t1.sp,
+    t1.probability,
+    t1.status,
+    t1.updateFlag,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+    from tb_match_gyj t1 where 1 = 1
+    <if test="lotteryId != null">
+      and t1.lotteryId = #{lotteryId}
+    </if>
+    <if test="matchCode != null">
+      and t1.matchCode = #{matchCode}
+    </if>
+    <if test="period != null and period != ''">
+      and t1.period = #{period}
+    </if>
+    <if test="status != null">
+      and t1.status = #{status}
+    </if>
+  </select>
+
+  <!--抓取任务-更新竞彩场次数据(更新标记为可更新)-->
+  <update id="updateGyjMatch">
+    update tb_match_gyj
+    <set>
+      <if test="leagueName != null">
+        leagueName = #{leagueName},
+      </if>
+      <if test="matchCode != null">
+          matchCode = #{matchCode},
+      </if>
+      <if test="teamId != null">
+          teamId = #{teamId},
+      </if>
+      <if test="teamName != null">
+          teamName = #{teamName},
+      </if>
+      <if test="guestTeamId != null">
+          guestTeamId = #{guestTeamId},
+      </if>
+      <if test="guestTeamName != null">
+          guestTeamName = #{guestTeamName},
+      </if>
+      <if test="sp != null">
+          sp = #{sp},
+      </if>
+      <if test="probability != null">
+          probability = #{probability},
+      </if>
+      <if test="status != null">
+          status = #{status},
+      </if>
+      <if test="updateFlag != null">
+          updateFlag = #{updateFlag},
+      </if>
+        updateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--新增冠亚军对阵场次-->
+  <insert id="insertGyjMatch">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_match_gyj (
+      leagueName, lotteryId, matchCode, teamImg, teamId, teamName, guestTeamImg, guestTeamId,
+      guestTeamName, sp, probability, status, createTime, updateTime
+    )
+    values (
+      #{leagueName}, #{lotteryId}, #{matchCode}, #{teamImg}, #{teamId}, #{teamName}, #{guestTeamImg},
+      #{guestTeamId}, #{guestTeamName}, #{sp}, #{probability}, #{status}, now(), now()
+    )
+  </insert>
+
+</mapper>

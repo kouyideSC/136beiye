@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.ActivityCouponReissueMapper" >
+
+  <!-- 查询活动优惠券补送 -->
+  <select id="queryActivityCouponReissues" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.ActivityCouponReissue">
+    select t1.* from tb_activity_coupon_reissue t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="activityId != null and activityId != ''">
+          and t1.activityId = #{activityId}
+        </if>
+        <if test="userId != null and userId != ''">
+          and t1.userId = #{userId}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.createTime desc
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 新增活动优惠券补送 -->
+  <insert id="insertActivityCouponReissue">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_activity_coupon_reissue (userId,activityId,smoney,couponType,couponMode,couponIds,couponExpireTime,createTime)
+    values (#{userId},#{activityId},#{smoney},#{couponType},#{couponMode},#{couponIds},#{couponExpireTime},now())
+  </insert>
+
+  <!-- 更新活动优惠券补送状态 -->
+  <update id="updateActivityCouponReissue" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_activity_coupon_reissue set status = 1 where id = #{id}
+  </update>
+
+</mapper>

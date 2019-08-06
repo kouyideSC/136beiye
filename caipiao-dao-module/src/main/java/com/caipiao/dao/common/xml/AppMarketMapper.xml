@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.AppMarketMapper" >
+
+  <!--查询市场列表-->
+  <select id="queryMarketList" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select * from tb_app_market where status = 1 order by id
+  </select>
+
+  <!--查询市场版本列表-->
+  <select id="queryMarketVersionList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.AppMarket">
+    select
+    v.id, v.clientType, v.versionType, v.marketId, m.marketName appName, v.buildVersion, v.appVersion,
+    v.isForceUpdate, v.status, v.downUrl, v.updateInfo,
+    date_format(v.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+    date_format(v.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+    from
+    tb_app_version v, tb_app_market m
+    where v.marketId = m.id
+    <if test="id != null and id != ''">
+      and v.id = #{id}
+    </if>
+    <if test="clientType != null and clientType != ''">
+      and v.clientType = #{clientType}
+    </if>
+    <if test="versionType != null and versionType != ''">
+      and v.versionType = #{versionType}
+    </if>
+    <if test="marketId != null and marketId != ''">
+      and v.marketId = #{marketId}
+    </if>
+    <if test="buildVersion != null and buildVersion != ''">
+      and v.buildVersion = #{buildVersion}
+    </if>
+    <if test="isForceUpdate != null and isForceUpdate != ''">
+      and v.isForceUpdate = #{isForceUpdate}
+    </if>
+    <if test="status != null and status != ''">
+      and v.status = #{status}
+    </if>
+    <if test="marketName != null and marketName != ''">
+      and m.marketShort = #{marketName}
+    </if>
+    order by v.appVersion desc, v.createTime desc
+  </select>
+
+  <!--保存市场版本-->
+  <insert id="insertMarketVersion">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_app_version (
+      appName, clientType, versionType, marketId, appVersion, buildVersion, downUrl, status, isForceUpdate, updateInfo
+    )
+    values (
+      #{appName}, #{clientType}, #{versionType}, #{marketId}, #{appVersion}, #{buildVersion}, #{downUrl},
+      #{status}, #{isForceUpdate}, #{updateInfo}
+    )
+  </insert>
+
+  <!--删除市场版本-->
+  <delete id="deleteMarketVersion">
+    delete from tb_app_version where id = #{id}
+  </delete>
+
+  <!-- 更新市场版本信息 -->
+  <update id="updateMarketVersion" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_app_version
+    <set>
+      <if test="marketId != null and marketId != ''">
+        marketId = #{marketId},
+      </if>
+      <if test="clientType != null and clientType != ''">
+        clientType = #{clientType},
+      </if>
+      <if test="versionType != null and versionType != ''">
+        versionType = #{versionType},
+      </if>
+      <if test="appVersion != null and appVersion != ''">
+        appVersion = #{appVersion},
+      </if>
+      <if test="buildVersion != null and buildVersion != ''">
+        buildVersion = #{buildVersion},
+      </if>
+      <if test="downUrl != null and downUrl != ''">
+        downUrl = #{downUrl},
+      </if>
+      <if test="status != null and status != ''">
+        status = #{status},
+      </if>
+      <if test="isForceUpdate != null and isForceUpdate != ''">
+        isForceUpdate = #{isForceUpdate},
+      </if>
+      <if test="updateInfo != null and updateInfo != ''">
+        updateInfo = #{updateInfo},
+      </if>
+      updateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+</mapper>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.PaymentWayMapper" >
+
+  <!-- 查询付款(提现)方式(渠道) -->
+  <select id="queryPaymentWays" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.PaymentWay">
+    select
+    t1.id,
+    t1.name,
+    t1.logo,
+    t1.channelCode,
+    t1.channelDesc,
+    t1.status,
+    t1.model,
+    t1.timeRangeStart,
+    t1.timeRangeEnd,
+    t1.timeCharacter,
+    t1.rate,
+    t1.minMoney,
+    t1.maxMoney,
+    t1.createTime,
+    t1.updateTime
+    from tb_payment_way t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="name != null and name != ''">
+          and t1.name = #{name}
+        </if>
+        <if test="channelCode != null and channelCode != ''">
+          and t1.channelCode = #{channelCode}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.channelCode
+          </otherwise>
+        </choose>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询提现渠道信息(管理后台) -->
+  <select id="queryPaymentWayInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.name,
+    t1.logo,
+    t1.channelCode,
+    t1.channelDesc,
+    t1.status,
+    t1.model,
+    date_format(t1.timeRangeStart,'%Y-%m-%d %H:%i:%s') timeRangeStart,
+    date_format(t1.timeRangeEnd,'%Y-%m-%d %H:%i:%s') timeRangeEnd,
+    t1.timeCharacter,
+    t1.rate,
+    t1.minMoney,
+    t1.maxMoney,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+    from tb_payment_way t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="name != null and name != ''">
+          and t1.name = #{name}
+        </if>
+        <if test="channelCode != null and channelCode != ''">
+          and t1.channelCode = #{channelCode}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.channelCode
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询提现渠道总记录条数(管理后台) -->
+  <select id="queryPaymentWayInfoCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+    select count(0) from tb_payment_way t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="name != null and name != ''">
+          and t1.name = #{name}
+        </if>
+        <if test="channelCode != null and channelCode != ''">
+          and t1.channelCode = #{channelCode}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 编辑提现渠道 -->
+  <update id="editTxqd" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_payment_way set updateTime = now()
+    <if test="status != null and status != ''">
+      ,status = #{status}
+    </if>
+    <if test="timeRangeStart != null and timeRangeStart != ''">
+      ,timeRangeStart = #{timeRangeStart}
+    </if>
+    <if test="timeRangeEnd != null and timeRangeEnd != ''">
+      ,timeRangeEnd = #{timeRangeEnd}
+    </if>
+    <if test="timeCharacter != null and timeCharacter != ''">
+      ,timeCharacter = #{timeCharacter}
+    </if>
+    <if test="model != null">
+      ,model = #{model}
+      <choose>
+        <!-- 如果启用模式为默认模式,则清空时间段和时间特征 -->
+        <when test="model == 0">
+          ,timeRangeStart = NULL
+          ,timeRangeEnd = NULL
+          ,timeCharacter = NULL
+        </when>
+        <!-- 如果启用模式为时间段,则清空时间特征 -->
+        <when test="model == 1">
+          ,timeCharacter = NULL
+        </when>
+        <!-- 如果启用模式为时间特征,则清空时间段 -->
+        <when test="model == 2">
+          ,timeRangeStart = NULL
+          ,timeRangeEnd = NULL
+        </when>
+      </choose>
+    </if>
+    <if test="rate != null and rate != ''">
+      ,rate = #{rate}
+    </if>
+    <if test="minMoney != null">
+        <choose>
+            <when test="minMoney == ''">
+                ,minMoney = NULL
+            </when>
+            <otherwise>
+                ,minMoney = #{minMoney}
+            </otherwise>
+        </choose>
+    </if>
+    <if test="maxMoney != null">
+        <choose>
+            <when test="maxMoney == ''">
+                ,maxMoney = NULL
+            </when>
+            <otherwise>
+                ,maxMoney = #{maxMoney}
+            </otherwise>
+        </choose>
+    </if>
+    where id = #{id}
+  </update>
+
+  <!-- 查询提现渠道区域配置 -->
+  <select id="queryPaymentWayAreaInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.channelCode,
+    t1.type,
+    t1.channelAreaCode,
+    t1.channelAreaName,
+    t1.areaCode,
+    t1.areaName
+    from tb_payment_way_area t1
+    where t1.channelCode = #{channelCode}
+    <if test="type != null and type != ''">
+      and t1.type = #{type}
+    </if>
+    <if test="areaName != null and areaName != ''">
+      and t1.areaName = #{areaName}
+    </if>
+    <if test="areaCode != null and areaCode != ''">
+      and t1.areaCode = #{areaCode}
+    </if>
+    limit 1
+  </select>
+
+  <!-- 查询提现渠道银行配置 -->
+  <select id="queryPaymentWayBankInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.channelCode,
+    t1.channelBankAbbreviation,
+    t1.channelBankCode,
+    t1.channelBankName,
+    t1.bankAbbreviation,
+    t1.bankName,
+    t1.bankCode
+    from tb_payment_way_bank t1
+    where t1.channelCode = #{channelCode}
+    <if test="bankName != null and bankName != ''">
+      and t1.bankName = #{bankName}
+    </if>
+    <if test="bankAbbreviation != null and bankAbbreviation != ''">
+      and t1.bankAbbreviation = #{bankAbbreviation}
+    </if>
+    limit 1
+  </select>
+
+</mapper>

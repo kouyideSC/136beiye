@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.lottery.PeriodMapper" >
+
+  <!--查询待处理期次列表-计奖程序-->
+  <select id="queryDefaultStatusPeriods" resultType="com.caipiao.domain.lottery.Period">
+    select
+    id, lotteryId, period, drawNumber, drawNumberTime, sellStatus, sellStartTime, sellEndTime, authorityEndTime,
+    updateFlag, updateTime, prizeGrade, matches, state
+    from tb_period
+    where lotteryId = #{lotteryId} and sellEndTime &lt; DATE_ADD(now(),INTERVAL 5 MINUTE) and state &gt;= 0 and state &lt; 99 order by period
+  </select>
+
+  <!--查询未截止的最近一期期次-->
+  <select id="queryCurrentFirstPeriod" resultType="com.caipiao.domain.lottery.Period">
+    select
+    id, lotteryId, period, drawNumber, sellStatus, sellStartTime, sellEndTime, authorityEndTime,
+    updateFlag, updateTime, prizeGrade, matches, state
+    from tb_period
+    where lotteryId = #{lotteryId} and sellEndTime > now() order by period limit 1
+  </select>
+
+  <!--查询彩种当前期次-->
+  <select id="queryCurrentPeriodByLottery" resultType="com.caipiao.domain.lottery.Period">
+    select
+    id, lotteryId, period, drawNumber, sellStatus, sellStartTime, sellEndTime, authorityEndTime,
+    updateFlag, updateTime, prizeGrade, matches, state
+    from tb_period
+    where lotteryId = #{lotteryId} and sellStartTime &lt; now() and sellEndTime &gt; DATE_SUB(now(), INTERVAL 65 SECOND) order by period
+  </select>
+
+  <!--根据彩种期号查询期次信息-->
+  <select id="queryPeriodByPerod" resultType="com.caipiao.domain.lottery.Period">
+    select
+    id, lotteryId, period, drawNumber,drawNumberTime, sellStatus, sellStartTime, sellEndTime, authorityEndTime,
+    updateFlag, updateTime, prizeGrade, matches, state
+    from tb_period
+    where lotteryId = #{lotteryId} and period = #{period}
+  </select>
+
+  <!--根据唯一编号-修改期次状态-->
+  <update id="updatePeriodStatusById">
+    update tb_period
+    <set>
+      <if test="state != null and state == 1">
+        sellStatus = #{sellStatus},
+      </if>
+      <if test="state != null and state == 3">
+        drawNumber = #{drawNumber},
+        drawNumberTime = now(),
+      </if>
+      <if test="prizeGrade != null">
+        prizeGrade = #{prizeGrade},
+      </if>
+      state = #{state},
+      stateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--根据id更新期次数据-->
+  <update id="updatePeriodById">
+    update tb_period
+    <set>
+      <if test="drawNumber != null">
+        drawNumber = #{drawNumber},
+        drawNumberTime = now(),
+      </if>
+      <if test="sellStatus != null">
+        sellStatus = #{sellStatus},
+      </if>
+      <if test="sellStartTime != null">
+        sellStartTime = #{sellStartTime},
+      </if>
+      <if test="sellEndTime != null">
+        sellEndTime = #{sellEndTime},
+      </if>
+      <if test="authorityEndTime != null">
+        authorityEndTime = #{authorityEndTime},
+      </if>
+      <if test="updateFlag != null">
+        updateFlag = #{updateFlag},
+      </if>
+      <if test="prizeGrade != null">
+        prizeGrade = #{prizeGrade},
+      </if>
+      <if test="matches != null">
+        matches = #{matches},
+      </if>
+      updateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--根据期次编号-修改期次时间-->
+  <update id="updatePeriodStatusByPeriodId">
+    update tb_period set
+    <if test="sellStartTime != null">
+      sellStartTime = #{sellStartTime},
+    </if>
+    <if test="sellEndTime != null">
+      sellEndTime = #{sellEndTime},
+    </if>
+    <if test="authorityEndTime != null">
+      authorityEndTime = #{authorityEndTime},
+    </if>
+    <if test="drawNumberTime != null">
+      drawNumberTime = #{drawNumberTime},
+    </if>
+    updateTime = now()
+    where lotteryId = #{lotteryId} and period = #{period}
+  </update>
+
+  <!--新增期次(抓取)-->
+  <insert id="insertPeriod">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_period (
+      lotteryId, period, drawNumberTime, sellStatus, sellStartTime, sellEndTime, authorityEndTime,
+      updateTime, prizeGrade, matches, stateTime
+      )
+    values (
+      #{lotteryId}, #{period}, #{drawNumberTime}, #{sellStatus}, #{sellStartTime}, #{sellEndTime},
+      #{authorityEndTime}, now(), #{prizeGrade}, #{matches}, now()
+      )
+  </insert>
+
+  <!-- 根据彩种id查询最新一期的开奖信息 -->
+  <select id="queryLatestKjByLotteryId" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.vo.KaiJiangVo">
+    select
+    t1.lotteryId lid,
+    t1.period pid,
+    date_format(t1.drawNumberTime,'%Y-%m-%d %H:%i:%s') as ktime,
+    t1.drawNumber kcode,
+    t2.shortName lname,
+    t2.orderValue xh
+    from tb_period t1,tb_lottery t2
+    where t2.id = t1.lotteryId
+    and t1.state &gt; 4 and t1.drawNumber is not NULL and t1.drawNumber != '' and t1.lotteryId = #{lotteryId}
+    <if test="appStatus != null and appStatus != ''">
+      and t2.appStatus = #{appStatus}
+    </if>
+    order by t1.period desc
+    limit 1
+  </select>
+
+  <!-- 根据期次范围查询期次列表(管理后台) -->
+  <select id="queryPeriodsByRange" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.lottery.Period">
+    select * from tb_period where lotteryId = #{id} and period &gt;= #{startPeriod} and period &lt;= #{endPeriod} order by period
+  </select>
+
+  <!-- 查询期次信息(管理后台) -->
+  <select id="queryPeriods" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.lotteryId,
+    t1.period,
+    (select m1.name from tb_lottery m1 where m1.id = t1.lotteryId) as lotteryName,
+    t1.drawNumber,
+    date_format(t1.drawNumberTime,'%Y-%m-%d %H:%i:%s') as drawNumberTime,
+    t1.sellStatus,
+    date_format(t1.sellStartTime,'%Y-%m-%d %H:%i:%s') as sellStartTime,
+    date_format(t1.sellEndTime,'%Y-%m-%d %H:%i:%s') as sellEndTime,
+    date_format(t1.authorityEndTime,'%Y-%m-%d %H:%i:%s') as authorityEndTime,
+    t1.prizeGrade,
+    t1.matches,
+    t1.updateFlag,
+    t1.state,
+    date_format(t1.stateTime,'%Y-%m-%d %H:%i:%s') as stateTime,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') as updateTime
+    from tb_period t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="lotteryId != null and lotteryId != ''">
+          and t1.lotteryId = #{lotteryId}
+        </if>
+        <if test="sellStatus != null and sellStatus != ''">
+          and t1.sellStatus = #{sellStatus}
+        </if>
+        <if test="minSellStatus != null and minSellStatus != ''">
+          and t1.sellStatus &gt;= #{minSellStatus}
+        </if>
+        <if test="state != null and state != ''">
+          and t1.state = #{state}
+        </if>
+        <if test="minState != null and minState != ''">
+          and t1.state &gt;= #{minState}
+        </if>
+        <if test="period != null and period != ''">
+          and t1.period = #{period}
+        </if>
+        <if test="ltSellEndTime == 1">
+          and t1.sellEndTime &gt; now()
+        </if>
+        <if test="maxSellEndTime != null and maxSellEndTime != ''">
+          and t1.sellEndTime &lt;= #{maxSellEndTime}
+        </if>
+        <if test="minSellEndTime != null and minSellEndTime != ''">
+          and t1.sellEndTime &gt;= #{minSellEndTime}
+        </if>
+        <if test="periodPrefix != null and periodPrefix != ''">
+          and t1.period regexp '^${periodPrefix}'
+        </if>
+        <choose>
+          <when test="orderBySorts != null and orderBySorts != ''">
+            order by ${orderBySorts}
+          </when>
+          <otherwise>
+            order by t1.period desc
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询期次总记录条数(管理后台) -->
+  <select id="queryPeriodsCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+    select count(0) from tb_period t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="lotteryId != null and lotteryId != ''">
+          and t1.lotteryId = #{lotteryId}
+        </if>
+        <if test="sellStatus != null and sellStatus != ''">
+          and t1.sellStatus = #{sellStatus}
+        </if>
+        <if test="state != null and state != ''">
+          and t1.state = #{state}
+        </if>
+        <if test="startPeriod != null and startPeriod != ''">
+          and t1.period &gt;= #{startPeriod}
+        </if>
+        <if test="endtPeriod != null and endtPeriod != ''">
+          and t1.period &lt;= #{endtPeriod}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 编辑期次(管理后台) -->
+  <update id="editPeriod" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_period t1
+    set t1.sellStatus = #{sellStatus}
+    ,t1.sellStartTime = #{sellStartTime}
+    ,t1.sellEndTime = #{sellEndTime}
+    ,t1.authorityEndTime = #{authorityEndTime}
+    ,t1.updateFlag = #{updateFlag}
+    ,t1.prizeGrade = #{prizeGrade}
+    <if test="matches != null and matches != ''">
+      ,t1.matches = #{matches}
+    </if>
+    ,t1.updateTime = now()
+    where t1.id = #{id}
+  </update>
+
+  <!-- 删除期次(管理后台) -->
+  <delete id="deletePeriod" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    delete from tb_period where id = #{id}
+  </delete>
+
+  <!-- 审核期次(管理后台) -->
+  <update id="auditPeriod" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_period t1
+    set t1.updateTime = now()
+    ,t1.drawNumber = #{drawNumber}
+    ,t1.prizeGrade = #{prizeGrade}
+    ,t1.state = 4
+    <if test="matches != null and matches != ''">
+      ,t1.matches = #{matches}
+    </if>
+    <if test="drawNumberTime != null and drawNumberTime != ''">
+      ,t1.drawNumberTime = #{drawNumberTime}
+    </if>
+    where t1.id = #{id}
+  </update>
+
+  <!-- 新增期次(管理后台) -->
+  <insert id="addPeriod" parameterType="java.util.HashMap">
+    insert into tb_period(lotteryId,period,sellStatus,sellStartTime,sellEndTime,authorityEndTime,drawNumberTime,prizeGrade,stateTime,createTime)
+    values(#{lotteryId},#{period},#{sellStatus},#{sellStartTime},#{sellEndTime},#{authorityEndTime},#{drawNumberTime},#{prizeGrade},now(),now())
+  </insert>
+
+  <!-- 查询彩种最大期次(管理后台) -->
+  <select id="queryMaxPeriod" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.lotteryId,
+    t1.period,
+    (select m1.name from tb_lottery m1 where m1.id = t1.lotteryId) as lotteryName,
+    t1.drawNumber,
+    date_format(t1.drawNumberTime,'%Y-%m-%d %H:%i:%s') as drawNumberTime,
+    t1.sellStatus,
+    date_format(t1.sellStartTime,'%Y-%m-%d %H:%i:%s') as sellStartTime,
+    date_format(t1.sellEndTime,'%Y-%m-%d %H:%i:%s') as sellEndTime,
+    date_format(t1.authorityEndTime,'%Y-%m-%d %H:%i:%s') as authorityEndTime,
+    t1.prizeGrade,
+    t1.matches,
+    t1.updateFlag,
+    t1.state,
+    date_format(t1.stateTime,'%Y-%m-%d %H:%i:%s') as stateTime,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') as updateTime
+    from
+    tb_period t1
+    where t1.lotteryId = #{lotteryId}
+    order by t1.period desc
+    limit 1
+  </select>
+
+  <!-- 查询范围期次(管理后台) -->
+  <select id="queryRangePeriods" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select t.* from ((select
+    t1.id,
+    t1.lotteryId,
+    t1.period,
+    (select m1.name from tb_lottery m1 where m1.id = t1.lotteryId) as lotteryName,
+    t1.drawNumber,
+    date_format(t1.drawNumberTime,'%Y-%m-%d %H:%i:%s') as drawNumberTime,
+    t1.sellStatus,
+    date_format(t1.sellStartTime,'%Y-%m-%d %H:%i:%s') as sellStartTime,
+    date_format(t1.sellEndTime,'%Y-%m-%d %H:%i:%s') as sellEndTime,
+    date_format(t1.authorityEndTime,'%Y-%m-%d %H:%i:%s') as authorityEndTime,
+    t1.prizeGrade,
+    t1.matches,
+    t1.updateFlag,
+    t1.state,
+    date_format(t1.stateTime,'%Y-%m-%d %H:%i:%s') as stateTime,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') as updateTime
+    from tb_period t1
+    where t1.lotteryId = #{lotteryId} and t1.sellEndTime &lt; now()
+    order by t1.period desc
+    limit 0,${qnum})
+    union all
+    (select
+    t1.id,
+    t1.lotteryId,
+    t1.period,
+    (select m1.name from tb_lottery m1 where m1.id = t1.lotteryId) as lotteryName,
+    t1.drawNumber,
+    date_format(t1.drawNumberTime,'%Y-%m-%d %H:%i:%s') as drawNumberTime,
+    t1.sellStatus,
+    date_format(t1.sellStartTime,'%Y-%m-%d %H:%i:%s') as sellStartTime,
+    date_format(t1.sellEndTime,'%Y-%m-%d %H:%i:%s') as sellEndTime,
+    date_format(t1.authorityEndTime,'%Y-%m-%d %H:%i:%s') as authorityEndTime,
+    t1.prizeGrade,
+    t1.matches,
+    t1.updateFlag,
+    t1.state,
+    date_format(t1.stateTime,'%Y-%m-%d %H:%i:%s') as stateTime,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') as updateTime
+    from tb_period t1
+    where t1.lotteryId = #{lotteryId} and t1.sellEndTime &gt; now()
+    order by t1.period asc
+    limit 0,${hnum})) t order by t.period desc
+  </select>
+
+  <!-- 根据起始期次等信息查询包含起始期次的在售期次信息 -->
+  <select id="queryPeriodInfoByStartPeriod" parameterType="java.util.Map" resultType="com.caipiao.domain.lottery.Period">
+    select
+    t1.id,
+    t1.period,
+    t1.authorityEndTime
+    from tb_period t1
+    where t1.sellStatus = 1 and t1.lotteryId = #{lotteryId} and t1.period &gt;= #{startPeriod}
+    order by t1.period asc
+    limit ${psum}
+  </select>
+
+  <!-- 查询当前在售期次 -->
+  <select id="queryCurrentSellPeriod" resultType="com.caipiao.domain.lottery.Period">
+    select
+    t1.id,
+    t1.period,
+    t1.sellEndTime,
+    t1.drawNumberTime
+    from tb_period t1
+    where t1.sellEndTime &gt; now() and t1.lotteryId = #{lotteryId} and t1.sellStatus = 1
+    order by t1.period asc
+    limit 1
+  </select>
+
+  <!-- 查询已经开奖但无开奖号码的期次 -->
+  <select id="queryPeriodAlreadyDrawList" resultType="com.caipiao.domain.lottery.Period">
+    select * from tb_period
+    where
+    lotteryId = #{lotteryId} and sellStatus = 2 and state = 2
+    and authorityEndTime &lt; DATE_SUB(NOW(),INTERVAL 60 SECOND)
+    and drawNumber is null
+    order by authorityEndTime
+    limit 10
+  </select>
+
+  <!-- 重置期次计奖状态-回退至开奖号码待审核 -->
+  <update id="updatePeriodRebackState" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_period
+    set
+    state = 3, stateTime = now()
+    where
+    lotteryId = #{lotteryId}
+    and period = #{matchCode}
+  </update>
+
+</mapper>

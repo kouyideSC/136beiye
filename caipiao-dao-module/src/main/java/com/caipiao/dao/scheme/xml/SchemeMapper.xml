@@ -1,0 +1,2356 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.scheme.SchemeMapper" >
+
+    <!-- 查询用户方案(管理后台) -->
+    <select id="queryUserSchemes" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select t.* from (
+        (select
+        t1.id,
+        t1.clientSource,
+        t1.clientSourceName,
+        t1.schemeUserId,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.playTypeId,
+        t1.schemeOrderId,
+        t1.schemeType,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemePayMoney,
+        t1.channelCode,
+        t1.channelDesc,
+        t1.schemeStatus,
+        t1.schemeStatusDesc,
+        t1.schemePlayType,
+        t1.schemeContent,
+        t1.schemeSpContent,
+        t1.schemeYhContent,
+        t1.prize,
+        t1.prizeSubjoin,
+        t1.prizeSubjoinSite,
+        t1.prizeTax,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.prizeDetail,
+        t1.rewardPrize,
+        t1.period,
+        t1.periodSum,
+        t1.donePeriod,
+        t1.theoryPrize,
+        date_format(t1.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        t1.drawNumber,
+        t1.openStatus,
+        date_format(t1.openTime,'%Y-%m-%d %H:%i:%s') openTime,
+        t1.prizeStatus,
+        date_format(t1.prizeTime,'%Y-%m-%d %H:%i:%s') prizeTime,
+        t1.bigOrderStatus,
+        t1.offsetWithDraw,
+        t1.offsetUnWithDraw,
+        t1.couponId,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        t2.id userId,
+        t2.nickName,
+        (select group_concat(distinct tv.voteName separator '，') from tb_ticket tk,tb_ticket_vote tv where tv.voteId = tk.voteId and tk.schemeId = t1.schemeOrderId) ticketVoteName
+        from tb_scheme t1,tb_user t2
+        where t2.id = t1.schemeUserId
+        and (t1.schemeStatus = 4 or t1.schemeStatus = 6 or t1.schemeStatus = 7 or t1.bigOrderStatus = 2)
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="lotteryId != null and lotteryId != ''">
+                    and t1.lotteryId = #{lotteryId}
+                </if>
+                <if test="schemeType != null and schemeType != ''">
+                    and t1.schemeType = #{schemeType}
+                </if>
+                <if test="schemeStatus != null and schemeStatus != ''">
+                    and t1.schemeStatus = #{schemeStatus}
+                </if>
+                <if test="minSchemeStatus != null and minSchemeStatus != ''">
+                    and t1.schemeStatus &gt;= #{minSchemeStatus}
+                </if>
+                <if test="userId != null and userId != ''">
+                    and t1.schemeUserId = #{userId}
+                </if>
+                <if test="period != null and period != ''">
+                    and t1.period = #{period}
+                </if>
+                <if test="schemeOrderId != null and schemeOrderId != ''">
+                    and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+                </if>
+                <if test="minSchemeMoney != null and minSchemeMoney != ''">
+                    and t1.schemeMoney &gt;= #{minSchemeMoney}
+                </if>
+                <if test="maxSchemeMoney != null and maxSchemeMoney != ''">
+                    and t1.schemeMoney &lt;= #{maxSchemeMoney}
+                </if>
+                <if test="minCreateTime != null and minCreateTime != ''">
+                    and t1.createTime &gt;= #{minCreateTime}
+                </if>
+                <if test="maxCreateTime != null and maxCreateTime != ''">
+                    and t1.createTime &lt;= #{maxCreateTime}
+                </if>
+                <if test="minCreateDate != null and minCreateDate != ''">
+                    and date_format(t1.createTime,'%Y%m%d') &gt;= #{minCreateDate}
+                </if>
+                <if test="maxCreateDate != null and maxCreateDate != ''">
+                    and date_format(t1.createTime,'%Y%m%d') &lt;= #{maxCreateDate}
+                </if>
+                <if test="clientSource != null and clientSource != ''">
+                    and t1.clientSource = #{clientSource}
+                </if>
+                <if test="openStatus != null and openStatus != ''">
+                    and t1.openStatus = #{openStatus}
+                </if>
+                <if test="minOpenStatus != null and minOpenStatus != ''">
+                    and t1.openStatus &gt;= #{minOpenStatus}
+                </if>
+                <if test="prizeStatus != null and prizeStatus != ''">
+                    and t1.prizeStatus = #{prizeStatus}
+                </if>
+                <if test="minPrizeStatus != null and minPrizeStatus != ''">
+                    and t1.prizeStatus &gt;= #{minPrizeStatus}
+                </if>
+                <if test="minPrizeTax != null and minPrizeTax != ''">
+                    and t1.prizeTax &gt;= #{minPrizeTax}
+                </if>
+                <if test="maxPrizeTax != null and maxPrizeTax != ''">
+                    and t1.prizeTax &lt;= #{maxPrizeTax}
+                </if>
+                <if test="userAttrs != null and userAttrs != ''">
+                    and (t2.id = #{userAttrs} or t2.nickName = #{userAttrs} or t2.mobile = #{userAttrs})
+                </if>
+                <if test="userType != null and userType != ''">
+                    and t2.userType = #{userType}
+                </if>
+                <if test="ticketVoteId != null and ticketVoteId != ''">
+                    and exists (select tk.schemeId from tb_ticket tk where tk.schemeId = t1.schemeOrderId and tk.voteId = #{ticketVoteId})
+                </if>
+                <choose>
+                    <when test="sorts != null and sorts != ''">
+                        order by ${sorts}
+                    </when>
+                    <otherwise>
+                        order by t1.bigOrderStatus desc,t1.schemeStatus desc,t1.createTime desc
+                    </otherwise>
+                </choose>
+                <if test="psize != null and psize != ''">
+                    limit ${pstart},${psize}
+                </if>
+            </otherwise>
+        </choose>
+        ) union all (select
+        t1.id,
+        t1.clientSource,
+        t1.clientSourceName,
+        t1.schemeUserId,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.playTypeId,
+        t1.schemeOrderId,
+        t1.schemeType,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemePayMoney,
+        t1.channelCode,
+        t1.channelDesc,
+        t1.schemeStatus,
+        t1.schemeStatusDesc,
+        t1.schemePlayType,
+        t1.schemeContent,
+        t1.schemeSpContent,
+        t1.schemeYhContent,
+        t1.prize,
+        t1.prizeSubjoin,
+        t1.prizeSubjoinSite,
+        t1.prizeTax,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.prizeDetail,
+        t1.rewardPrize,
+        t1.period,
+        t1.periodSum,
+        t1.donePeriod,
+        t1.theoryPrize,
+        date_format(t1.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        t1.drawNumber,
+        t1.openStatus,
+        date_format(t1.openTime,'%Y-%m-%d %H:%i:%s') openTime,
+        t1.prizeStatus,
+        date_format(t1.prizeTime,'%Y-%m-%d %H:%i:%s') prizeTime,
+        t1.bigOrderStatus,
+        t1.offsetWithDraw,
+        t1.offsetUnWithDraw,
+        t1.couponId,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        t2.id userId,
+        t2.nickName,
+        (select group_concat(distinct tv.voteName separator '，') from tb_ticket tk,tb_ticket_vote tv where tv.voteId = tk.voteId and tk.schemeId = t1.schemeOrderId) ticketVoteName
+        from tb_scheme t1,tb_user t2
+        where t2.id = t1.schemeUserId
+        and t1.schemeStatus != 4 and t1.schemeStatus != 6 and t1.schemeStatus != 7 and t1.bigOrderStatus != 2 and t1.schemeStatus != 0
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="lotteryId != null and lotteryId != ''">
+                    and t1.lotteryId = #{lotteryId}
+                </if>
+                <if test="schemeType != null and schemeType != ''">
+                    and t1.schemeType = #{schemeType}
+                </if>
+                <if test="schemeStatus != null and schemeStatus != ''">
+                    and t1.schemeStatus = #{schemeStatus}
+                </if>
+                <if test="userId != null and userId != ''">
+                    and t1.schemeUserId = #{userId}
+                </if>
+                <if test="minSchemeStatus != null and minSchemeStatus != ''">
+                    and t1.schemeStatus &gt;= #{minSchemeStatus}
+                </if>
+                <if test="period != null and period != ''">
+                    and t1.period = #{period}
+                </if>
+                <if test="schemeOrderId != null and schemeOrderId != ''">
+                    and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+                </if>
+                <if test="minSchemeMoney != null and minSchemeMoney != ''">
+                    and t1.schemeMoney &gt;= #{minSchemeMoney}
+                </if>
+                <if test="maxSchemeMoney != null and maxSchemeMoney != ''">
+                    and t1.schemeMoney &lt;= #{maxSchemeMoney}
+                </if>
+                <if test="minCreateTime != null and minCreateTime != ''">
+                    and t1.createTime &gt;= #{minCreateTime}
+                </if>
+                <if test="maxCreateTime != null and maxCreateTime != ''">
+                    and t1.createTime &lt;= #{maxCreateTime}
+                </if>
+                <if test="minCreateDate != null and minCreateDate != ''">
+                    and date_format(t1.createTime,'%Y%m%d') &gt;= #{minCreateDate}
+                </if>
+                <if test="maxCreateDate != null and maxCreateDate != ''">
+                    and date_format(t1.createTime,'%Y%m%d') &lt;= #{maxCreateDate}
+                </if>
+                <if test="clientSource != null and clientSource != ''">
+                    and t1.clientSource = #{clientSource}
+                </if>
+                <if test="openStatus != null and openStatus != ''">
+                    and t1.openStatus = #{openStatus}
+                </if>
+                <if test="minOpenStatus != null and minOpenStatus != ''">
+                    and t1.openStatus &gt;= #{minOpenStatus}
+                </if>
+                <if test="prizeStatus != null and prizeStatus != ''">
+                    and t1.prizeStatus = #{prizeStatus}
+                </if>
+                <if test="minPrizeStatus != null and minPrizeStatus != ''">
+                    and t1.prizeStatus &gt;= #{minPrizeStatus}
+                </if>
+                <if test="minPrizeTax != null and minPrizeTax != ''">
+                    and t1.prizeTax &gt;= #{minPrizeTax}
+                </if>
+                <if test="maxPrizeTax != null and maxPrizeTax != ''">
+                    and t1.prizeTax &lt;= #{maxPrizeTax}
+                </if>
+                <if test="userAttrs != null and userAttrs != ''">
+                    and (t2.id = #{userAttrs} or t2.nickName = #{userAttrs} or t2.mobile = #{userAttrs})
+                </if>
+                <if test="userType != null and userType != ''">
+                    and t2.userType = #{userType}
+                </if>
+                <if test="ticketVoteId != null and ticketVoteId != ''">
+                    and exists (select tk.schemeId from tb_ticket tk where tk.schemeId = t1.schemeOrderId and tk.voteId = #{ticketVoteId})
+                </if>
+                <choose>
+                    <when test="sorts != null and sorts != ''">
+                        order by ${sorts}
+                    </when>
+                    <otherwise>
+                        order by t1.createTime desc
+                    </otherwise>
+                </choose>
+                <if test="psize != null and psize != ''">
+                    limit ${pstart},${psize}
+                </if>
+            </otherwise>
+        </choose>
+        ))t
+        <if test="psize != null and psize != ''">
+            limit 0,${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户方案总计(管理后台) -->
+    <select id="queryUserSchemesCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select count(0) as tsize,sum(t1.schemeMoney) as tmoney,sum(t1.schemePayMoney) as tpaymoney,sum(t1.prizeTax) as tprize
+        from tb_scheme t1,tb_user t2
+        where t2.id = t1.schemeUserId and t1.schemeStatus != 0
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="lotteryId != null and lotteryId != ''">
+                    and t1.lotteryId = #{lotteryId}
+                </if>
+                <if test="schemeType != null and schemeType != ''">
+                    and t1.schemeType = #{schemeType}
+                </if>
+                <if test="schemeStatus != null and schemeStatus != ''">
+                    and t1.schemeStatus = #{schemeStatus}
+                </if>
+                <if test="userId != null and userId != ''">
+                    and t1.schemeUserId = #{userId}
+                </if>
+                <if test="minSchemeStatus != null and minSchemeStatus != ''">
+                    and t1.schemeStatus &gt;= #{minSchemeStatus}
+                </if>
+                <if test="period != null and period != ''">
+                    and t1.period = #{period}
+                </if>
+                <if test="schemeOrderId != null and schemeOrderId != ''">
+                    and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+                </if>
+                <if test="minSchemeMoney != null and minSchemeMoney != ''">
+                    and t1.schemeMoney &gt;= #{minSchemeMoney}
+                </if>
+                <if test="maxSchemeMoney != null and maxSchemeMoney != ''">
+                    and t1.schemeMoney &lt;= #{maxSchemeMoney}
+                </if>
+                <if test="minCreateTime != null and minCreateTime != ''">
+                    and t1.createTime &gt;= #{minCreateTime}
+                </if>
+                <if test="maxCreateTime != null and maxCreateTime != ''">
+                    and t1.createTime &lt;= #{maxCreateTime}
+                </if>
+                <if test="minCreateDate != null and minCreateDate != ''">
+                    and date_format(t1.createTime,'%Y%m%d') &gt;= #{minCreateDate}
+                </if>
+                <if test="maxCreateDate != null and maxCreateDate != ''">
+                    and date_format(t1.createTime,'%Y%m%d') &lt;= #{maxCreateDate}
+                </if>
+                <if test="clientSource != null and clientSource != ''">
+                    and t1.clientSource = #{clientSource}
+                </if>
+                <if test="openStatus != null and openStatus != ''">
+                    and t1.openStatus = #{openStatus}
+                </if>
+                <if test="minOpenStatus != null and minOpenStatus != ''">
+                    and t1.openStatus &gt;= #{minOpenStatus}
+                </if>
+                <if test="prizeStatus != null and prizeStatus != ''">
+                    and t1.prizeStatus = #{prizeStatus}
+                </if>
+                <if test="minPrizeStatus != null and minPrizeStatus != ''">
+                    and t1.prizeStatus &gt;= #{minPrizeStatus}
+                </if>
+                <if test="minPrizeTax != null and minPrizeTax != ''">
+                    and t1.prizeTax &gt;= #{minPrizeTax}
+                </if>
+                <if test="maxPrizeTax != null and maxPrizeTax != ''">
+                    and t1.prizeTax &lt;= #{maxPrizeTax}
+                </if>
+                <if test="userAttrs != null and userAttrs != ''">
+                    and (t2.id = #{userAttrs} or t2.nickName = #{userAttrs} or t2.mobile = #{userAttrs})
+                </if>
+                <if test="userType != null and userType != ''">
+                    and t2.userType = #{userType}
+                </if>
+                <if test="ticketVoteId != null and ticketVoteId != ''">
+                    and exists (select tk.schemeId from tb_ticket tk where tk.schemeId = t1.schemeOrderId and tk.voteId = #{ticketVoteId})
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询用户普通方案和追号方案(管理后台) -->
+    <select id="queryUserPtAndZhSchemes" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select t.* from (
+        select
+        t1.id,
+        t1.id schemeId,
+        t1.lotteryName,
+        t1.schemeOrderId,
+        t1.schemeType,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemePayMoney,
+        t1.schemeStatus,
+        t1.schemeStatusDesc,
+        t1.prize,
+        t1.prizeSubjoin,
+        t1.prizeSubjoinSite,
+        t1.prizeTax,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.prizeDetail,
+        t1.period,
+        t1.theoryPrize,
+        date_format(t1.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        t1.openStatus,
+        date_format(t1.openTime,'%Y-%m-%d %H:%i:%s') openTime,
+        t1.prizeStatus,
+        date_format(t1.prizeTime,'%Y-%m-%d %H:%i:%s') prizeTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        t2.id userId,
+        t2.nickName,
+        (select group_concat(distinct tv.voteName separator '，') from tb_ticket tk,tb_ticket_vote tv where tv.voteId = tk.voteId and tk.schemeId = t1.schemeOrderId) ticketVoteName
+        from tb_scheme t1,tb_user t2
+        where t2.id = t1.schemeUserId
+        and t1.schemeType != 1
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t1.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t1.period = #{period}
+        </if>
+        <if test="schemeStatus != null and schemeStatus != ''">
+            and t1.schemeStatus = #{schemeStatus}
+        </if>
+        <if test="minSchemeStatus != null and minSchemeStatus != ''">
+            and t1.schemeStatus &gt;= #{minSchemeStatus}
+        </if>
+        <if test="maxSchemeStatus != null and maxSchemeStatus != ''">
+            and t1.schemeStatus &lt;= #{maxSchemeStatus}
+        </if>
+        <if test="notSchemeStatus != null and notSchemeStatus != ''">
+            and t1.schemeStatus != #{notSchemeStatus}
+        </if>
+        <if test="schemeOrderId != null and schemeOrderId != ''">
+            and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+        </if>
+        <if test="minSchemeMoney != null and minSchemeMoney != ''">
+            and t1.schemeMoney &gt;= #{minSchemeMoney}
+        </if>
+        <if test="maxSchemeMoney != null and maxSchemeMoney != ''">
+            and t1.schemeMoney &lt;= #{maxSchemeMoney}
+        </if>
+        <if test="openStatus != null and openStatus != ''">
+            and t1.openStatus = #{openStatus}
+        </if>
+        <if test="minOpenStatus != null and minOpenStatus != ''">
+            and t1.openStatus &gt;= #{minOpenStatus}
+        </if>
+        <if test="minOpenTime != null and minOpenTime != ''">
+            and t1.openTime &gt;= #{minOpenTime}
+        </if>
+        <if test="maxOpenTime != null and maxOpenTime != ''">
+            and t1.openTime &gt;= #{maxOpenTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+            and t1.createTime &lt;= #{maxCreateTime}
+        </if>
+        <if test="minCreateDate != null and minCreateDate != ''">
+            and date_format(t1.createTime,'%Y%m%d') &gt;= #{minCreateDate}
+        </if>
+        <if test="prizeStatus != null and prizeStatus != ''">
+            and t1.prizeStatus = #{prizeStatus}
+        </if>
+        <if test="minPrizeStatus != null and minPrizeStatus != ''">
+            and t1.prizeStatus &gt;= #{minPrizeStatus}
+        </if>
+        <if test="minPrizeTax != null and minPrizeTax != ''">
+            and t1.prizeTax &gt;= #{minPrizeTax}
+        </if>
+        <if test="maxPrizeTax != null and maxPrizeTax != ''">
+            and t1.prizeTax &lt;= #{maxPrizeTax}
+        </if>
+        <if test="isdcd != null and isdcd == 1">
+            and t1.schemeStatus in(1,2,4,6,7)
+        </if>
+        <if test="userAttrs != null and userAttrs != ''">
+            and (t2.id = #{userAttrs} or t2.nickName = #{userAttrs} or t2.mobile = #{userAttrs})
+        </if>
+        <if test="ticketVoteId != null and ticketVoteId != ''">
+            and exists (select tk.schemeId from tb_ticket tk where tk.schemeId = t1.schemeOrderId and tk.voteId = #{ticketVoteId})
+        </if>
+        union all select
+        t1.id,
+        t1.schemeId,
+        t1.lotteryName,
+        t1.schemeOrderId,
+        '1' as schemeType,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemeMoney schemePayMoney,
+        t1.schemeStatus,
+        t1.schemeStatusDesc,
+        t1.prize,
+        t1.prizeSubjoin,
+        t1.prizeSubjoinSite,
+        t1.prizeTax,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.prizeDetail,
+        t1.period,
+        '' as theoryPrize,
+        date_format(t1.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        t1.openStatus,
+        date_format(t1.openTime,'%Y-%m-%d %H:%i:%s') openTime,
+        t1.prizeStatus,
+        date_format(t1.prizeTime,'%Y-%m-%d %H:%i:%s') prizeTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        t2.id userId,
+        t2.nickName,
+        (select group_concat(distinct tv.voteName separator '，') from tb_ticket tk,tb_ticket_vote tv where tv.voteId = tk.voteId and tk.schemeId = t1.schemeOrderId) ticketVoteName
+        from tb_scheme_zhuihao t1,tb_user t2
+        where t2.id = t1.schemeUserId
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t1.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t1.period = #{period}
+        </if>
+        <if test="schemeStatus != null and schemeStatus != ''">
+            and t1.schemeStatus = #{schemeStatus}
+        </if>
+        <if test="minSchemeStatus != null and minSchemeStatus != ''">
+            and t1.schemeStatus &gt;= #{minSchemeStatus}
+        </if>
+        <if test="maxSchemeStatus != null and maxSchemeStatus != ''">
+            and t1.schemeStatus &lt;= #{maxSchemeStatus}
+        </if>
+        <if test="notSchemeStatus != null and notSchemeStatus != ''">
+            and t1.schemeStatus != #{notSchemeStatus}
+        </if>
+        <if test="schemeOrderId != null and schemeOrderId != ''">
+            and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+        </if>
+        <if test="minSchemeMoney != null and minSchemeMoney != ''">
+            and t1.schemeMoney &gt;= #{minSchemeMoney}
+        </if>
+        <if test="maxSchemeMoney != null and maxSchemeMoney != ''">
+            and t1.schemeMoney &lt;= #{maxSchemeMoney}
+        </if>
+        <if test="openStatus != null and openStatus != ''">
+            and t1.openStatus = #{openStatus}
+        </if>
+        <if test="minOpenStatus != null and minOpenStatus != ''">
+            and t1.openStatus &gt;= #{minOpenStatus}
+        </if>
+        <if test="minOpenTime != null and minOpenTime != ''">
+            and t1.openTime &gt;= #{minOpenTime}
+        </if>
+        <if test="maxOpenTime != null and maxOpenTime != ''">
+            and t1.openTime &gt;= #{maxOpenTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+            and t1.createTime &lt;= #{maxCreateTime}
+        </if>
+        <if test="minCreateDate != null and minCreateDate != ''">
+            and date_format(t1.createTime,'%Y%m%d') &gt;= #{minCreateDate}
+        </if>
+        <if test="prizeStatus != null and prizeStatus != ''">
+            and t1.prizeStatus = #{prizeStatus}
+        </if>
+        <if test="minPrizeStatus != null and minPrizeStatus != ''">
+            and t1.prizeStatus &gt;= #{minPrizeStatus}
+        </if>
+        <if test="minPrizeTax != null and minPrizeTax != ''">
+            and t1.prizeTax &gt;= #{minPrizeTax}
+        </if>
+        <if test="maxPrizeTax != null and maxPrizeTax != ''">
+            and t1.prizeTax &lt;= #{maxPrizeTax}
+        </if>
+        <if test="isdcd != null and isdcd == 1">
+            and t1.schemeStatus in(1,2,4,6,7)
+        </if>
+        <if test="userAttrs != null and userAttrs != ''">
+            and (t2.id = #{userAttrs} or t2.nickName = #{userAttrs} or t2.mobile = #{userAttrs})
+        </if>
+        <if test="ticketVoteId != null and ticketVoteId != ''">
+            and exists (select tk.schemeId from tb_ticket tk where tk.schemeId = t1.schemeOrderId and tk.voteId = #{ticketVoteId})
+        </if>
+        )t
+        <choose>
+            <when test="sorts != null and sorts != ''">
+                order by ${sorts}
+            </when>
+            <otherwise>
+                order by t1.openTime desc,t1.createTime desc
+            </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户普通方案和追号方案总计(管理后台) -->
+    <select id="queryUserPtAndZhSchemesCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select sum(t.total) as tsize,sum(t.money) as tmoney,sum(t.paymoney) as tpaymoney,sum(t.prize) as tprize from (
+        select
+        count(0) as total,sum(t1.schemeMoney) as money,sum(t1.schemePayMoney) as paymoney,sum(t1.prizeTax) as prize
+        from tb_scheme t1,tb_user t2
+        where t2.id = t1.schemeUserId
+        and t1.schemeType != 1
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t1.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t1.period = #{period}
+        </if>
+        <if test="schemeStatus != null and schemeStatus != ''">
+            and t1.schemeStatus = #{schemeStatus}
+        </if>
+        <if test="minSchemeStatus != null and minSchemeStatus != ''">
+            and t1.schemeStatus &gt;= #{minSchemeStatus}
+        </if>
+        <if test="maxSchemeStatus != null and maxSchemeStatus != ''">
+            and t1.schemeStatus &lt;= #{maxSchemeStatus}
+        </if>
+        <if test="notSchemeStatus != null and notSchemeStatus != ''">
+            and t1.schemeStatus != #{notSchemeStatus}
+        </if>
+        <if test="schemeOrderId != null and schemeOrderId != ''">
+            and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+        </if>
+        <if test="minSchemeMoney != null and minSchemeMoney != ''">
+            and t1.schemeMoney &gt;= #{minSchemeMoney}
+        </if>
+        <if test="maxSchemeMoney != null and maxSchemeMoney != ''">
+            and t1.schemeMoney &lt;= #{maxSchemeMoney}
+        </if>
+        <if test="openStatus != null and openStatus != ''">
+            and t1.openStatus = #{openStatus}
+        </if>
+        <if test="minOpenStatus != null and minOpenStatus != ''">
+            and t1.openStatus &gt;= #{minOpenStatus}
+        </if>
+        <if test="minOpenTime != null and minOpenTime != ''">
+            and t1.openTime &gt;= #{minOpenTime}
+        </if>
+        <if test="maxOpenTime != null and maxOpenTime != ''">
+            and t1.openTime &gt;= #{maxOpenTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+            and t1.createTime &lt;= #{maxCreateTime}
+        </if>
+        <if test="minCreateDate != null and minCreateDate != ''">
+            and date_format(t1.createTime,'%Y%m%d') &gt;= #{minCreateDate}
+        </if>
+        <if test="prizeStatus != null and prizeStatus != ''">
+            and t1.prizeStatus = #{prizeStatus}
+        </if>
+        <if test="minPrizeStatus != null and minPrizeStatus != ''">
+            and t1.prizeStatus &gt;= #{minPrizeStatus}
+        </if>
+        <if test="minPrizeTax != null and minPrizeTax != ''">
+            and t1.prizeTax &gt;= #{minPrizeTax}
+        </if>
+        <if test="maxPrizeTax != null and maxPrizeTax != ''">
+            and t1.prizeTax &lt;= #{maxPrizeTax}
+        </if>
+        <if test="isdcd != null and isdcd == 1">
+            and t1.schemeStatus in(1,2,4,6,7)
+        </if>
+        <if test="userAttrs != null and userAttrs != ''">
+            and (t2.id = #{userAttrs} or t2.nickName = #{userAttrs} or t2.mobile = #{userAttrs})
+        </if>
+        <if test="ticketVoteId != null and ticketVoteId != ''">
+            and exists (select tk.schemeId from tb_ticket tk where tk.schemeId = t1.schemeOrderId and tk.voteId = #{ticketVoteId})
+        </if>
+        and t1.schemeType != 1
+        union all select
+        count(0) as total,sum(t1.schemeMoney) as money,sum(t1.schemeMoney) as paymoney,sum(t1.prizeTax) as prize
+        from tb_scheme_zhuihao t1,tb_user t2
+        where t2.id = t1.schemeUserId
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t1.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t1.period = #{period}
+        </if>
+        <if test="schemeStatus != null and schemeStatus != ''">
+            and t1.schemeStatus = #{schemeStatus}
+        </if>
+        <if test="minSchemeStatus != null and minSchemeStatus != ''">
+            and t1.schemeStatus &gt;= #{minSchemeStatus}
+        </if>
+        <if test="maxSchemeStatus != null and maxSchemeStatus != ''">
+            and t1.schemeStatus &lt;= #{maxSchemeStatus}
+        </if>
+        <if test="notSchemeStatus != null and notSchemeStatus != ''">
+            and t1.schemeStatus != #{notSchemeStatus}
+        </if>
+        <if test="schemeOrderId != null and schemeOrderId != ''">
+            and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+        </if>
+        <if test="minSchemeMoney != null and minSchemeMoney != ''">
+            and t1.prizeTax &gt;= #{minSchemeMoney}
+        </if>
+        <if test="maxSchemeMoney != null and maxSchemeMoney != ''">
+            and t1.schemeMoney &lt;= #{maxSchemeMoney}
+        </if>
+        <if test="openStatus != null and openStatus != ''">
+            and t1.openStatus = #{openStatus}
+        </if>
+        <if test="minOpenStatus != null and minOpenStatus != ''">
+            and t1.openStatus &gt;= #{minOpenStatus}
+        </if>
+        <if test="minOpenTime != null and minOpenTime != ''">
+            and t1.openTime &gt;= #{minOpenTime}
+        </if>
+        <if test="maxOpenTime != null and maxOpenTime != ''">
+            and t1.openTime &gt;= #{maxOpenTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+            and t1.createTime &lt;= #{maxCreateTime}
+        </if>
+        <if test="minCreateDate != null and minCreateDate != ''">
+            and date_format(t1.createTime,'%Y%m%d') &gt;= #{minCreateDate}
+        </if>
+        <if test="prizeStatus != null and prizeStatus != ''">
+            and t1.prizeStatus = #{prizeStatus}
+        </if>
+        <if test="minPrizeStatus != null and minPrizeStatus != ''">
+            and t1.prizeStatus &gt;= #{minPrizeStatus}
+        </if>
+        <if test="minPrizeTax != null and minPrizeTax != ''">
+            and t1.prizeTax &gt;= #{minPrizeTax}
+        </if>
+        <if test="maxPrizeTax != null and maxPrizeTax != ''">
+            and t1.prizeTax &lt;= #{maxPrizeTax}
+        </if>
+        <if test="isdcd != null and isdcd == 1">
+            and t1.schemeStatus in(1,2,4,6,7)
+        </if>
+        <if test="userAttrs != null and userAttrs != ''">
+            and (t2.id = #{userAttrs} or t2.nickName = #{userAttrs} or t2.mobile = #{userAttrs})
+        </if>
+        <if test="ticketVoteId != null and ticketVoteId != ''">
+            and exists (select tk.schemeId from tb_ticket tk where tk.schemeId = t1.schemeOrderId and tk.voteId = #{ticketVoteId})
+        </if>
+        )t
+    </select>
+
+    <!-- 保存方案 -->
+    <insert id="saveScheme" parameterType="com.caipiao.domain.base.SchemeBean">
+
+        <!-- 获取待新增记录的主键值 -->
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+
+        <!-- 新增方案记录 -->
+        insert into tb_scheme
+        (clientSource,clientSourceName,schemeUserId,lotteryId,lotteryName,playTypeId,schemeOrderId,schemeType,schemeMultiple,schemeZs,
+        schemeMoney,schemeStatus,schemeStatusDesc,schemePlayType,schemeContent,schemeSpContent,schemeYhContent,
+        period,periodSum,donePeriod,isPrizeStop,endTime,estimateDrawTime,schemeSource,theoryPrize,profitMargin,createTime,isShare,shareEndTime)
+        values
+        (#{clientSource},#{clientSourceName},#{userId},#{lid},#{lname},#{playTypeId},#{scode},#{stype},#{smultiple},#{szs},
+        #{money},#{status},#{sdesc},#{wtype},#{tzcontent},#{tzspcontent},#{yhinfos},
+        #{period},#{pSum},#{ywcSum},#{prizeStop},#{etime},#{yjkjTime},#{source},#{lprize},#{profitMargin},now(),#{isShare},#{fetime})
+    </insert>
+
+    <!-- 保存追号方案 -->
+    <insert id="saveZhScheme" parameterType="com.caipiao.domain.base.SchemeBean">
+        insert into tb_scheme_zhuihao
+        (clientSource,clientSourceName,schemeId,schemeUserId,lotteryId,lotteryName,schemeOrderId,schemeMultiple,schemeZs,schemeMoney,
+        schemeStatus,schemeStatusDesc,schemePlayType,schemeContent,period,endTime,createTime)
+        values
+        (#{clientSource},#{clientSourceName},#{sid},#{userId},#{lid},#{lname},#{scode},#{smultiple},#{szs},#{money},
+        #{status},#{sdesc},#{wtype},#{tzcontent},#{period},#{etime},now())
+    </insert>
+
+    <!-- 保存方案对阵信息 -->
+    <insert id="saveSchemeMatches">
+        insert into tb_scheme_matches(schemeId,schemeOrderId,lotteryId,matchCode,createTime)
+        values(#{schemeId},#{schemeOrderId},#{lotteryId},#{matchCode},now())
+    </insert>
+
+    <!-- 非渠道方案确认购买(支付) -->
+    <parameterMap id="schemePayParameter" type="com.caipiao.domain.cpadmin.BaseDto">
+        <parameter property="userId" jdbcType="BIGINT" mode="IN"></parameter><!-- 用户id -->
+        <parameter property="sid" jdbcType="BIGINT" mode="IN"></parameter><!-- 方案id -->
+        <parameter property="ymoney" jdbcType="DECIMAL" mode="IN"></parameter><!-- 应付金额 -->
+        <parameter property="smoney" jdbcType="DECIMAL" mode="IN"></parameter><!-- 实付金额 -->
+        <parameter property="cuid" jdbcType="BIGINT" mode="IN"></parameter><!-- 用户优惠券id -->
+        <parameter property="channelCode" jdbcType="INTEGER" mode="IN"></parameter><!-- 支付渠道(300-余额支付[购彩] 301-优惠券支付) -->
+        <parameter property="channelDesc" jdbcType="VARCHAR" mode="IN"></parameter><!-- 支付渠道描述 -->
+        <parameter property="clientFrom" jdbcType="INTEGER" mode="IN"></parameter><!-- 客户端来源 0-WWW 1-IOS 2-ANDROID 3-H5 4-Other -->
+        <parameter property="dcode" jdbcType="INTEGER" mode="OUT"></parameter><!-- 处理结果编号( -->
+        <parameter property="dmsg" jdbcType="VARCHAR" mode="OUT"></parameter><!-- 处理结果描述 -->
+    </parameterMap>
+    <select id="schemePay" parameterMap="schemePayParameter" statementType="CALLABLE">
+      {call cp_scheme_pay(?,?,?,?,?,?,?,?,?,?)}
+    </select>
+
+    <!-- 渠道方案确认购买(支付) -->
+    <parameterMap id="schemePayChannelParameter" type="com.caipiao.domain.cpadmin.BaseDto">
+        <parameter property="userId" jdbcType="BIGINT" mode="IN"></parameter><!-- 用户id -->
+        <parameter property="channelId" jdbcType="BIGINT" mode="IN"></parameter><!-- 渠道id -->
+        <parameter property="sid" jdbcType="BIGINT" mode="IN"></parameter><!-- 方案id -->
+        <parameter property="ymoney" jdbcType="DECIMAL" mode="IN"></parameter><!-- 应付金额 -->
+        <parameter property="smoney" jdbcType="DECIMAL" mode="IN"></parameter><!-- 实付金额 -->
+        <parameter property="cuid" jdbcType="BIGINT" mode="IN"></parameter><!-- 用户优惠券id -->
+        <parameter property="channelCode" jdbcType="INTEGER" mode="IN"></parameter><!-- 支付渠道(300-余额支付[购彩] 301-优惠券支付) -->
+        <parameter property="channelDesc" jdbcType="VARCHAR" mode="IN"></parameter><!-- 支付渠道描述 -->
+        <parameter property="clientFrom" jdbcType="INTEGER" mode="IN"></parameter><!-- 客户端来源 0-WWW 1-IOS 2-ANDROID 3-H5 4-Other -->
+        <parameter property="dcode" jdbcType="INTEGER" mode="OUT"></parameter><!-- 处理结果编号( -->
+        <parameter property="dmsg" jdbcType="VARCHAR" mode="OUT"></parameter><!-- 处理结果描述 -->
+    </parameterMap>
+    <select id="schemePayChannel" parameterMap="schemePayChannelParameter" statementType="CALLABLE">
+        {call cp_scheme_pay(?,?,?,?,?,?,?,?,?,?,?)}
+    </select>
+
+    <!-- 查询用户方案 -->
+    <select id="querySchemeInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.scheme.Scheme">
+        select
+        t1.id,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.schemeUserId,
+        t1.playTypeId,
+        t1.schemeOrderId,
+        t1.schemeType,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemeStatus,
+        t1.schemeContent,
+        t1.schemeSpContent,
+        t1.schemeYhContent,
+        t1.prize,
+        t1.prizeTax,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.drawNumber,
+        t1.period,
+        t1.periodSum,
+        t1.donePeriod,
+        t1.isPrizeStop,
+        t1.outTicketTime,
+        t1.hideType,
+        t1.minParticipant,
+        t1.remuneration,
+        t1.userNickName,
+        t1.copySchemeId,
+        t1.shareEndTime,
+        t1.shareTime,
+        t1.rewardPrize,
+        t1.safeguardMoney,
+        t1.redSafeHuardMoney,
+        t1.openStatus,
+        t1.openTime,
+        t1.prizeStatus,
+        t1.prizeTime,
+        t1.isShare,
+        t1.endTime,
+        t1.estimateDrawTime,
+        t1.theoryPrize,
+        t1.createTime,
+        t1.updateTime
+        from tb_scheme t1
+        where t1.schemeUserId = #{userId}
+        <choose>
+            <when test="sid != null and sid != ''">
+                and t1.id = #{sid}
+            </when>
+            <otherwise>
+                <if test="minSchemeStatus != null and minSchemeStatus != ''">
+                    and t1.schemeStatus &gt;= #{minSchemeStatus}
+                </if>
+                <if test="maxSchemeStatus != null and maxSchemeStatus != ''">
+                    and t1.schemeStatus &lt;= #{maxSchemeStatus}
+                </if>
+                <if test="schemeType != null and schemeType != ''">
+                    and t1.schemeType = #{schemeType}
+                </if>
+                <if test="stime != null and stime != ''">
+                    and t1.createTime &gt;= #{stime}
+                </if>
+                <if test="openStatus != null and openStatus != ''">
+                    and t1.openStatus = #{openStatus}
+                </if>
+                <if test="minOpenStatus != null and minOpenStatus != ''">
+                    and t1.openStatus &gt;= #{minOpenStatus}
+                </if>
+                <if test="prizeStatus != null and prizeStatus != ''">
+                    and t1.prizeStatus = #{prizeStatus}
+                </if>
+                <if test="maxPrizeStatus != null and maxPrizeStatus != ''">
+                    and t1.prizeStatus &lt;= #{maxPrizeStatus}
+                </if>
+                <if test="wxflag == 1">
+                    and t1.schemeStatus = 5
+                </if>
+                <if test="dkjflag == 1">
+                    and t1.openStatus = 0
+                    and (t1.schemeStatus between 1 and 4 or t1.schemeStatus between 6 and 7)
+                </if>
+                <if test="lid != null and lid != ''">
+                    and find_in_set(t1.lotteryId,#{lid})
+                </if>
+                order by t1.createTime desc
+                <if test="psize != null and psize != ''">
+                    limit ${pstart},${psize}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询用户方案总记录条数 -->
+    <select id="querySchemeInfoCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Long">
+        select count(0) from tb_scheme t1
+        where t1.schemeUserId = #{userId}
+        <choose>
+            <when test="sid != null and sid != ''">
+                and t1.id = #{sid}
+            </when>
+            <otherwise>
+                <if test="minSchemeStatus != null and minSchemeStatus != ''">
+                    and t1.schemeStatus &gt;= #{minSchemeStatus}
+                </if>
+                <if test="maxSchemeStatus != null and maxSchemeStatus != ''">
+                    and t1.schemeStatus &lt;= #{maxSchemeStatus}
+                </if>
+                <if test="schemeType != null and schemeType != ''">
+                    and t1.schemeType = #{schemeType}
+                </if>
+                <if test="stime != null and stime != ''">
+                    and t1.createTime &gt;= #{stime}
+                </if>
+                <if test="openStatus != null and openStatus != ''">
+                    and t1.openStatus = #{openStatus}
+                </if>
+                <if test="minOpenStatus != null and minOpenStatus != ''">
+                    and t1.openStatus &gt;= #{minOpenStatus}
+                </if>
+                <if test="prizeStatus != null and prizeStatus != ''">
+                    and t1.prizeStatus = #{prizeStatus}
+                </if>
+                <if test="maxPrizeStatus != null and maxPrizeStatus != ''">
+                    and t1.prizeStatus &lt;= #{maxPrizeStatus}
+                </if>
+                <if test="wxflag == 1">
+                    and t1.schemeStatus = 5
+                </if>
+                <if test="dkjflag == 1">
+                    and t1.openStatus = 0
+                    and (t1.schemeStatus between 1 and 4 or t1.schemeStatus between 6 and 7)
+                </if>
+                <if test="lid != null and lid != ''">
+                    and find_in_set(t1.lotteryId,#{lid})
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询支付成功的普通方案-进行拆票 -->
+    <select id="querySchemePaySuccess" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from
+        tb_scheme
+        where
+        schemeStatus = 1 and openStatus = 0 and prizeStatus = 0
+        <if test="schemeType == 0">
+            and (schemeType = 0 or schemeType = 3 or schemeType = 4)
+        </if>
+        <if test="schemeType == 2">
+            and schemeType = 2
+        </if>
+        order by createTime limit 1000
+    </select>
+
+    <!-- 查询支付成功的追号方案-进行拆票 -->
+    <select id="queryZhuiHaoSchemePaySuccess" resultType="com.caipiao.domain.scheme.SchemeZhuiHao">
+        select
+        z.id, z.schemeId, z.schemeUserId, z.lotteryId, z.lotteryName, z.schemeOrderId, z.schemeMultiple,
+        z.schemeMoney, z.schemeStatus, z.schemeStatusDesc, z.schemePlayType, z.schemeContent, z.prize,
+        z.prizeSubjoin, z.prizeSubjoinSite, z.prizeTax, z.prizeSubjoinTax, z.prizeSubjoinSiteTax,
+        z.prizeDetail, z.prizeBarrier, z.drawNumber, z.period, z.endTime,
+        p.sellStartTime outTicketTime, p.sellEndTime openTime, z.openStatus, z.prizeStatus
+        from
+        tb_scheme_zhuihao z, tb_period p
+        where
+        z.lotteryId = p.lotteryId
+        and z.period = p.period
+        and z.schemeStatus = 1 and z.openStatus = 0 and z.prizeStatus = 0
+        and p.sellStatus = 1 and p.sellStartTime &lt; now() and p.sellEndTime &gt;= DATE_SUB(now(), INTERVAL 65 SECOND)
+        order by z.createTime limit 1000
+    </select>
+
+    <!--更新普通方案出票状态-拆票-->
+    <update id="updateSchemeTicketStatus">
+        update tb_scheme set schemeStatus = #{schemeStatus}, schemeStatusDesc = #{schemeStatusDesc}, updateTime = now()
+        <if test="schemeStatus != null and schemeStatus > 2">
+            ,outTicketTime = now()
+        </if>
+        <if test="backStatus != null and backStatus > 0">
+            ,backStatus = #{backStatus}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!--更新追号方案出票状态-拆票-->
+    <update id="updateZhuiHaoSchemeTicketStatus">
+        update tb_scheme_zhuihao set schemeStatus = #{schemeStatus}, schemeStatusDesc = #{schemeStatusDesc}, updateTime = now()
+        <if test="schemeStatus != null and schemeStatus > 2">
+            ,outTicketTime = now()
+        </if>
+        <if test="backStatus != null and backStatus > 0">
+            ,backStatus = #{backStatus}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 查询竞彩足球方案场次信息 -->
+    <select id="queryJczqSchemeMatchesBySid" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.matchCode,
+        t1.weekday,
+        t1.jcId,
+        t1.hostName,
+        t1.guestName,
+        t1.leagueName,
+        t1.halfScore,
+        t1.score,
+        date_format(t1.matchTime,'%Y-%m-%d %H:%i:%s') matchTime,
+        t1.state,
+        date_format(t2.beginTime,'%Y-%m-%d %H:%i:%s') beginTime,
+        t2.homeScore,
+        t2.guestScore,
+        t2.matchState,
+        t2.homeHalfScore,
+        t2.guestHalfScore
+        from tb_match_football t1 left join zl_schedule t2
+        on(t2.speriod = t1.period and t2.jcId = t1.jcId)
+        where exists (select t3.matchCode from tb_scheme_matches t3 where t3.matchCode = t1.matchCode and t3.schemeId = #{sid})
+    </select>
+
+    <!-- 查询竞彩足球方案场次信息-出票查询 -->
+    <select id="queryJczqMatchesForTicket" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.matchCode,
+        t1.weekday,
+        t1.jcId,
+        t1.hostName,
+        t1.guestName,
+        t1.leagueName,
+        t1.halfScore,
+        t1.score,
+        date_format(t1.matchTime,'%Y-%m-%d %H:%i:%s') matchTime,
+        t1.state,
+        date_format(t2.beginTime,'%Y-%m-%d %H:%i:%s') beginTime,
+        t2.homeScore,
+        t2.guestScore,
+        t2.matchState,
+        t2.homeHalfScore,
+        t2.guestHalfScore
+        from tb_match_football t1 left join zl_schedule t2
+        on(t2.speriod = t1.period and t2.jcId = t1.jcId)
+        where exists (select t3.matchCode from tb_scheme_matches t3 where t3.matchCode = t1.matchCode and t3.schemeOrderId = #{schemeOrderId})
+    </select>
+
+    <!-- 查询竞彩篮球方案场次信息 -->
+    <select id="queryJclqSchemeMatchesBySid" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.matchCode,
+        t1.weekday,
+        t1.jcId,
+        t1.hostName,
+        t1.guestName,
+        t1.leagueName,
+        t1.halfScore,
+        t1.score,
+        date_format(t1.matchTime,'%Y-%m-%d %H:%i:%s') matchTime,
+        t1.state
+        from tb_match_basketball t1
+        where exists (select t2.matchCode from tb_scheme_matches t2 where t2.matchCode = t1.matchCode and t2.schemeId = #{sid})
+    </select>
+
+    <!-- 查询竞彩篮球方案场次信息-出票管理 -->
+    <select id="queryJclqMatchesForTicket" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.matchCode,
+        t1.weekday,
+        t1.jcId,
+        t1.hostName,
+        t1.guestName,
+        t1.leagueName,
+        t1.halfScore,
+        t1.score,
+        date_format(t1.matchTime,'%Y-%m-%d %H:%i:%s') matchTime,
+        t1.state
+        from tb_match_basketball t1
+        where exists (select t2.matchCode from tb_scheme_matches t2 where t2.matchCode = t1.matchCode and t2.schemeOrderId = #{schemeOrderId})
+    </select>
+
+    <!-- 查询方案追号信息 -->
+    <select id="querySchemeZhuihaoInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.scheme.SchemeZhuiHao">
+        select
+        t1.id,
+        t1.schemeId,
+        t1.schemeUserId,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.schemeOrderId,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemeStatus,
+        t1.schemeStatusDesc,
+        t1.schemePlayType,
+        t1.schemeContent,
+        t1.prize,
+        t1.prizeTax,
+        t1.drawNumber,
+        t1.period,
+        t1.endTime,
+        t1.outTicketTime,
+        t1.openStatus,
+        t1.openTime,
+        t1.prizeStatus,
+        t1.prizeTime,
+        t1.createTime
+        from tb_scheme_zhuihao t1 where t1.schemeId = #{schemeId}
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <if test="minSchemeStatus != null and minSchemeStatus != ''">
+            and t1.schemeStatus &gt;= #{minSchemeStatus}
+        </if>
+        <if test="maxSchemeStatus != null and maxSchemeStatus != ''">
+            and t1.schemeStatus &lt;= #{maxSchemeStatus}
+        </if>
+        <choose>
+            <when test="sorts != null and sorts != ''">
+                order by ${sorts}
+            </when>
+            <otherwise>
+                order by t1.period desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询方案追号信息(管理后台) -->
+    <select id="querySchemeZhs" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.schemeId,
+        t1.schemeUserId,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.schemeOrderId,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemeStatus,
+        t1.schemeStatusDesc,
+        t1.schemePlayType,
+        t1.schemeContent,
+        t1.prize,
+        t1.prizeTax,
+        t1.drawNumber,
+        t1.period,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        date_format(t1.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        t1.openStatus,
+        date_format(t1.openTime,'%Y-%m-%d %H:%i:%s') openTime,
+        t1.prizeStatus,
+        date_format(t1.prizeTime,'%Y-%m-%d %H:%i:%s') prizeTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime
+        from tb_scheme_zhuihao t1 where 1 = 1
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="schemeId != null and schemeId != ''">
+                    and t1.schemeId = #{schemeId}
+                </if>
+                <if test="minSchemeStatus != null and minSchemeStatus != ''">
+                    and t1.schemeStatus &gt;= #{minSchemeStatus}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询追号方案信息(管理后台) -->
+    <select id="queryZhuihaoSchemeInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.schemeId,
+        t1.schemeUserId,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.schemeOrderId,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemeStatus,
+        t1.schemeStatusDesc,
+        t1.schemePlayType,
+        t1.schemeContent,
+        t1.prize,
+        t1.prizeTax,
+        t1.prizeSubjoinSite,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.prizeDetail,
+        t1.prizeBarrier,
+        t1.drawNumber,
+        t1.period,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        date_format(t1.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        t1.openStatus,
+        date_format(t1.openTime,'%Y-%m-%d %H:%i:%s') openTime,
+        t1.prizeStatus,
+        date_format(t1.prizeTime,'%Y-%m-%d %H:%i:%s') prizeTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        t1.endTime,
+        t2.clientSource,
+        t2.clientSourceName,
+        t2.playTypeId,
+        t2.schemeType,
+        t2.schemePayMoney,
+        t2.channelCode,
+        t2.channelDesc,
+        t3.id userId,
+        t3.nickName
+        from tb_scheme_zhuihao t1,tb_scheme t2,tb_user t3
+        where t2.id = t1.schemeId and t3.id = t1.schemeUserId
+        <if test="xsdlFlag == 1">
+            and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+            union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+            where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.schemeUserId)
+        </if>
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="schemeId != null and schemeId != ''">
+                    and t1.schemeId = #{schemeId}
+                </if>
+                <if test="schemeOrderId != null and schemeOrderId != ''">
+                    and locate(#{schemeOrderId},t1.schemeOrderId) &gt; 0
+                </if>
+                <if test="minSchemeStatus != null and minSchemeStatus != ''">
+                    and t1.schemeStatus &gt;= #{minSchemeStatus}
+                </if>
+            </otherwise>
+        </choose>
+        limit 1
+    </select>
+
+    <!-- 方案撤单 -->
+    <update id="cancelScheme" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme set schemeStatus = #{schemeStatus},schemeStatusDesc = #{schemeStatusDesc},prizeTime = now(),updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 追号方案撤单 -->
+    <update id="cancelSchemeZh" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme_zhuihao set schemeStatus = #{schemeStatus},schemeStatusDesc = #{schemeStatusDesc},prizeTime = now(),updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 方案大单审核 -->
+    <update id="auditBigOrder" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme set bigOrderStatus = 3,updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 方案出票成功 -->
+    <update id="schemeCpcg" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme set schemeStatus = #{schemeStatus},schemeStatusDesc = #{schemeStatusDesc},updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 追号方案出票成功 -->
+    <update id="zhschemeCpcg" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme_zhuihao set schemeStatus = #{schemeStatus},schemeStatusDesc = #{schemeStatusDesc},updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 方案重新出票 -->
+    <update id="schemeCxcp" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme set schemeStatus = #{schemeStatus},schemeStatusDesc = #{schemeStatusDesc},updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 追号方案重新出票 -->
+    <update id="zhschemeCxcp" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme_zhuihao set schemeStatus = #{schemeStatus},schemeStatusDesc = #{schemeStatusDesc},updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 方案确认派奖 -->
+    <update id="schemeQrPj" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme set prizeStatus = 2,prizeTime = now(),updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 追号方案确认派奖 -->
+    <update id="zhschemeQrPj" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme_zhuihao set prizeStatus = 2,prizeTime = now(),updateTime = now() where id = #{id}
+    </update>
+
+    <!-- 查询场次截止后还是出票中的方案列表-竞彩 -->
+    <select id="queryJcNoSuccessSchemeForEndTime" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from (
+          select s.id, s.schemeOrderId, s.createTime from tb_scheme s, tb_scheme_matches m
+          where
+          s.lotteryId = m.lotteryId and s.id = m.schemeId
+          and s.lotteryId = #{lotteryId} and m.matchCode = #{matchCode} and s.schemeStatus = 1 and s.openStatus = 0 and s.prizeStatus = 0
+          and s.schemeType != 1
+          UNION
+          select s.id, s.schemeOrderId, s.createTime from tb_scheme s, tb_scheme_matches m
+          where
+          s.lotteryId = m.lotteryId and s.id = m.schemeId
+          and s.lotteryId = #{lotteryId} and m.matchCode = #{matchCode} and s.schemeStatus = 2 and s.openStatus = 0 and s.prizeStatus = 0
+          and s.schemeType != 1
+        ) t
+        order by t.createTime
+    </select>
+
+    <!-- 查询场次截止后还是出票中的方案列表-数字彩 -->
+    <select id="querySzcNoSuccessSchemeForEndTime" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from (
+          select s.id, s.schemeOrderId, 0 schemeType, s.createTime from tb_scheme s
+          where
+          s.lotteryId = #{lotteryId} and s.period = #{period} and s.schemeStatus = 1 and s.openStatus = 0 and s.prizeStatus = 0
+          and s.schemeType != 1
+          UNION
+          select s.id, s.schemeOrderId, 0 schemeType, s.createTime from tb_scheme s
+          where
+          s.lotteryId = #{lotteryId} and s.period = #{period} and s.schemeStatus = 2 and s.openStatus = 0 and s.prizeStatus = 0
+		  and s.schemeType != 1
+		  UNION
+		  select z.id, z.schemeOrderId, 1 schemeType, z.createTime from tb_scheme_zhuihao z
+          where
+          z.lotteryId = #{lotteryId} and z.period = #{period} and z.schemeStatus = 1 and z.openStatus = 0 and z.prizeStatus = 0
+          UNION
+          select z.id, z.schemeOrderId, 1 schemeType, z.createTime from tb_scheme_zhuihao z
+          where
+          z.lotteryId = #{lotteryId} and z.period = #{period} and z.schemeStatus = 2 and z.openStatus = 0 and z.prizeStatus = 0
+        ) t
+        order by t.createTime
+    </select>
+
+    <!-- 查询场次相关的所有方案 -->
+    <select id="querySchemeForMatch" resultType="com.caipiao.domain.scheme.SchemeMatches">
+        select m.* from tb_scheme_matches m, tb_scheme s
+        where
+        m.schemeId = s.id and m.lotteryId = #{lotteryId} and m.matchCode = #{matchCode} and s.schemeStatus > 2
+        order by m.schemeId
+    </select>
+
+    <!-- 查询场次包含的所有订单对应的全部场次-竞彩足球 -->
+    <select id="querySchemeForJczqMatch" resultType="com.caipiao.domain.match.MatchFootBall">
+        select distinct f.* from tb_match_football f, tb_scheme_matches ms,
+        (
+	      select m.* from tb_scheme_matches m where m.lotteryId = #{lotteryId} and m.matchCode= #{matchCode}
+        ) tm
+        where ms.schemeId = tm.schemeId and ms.matchCode = f.matchCode
+        order by f.matchCode
+    </select>
+
+    <!-- 查询场次包含的所有订单对应的全部场次-竞彩篮球 -->
+    <select id="querySchemeForJclqMatch" resultType="com.caipiao.domain.match.MatchBasketBall">
+        select distinct f.* from tb_match_basketball f, tb_scheme_matches ms,
+        (
+        select m.* from tb_scheme_matches m where m.lotteryId = #{lotteryId} and m.matchCode= #{matchCode}
+        ) tm
+        where ms.schemeId = tm.schemeId and ms.matchCode = f.matchCode
+        order by f.matchCode
+    </select>
+
+    <!-- 查询该方案包含的未审核的场次数量-竞彩足球 -->
+    <select id="queryNoAuditMatchCountForJczqScheme" resultType="java.lang.Integer">
+        select count(1) from tb_match_football f, tb_scheme_matches m
+        where
+        f.matchCode = m.matchCode and m.schemeId = #{schemeId} and m.lotteryId = #{lotteryId} and f.state &lt; #{state}
+    </select>
+
+    <!-- 查询该方案包含的未审核的场次数量-竞彩篮球 -->
+    <select id="queryNoAuditMatchCountForJclqScheme" resultType="java.lang.Integer">
+        select count(1) from tb_match_basketball f, tb_scheme_matches m
+        where
+        f.matchCode = m.matchCode and m.schemeId = #{schemeId} and m.lotteryId = #{lotteryId} and f.state &lt; #{state}
+    </select>
+
+    <!-- 根据方案编号查询方案信息 -->
+    <select id="querySchemeInfoBySchemeOrderId" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from tb_scheme
+        where
+        schemeOrderId = #{schemeOrderId} and schemeStatus > 0
+    </select>
+
+    <!-- 根据方案编号查询追号方案信息 -->
+    <select id="queryZhuihaoSchemeInfoBySchemeOrderId" resultType="com.caipiao.domain.scheme.SchemeZhuiHao">
+        select * from tb_scheme_zhuihao
+        where
+        schemeOrderId = #{schemeOrderId} and schemeStatus > 0
+    </select>
+
+    <!-- 更新方案计奖状态与奖金 -->
+    <update id="updateSchemeStatusPrize" parameterType="com.caipiao.domain.scheme.Scheme">
+        update tb_scheme
+        set
+        openStatus = #{openStatus},
+        prize = #{prize},
+        prizeSubjoin = #{prizeSubjoin},
+        prizeSubjoinSite = #{prizeSubjoinSite},
+        prizeTax = #{prizeTax},
+        prizeSubjoinTax = #{prizeSubjoinTax},
+        prizeSubjoinSiteTax = #{prizeSubjoinSiteTax},
+        prizeDetail = #{prizeDetail},
+        prizeBarrier = #{prizeBarrier},
+        prizeStatus = #{prizeStatus},
+        rewardPrize = #{rewardPrize},
+        openTime = now()
+        <if test="donePeriod != null and donePeriod > 0">
+            ,donePeriod = #{donePeriod}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 查询奖金低于maxPrize的待派奖方案列表-竞彩 -->
+    <select id="queryAutoSendMoneySchemeList" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from tb_scheme where lotteryId = #{lotteryId} and schemeStatus = 3
+        and openStatus = 2 and prizeStatus = 0 and prizeTax &lt; #{maxPrize}
+    </select>
+
+    <!-- 查询奖金低于maxPrize的待派奖方案列表-数字彩 -->
+    <select id="queryAutoSendMoneySzcSchemeList" resultType="com.caipiao.domain.scheme.Scheme">
+        select id, schemeOrderId, prizeTax, prize, 0 schemeType from tb_scheme where schemeStatus = 3 and period = #{period} and schemeType != 1
+        and openStatus = 2 and prizeStatus = 0 and prizeTax &lt; #{maxPrize}
+        UNION
+        select id, schemeOrderId, prizeTax, prize, 1 schemeType from tb_scheme_zhuihao where schemeStatus = 3 and period = #{period}
+        and openStatus = 2 and prizeStatus = 0 and prizeTax &lt; #{maxPrize}
+    </select>
+
+    <!-- 更新数字彩开奖号码至用户订单号-非追号订单 -->
+    <update id="updateSchemeDrawNumber">
+        update tb_scheme set drawNumber = #{drawNumber} where lotteryId = #{lotteryId} and period = #{period} and schemeType != 1
+    </update>
+
+    <!-- 更新数字彩开奖号码至用户订单号-追号订单 -->
+    <update id="updateZhuiHaoSchemeDrawNumber">
+        update tb_scheme_zhuihao set drawNumber = #{drawNumber} where lotteryId = #{lotteryId} and period = #{period}
+    </update>
+
+    <!-- 更新追号方案计奖状态与奖金 -->
+    <update id="updateZhuihaoSchemeStatusPrize" parameterType="com.caipiao.domain.scheme.SchemeZhuiHao">
+        update tb_scheme_zhuihao
+        set openStatus = #{openStatus},
+        prize = #{prize},
+        prizeSubjoin = #{prizeSubjoin},
+        prizeSubjoinSite = #{prizeSubjoinSite},
+        prizeTax = #{prizeTax},
+        prizeSubjoinTax = #{prizeSubjoinTax},
+        prizeSubjoinSiteTax = #{prizeSubjoinSiteTax},
+        prizeDetail = #{prizeDetail},
+        prizeBarrier = #{prizeBarrier},
+        openTime = now()
+        where id = #{id}
+    </update>
+
+    <!-- 根据主键编号查询追号方案信息 -->
+    <select id="querySchemeInfoById" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from tb_scheme where id = #{id}
+    </select>
+
+    <!-- 根据主键编号查询未预约成功的追号方案列表 -->
+    <select id="queryZhuihaoSchemeInfoById" resultType="com.caipiao.domain.scheme.SchemeZhuiHao">
+        select * from tb_scheme_zhuihao where schemeId = #{schemeId} and schemeStatus = #{schemeStatus}
+    </select>
+
+    <!-- 查询出票中的方案列表 -->
+    <select id="queryOutTicketingSchemeList" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from (
+          select s.id, s.schemeOrderId, 0 schemeType, s.createTime, s.schemeUserId, u.isSale clientSource,
+          s.schemeMoney, u.userType channelCode, s.lotteryId, s.schemeContent
+          from tb_scheme s, tb_user u
+          where
+          s.schemeUserId = u.id and
+          s.schemeStatus in (2,6) and s.openStatus = 0 and s.prizeStatus = 0
+          and s.schemeType != 1
+		  UNION
+		  select z.id, z.schemeOrderId, 1 schemeType, z.createTime, z.schemeUserId, u.isSale clientSource,
+		  z.schemeMoney, u.userType channelCode, z.lotteryId, z.schemeContent
+		  from tb_scheme_zhuihao z, tb_user u
+          where
+          z.schemeUserId = u.id and
+          z.schemeStatus in (2,6) and z.openStatus = 0 and z.prizeStatus = 0
+        ) t
+        order by t.createTime
+    </select>
+
+    <!-- 查询需要返利的方案列表 -->
+    <select id="queryRebateSchemeList" resultType="com.caipiao.domain.scheme.Scheme">
+        select * from (
+        select s.id, s.schemeOrderId, 0 schemeType, s.createTime, s.schemeUserId, s.schemeMoney,
+        u.isSale clientSource, u.userType channelCode, u.higherUid couponId, s.lotteryId
+        from tb_scheme s, tb_user u
+        where
+        s.schemeUserId = u.id and
+        s.schemeStatus = 3 and s.openStatus = 0 and s.prizeStatus = 0 and s.backStatus = #{backStatus}
+        and s.schemeType != 1
+        UNION
+        select z.id, z.schemeOrderId, 1 schemeType, z.createTime, z.schemeUserId, z.schemeMoney,
+        u.isSale clientSource, u.userType channelCode, u.higherUid couponId, z.lotteryId
+        from tb_scheme_zhuihao z, tb_user u
+        where
+        z.schemeUserId = u.id and
+        z.schemeStatus = 3 and z.openStatus = 0 and z.prizeStatus = 0 and z.backStatus = #{backStatus}
+        ) t
+        order by t.createTime
+    </select>
+
+    <!-- 更新订单表-发单人已跟单金额 -->
+    <update id="updateSchemeFollowMoney">
+        update tb_scheme s, tb_scheme_follow f set s.redSafeHuardMoney = redSafeHuardMoney - f.followMoney
+        where
+        s.schemeOrderId = f.senderSchemeId and f.followSchemeId = #{followSchemeId}
+    </update>
+
+    <!-- 更新订单返点状态-非追号订单 -->
+    <update id="updateSchemeBackStatus">
+        update tb_scheme set backStatus = #{backStatus} where id = #{id}
+    </update>
+
+    <!-- 更新订单返点状态-追号订单 -->
+    <update id="updateZhuiHaoSchemeBackStatus">
+        update tb_scheme_zhuihao set backStatus = #{backStatus} where id = #{id}
+    </update>
+
+    <!--根据订单号更新普通方案出票状态-拆票-->
+    <update id="updateSchemeStatusBySchemeOrderId">
+        update tb_scheme set schemeStatus = #{schemeStatus}, schemeStatusDesc = #{schemeStatusDesc}, updateTime = now()
+        where schemeOrderId = #{schemeOrderId}
+    </update>
+
+    <!--根据订单号更新追号方案出票状态-拆票-->
+    <update id="updateZhuiHaoSchemeStatusBySchemeOrderId">
+        update tb_scheme_zhuihao set schemeStatus = #{schemeStatus}, schemeStatusDesc = #{schemeStatusDesc}, updateTime = now()
+        where schemeOrderId = #{schemeOrderId}
+    </update>
+
+    <!-- 渠道查询订单出票状态 -->
+    <select id="queryChannelSchemeList" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select schemeOrderId, schemeStatus, schemeMoney, lotteryName
+        from tb_scheme
+        where
+        schemeSource = #{appId} and schemeStatus > 0 and schemeOrderId in
+        <foreach item="item" index="index" collection="orderId" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 渠道查询订单中奖状态 -->
+    <select id="queryChannelAwardSchemeList" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select schemeOrderId, schemeMoney, lotteryName, openStatus, prizeTax
+        from tb_scheme
+        where
+        schemeSource = #{appId} and schemeStatus = 3 and schemeOrderId in
+        <foreach item="item" index="index" collection="orderId" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <!-- 查询需要进行出票通知的渠道订单 -->
+    <select id="queryChannelSchemeToNotify" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select id, schemeOrderId, schemeStatus, schemeMoney, lotteryName, channelNotifyNumber
+        from tb_scheme
+        where
+        schemeSource = #{appId} and schemeStatus = 3 and openStatus = 0 and schemeType != 1 and channelNotifyNumber &lt; 3
+    </select>
+
+    <!--更新渠道订单出票通知次数-->
+    <update id="updateSchemeNotifyNumber">
+        update tb_scheme set channelNotifyNumber = #{number} where id = #{id}
+    </update>
+
+    <!--查询竞彩足球订单相关的场次数据-->
+    <select id="querySchemeInfoByZqMatches" resultType="com.caipiao.domain.scheme.SchemeMatches">
+        select s.schemeId, s.matchCode, s.schemeOrderId, f.leagueName lotteryId
+        from tb_scheme_matches s, tb_match_football f
+        where
+        s.matchCode = f.matchCode
+        and s.schemeId = #{schemeId}
+        order by s.matchCode desc
+    </select>
+
+    <!--查询竞彩篮球订单相关的场次数据-->
+    <select id="querySchemeInfoByLqMatches" resultType="com.caipiao.domain.scheme.SchemeMatches">
+        select s.schemeId, s.matchCode, s.schemeOrderId, f.leagueName lotteryId
+        from tb_scheme_matches s, tb_match_basketball f
+        where
+        s.matchCode = f.matchCode
+        and s.schemeId = #{schemeId}
+        order by s.matchCode desc
+    </select>
+
+    <!-- 查询追号方案信息 -->
+    <select id="queryZhuihaoScheme" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.schemeId
+        from tb_scheme_zhuihao t1 where t1.id = #{id}
+    </select>
+
+    <!-- 更新追号方案(总方案)的已完成期次数 -->
+    <update id="updateSchemeForDonePeriod" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme set donePeriod = (donePeriod + 1) where id = #{id}
+    </update>
+
+    <!--查询跟单关联列表-->
+    <select id="querySchemeFollowList" resultType="com.caipiao.domain.scheme.SchemeFollow">
+        select *
+        from tb_scheme_follow
+        where 1=1
+        <if test="senderUserId != null and senderUserId != ''">
+            and senderUserId = #{senderUserId}
+        </if>
+        <if test="senderSchemeId != null and senderSchemeId != ''">
+            and senderSchemeId = #{senderSchemeId}
+        </if>
+        <if test="followUserId != null and followUserId != ''">
+            and followUserId = #{followUserId}
+        </if>
+        <if test="followSchemeId != null and followSchemeId != ''">
+            and followSchemeId = #{followSchemeId}
+        </if>
+        <if test="awardState != null and awardState != ''">
+            and awardState = #{awardState}
+        </if>
+        order by followMoney desc
+    </select>
+
+    <!-- 根据跟单方案编号查询跟单关联记录 -->
+    <select id="querySchemeFollowInfo" resultType="com.caipiao.domain.scheme.SchemeFollow">
+        select *
+        from tb_scheme_follow
+        where
+        followSchemeId = #{schemeId} and awardState = 0 and schemeStatus = 1
+    </select>
+
+    <!-- 根据ID-更新跟单方案关联信息 -->
+    <update id="updateSchemeFollow" parameterType="com.caipiao.domain.scheme.SchemeFollow">
+        update tb_scheme_follow set
+        awardTime = now()
+        <if test="followPrizeMoney != null and followPrizeMoney != ''">
+            ,followPrizeMoney = #{followPrizeMoney}
+        </if>
+        <if test="rewardMoney != null and rewardMoney != ''">
+            ,rewardMoney = #{rewardMoney}
+        </if>
+        <if test="awardState != null and awardState != ''">
+            ,awardState = #{awardState}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 根据发单人订单编号-更新跟单方案计奖状态-->
+    <update id="updateSchemeFollowBySendSchemeOrderId">
+        update tb_scheme_follow set awardTime = now(), awardState = 3 where senderSchemeId = #{senderSchemeId}
+    </update>
+
+    <!-- 更新跟单方案出票状态 -->
+    <update id="updateSchemeStatusFollow">
+        update tb_scheme_follow set schemeStatus = #{schemeStatus} where followSchemeId = #{followSchemeId}
+    </update>
+
+    <!-- 根据比赛场次查询中奖神单收获打赏列表 -->
+    <select id="querySchemeFollowListByRewards" resultType="com.caipiao.domain.scheme.SchemeFollow">
+        select
+          f.senderSchemeId, IFNULL(sum(f.rewardMoney),0) rewardMoney,
+          IFNULL(s.prizeTax,0) followPrizeMoney,
+          s.prizeDetail followNickName, IFNULL(s.prize,0) followMoney
+        from tb_scheme_follow f, tb_scheme s, tb_scheme_matches m
+        where
+          f.senderSchemeId = s.schemeOrderId
+          and s.id = m.schemeId
+          and m.matchCode = #{matchCode}
+          and m.lotteryId = #{lotteryId}
+          and s.schemeType = 4 and s.schemeStatus = 3
+          and f.awardState &gt; 0 and s.openStatus = 2
+          and s.prizeStatus = 1 and s.prizeTax &gt; 0
+          and f.schemeStatus = 1
+        group by f.senderSchemeId
+    </select>
+
+    <!-- 更新神单方案中奖金额和描述 -->
+    <update id="updateSchemeFollowPrize" parameterType="com.caipiao.domain.scheme.Scheme">
+        update tb_scheme
+        set prizeStatus = 0,
+        prize = #{prize},
+        prizeTax = #{prizeTax},
+        prizeDetail = #{prizeDetail},
+        rewardPrize = #{rewardPrize}
+        where schemeOrderId = #{schemeOrderId}
+    </update>
+
+    <select id="queryDayWinSchemeInfoByUserId" resultType="com.caipiao.domain.scheme.Scheme">
+      select * from tb_scheme s
+      where
+      s.schemeUserId = #{schemeUserId}
+      and s.schemeStatus = 3
+      and s.openStatus = 2
+      and openTime > DATE_SUB(NOW(),INTERVAL 1 DAY)
+      and s.winPopup = '0'
+      order by s.prizeTax desc
+      limit 1
+    </select>
+
+    <!-- 更新中奖订单弹框状态 -->
+    <update id="updateSchemeWinPopupStatus">
+        update tb_scheme set winPopup = '1'
+        where
+        schemeStatus = 3 and openStatus = 2 and openTime > DATE_SUB(NOW(),INTERVAL 1 DAY)
+        and winPopup = '0' and schemeUserId = #{schemeUserId}
+    </update>
+
+    <!-- 查询用户单日已发神单的数量 -->
+    <select id="queryUserSdCountOfDay" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(0) from tb_scheme t1
+        where t1.schemeUserId = #{userId} and t1.schemeType = 4 and t1.schemeStatus = 3 and date_format(t1.createTime,'%Y-%m-%d') = #{createDate}
+    </select>
+
+    <!-- 查询用户方案投注内容相同的神单 -->
+    <select id="queryUserSdCountOfSameCotent" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(0) from tb_scheme t1
+        where t1.lotteryId = #{lotteryId} and t1.schemeUserId = #{userId} and t1.schemeType = 4 and t1.schemeContent = #{schemeContent}
+    </select>
+
+    <!-- 设置方案为神单(晒单) -->
+    <update id="updateSchemeForSd" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme
+        set schemeType = 4,minParticipant = #{minParticipant},safeguardMoney = #{safeguardMoney}
+        ,remuneration = #{remuneration},hideType = #{hideType},userNickName = #{userNickName},shareTime = now()
+        where id = #{sid} and schemeUserId = #{userId}
+    </update>
+
+    <!-- 查询方案场次信息 -->
+    <select id="querySchemeMatches" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.scheme.SchemeMatches">
+        select
+        t1.id,
+        t1.schemeId,
+        t1.schemeOrderId,
+        t1.lotteryId,
+        t1.matchCode
+        from tb_scheme_matches t1 where 1 = 1
+        <if test="schemeId != null and schemeId != ''">
+            and t1.schemeId = #{schemeId}
+        </if>
+    </select>
+
+    <!-- 查询方案对阵即时比分信息 -->
+    <select id="querySchemeMatchBfInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        date_format(t1.beginTime,'%Y-%m-%d %H:%i:%s') beginTime,
+        t1.homeScore,
+        t1.guestScore,
+        t1.matchState,
+        t1.homeHalfScore,
+        t1.guestHalfScore
+        from zl_schedule t1 where 1 = 1
+        <if test="speriod != null and speriod != ''">
+            and t1.speriod = #{speriod}
+        </if>
+        <if test="jcId != null and jcId != ''">
+            and t1.jcId = #{jcId}
+        </if>
+        order by createTime desc limit 1
+    </select>
+
+    <!-- 查询用户神单方案信息 -->
+    <select id="querySdSchemeInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.schemeUserId,
+        t1.playTypeId,
+        t1.schemeOrderId,
+        t1.schemeType,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemeContent,
+        t1.schemeSpContent,
+        t1.schemeYhContent,
+        t1.hideType,
+        t1.minParticipant,
+        t1.remuneration,
+        t1.safeguardMoney,
+        t1.redSafeHuardMoney,
+        t1.profitMargin,
+        t1.openStatus,
+        t1.prizeTax,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.rewardPrize,
+        t1.period,
+        t1.endTime,
+        t1.createTime,
+        t2.*
+        from tb_scheme t1
+        left join
+        (select m1.userId,
+        m1.orderSums,
+        m1.hitSums,
+        m1.hitRate,
+        m1.buyMoney,
+        m1.hitMoney,
+        m1.winRate,
+        m1.runRedSums,
+        m1.hitDescribe,
+        m1.followSums,
+        m1.followMoneySums,
+        m1.weekOrderSums,
+        m1.weekHitSums,
+        m1.weekHitRate,
+        m1.weekBuyMoney,
+        m1.weekHitMoney,
+        m1.weekWinRate,
+        m1.weekHitDescribe,
+        m1.weekRunRedSums,
+        m1.monthOrderSums,
+        m1.monthHitSums,
+        m1.monthHitRate,
+        m1.monthBuyMoney,
+        m1.monthHitMoney,
+        m1.monthWinRate,
+        m1.monthHitDescribe,
+        m1.monthRunRedSums,
+        m1.tenOrderTrend,
+        m1.rewardMoney,
+        m2.nickName,
+        m2.avatar
+        from tb_user_follow_statis m1,tb_user m2
+        where m2.id = m1.userId and m1.lotteryId = #{lid})t2
+        on t2.userId = t1.schemeUserId
+        where t1.lotteryId = #{lid} and t1.schemeType = 4
+        <choose>
+            <when test="sid != null and sid != ''">
+                and t1.id = #{sid}
+            </when>
+            <otherwise>
+                <if test="minCreateTime != null and minCreateTime != ''">
+                    and t1.createTime &gt;= #{minCreateTime}
+                </if>
+                <if test="minEndTime != null and minEndTime != ''">
+                    and t1.endTime &gt; #{minEndTime}
+                </if>
+                <if test="maxEndTime != null and maxEndTime != ''">
+                    and t1.endTime &lt; #{maxEndTime}
+                </if>
+                <if test="suserId != null and suserId != ''">
+                    and t1.schemeUserId = #{suserId}
+                </if>
+                <if test="completeFlag == 1">
+                    and t1.redSafeHuardMoney &lt; t1.safeguardMoney
+                </if>
+                <if test="excludeIds != null and excludeIds != ''">
+                    and t1.id not in (#{excludeIds})
+                </if>
+                <choose>
+                    <when test="psorts != null and psorts != ''">
+                        order by ${psorts}
+                    </when>
+                    <otherwise>
+                        order by t1.createTime desc
+                    </otherwise>
+                </choose>
+                <if test="psize != null and psize != ''">
+                    limit ${pstart},${psize}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询用户神单方案信息总记录数 -->
+    <select id="querySdSchemeInfoCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="long">
+        select count(0) from tb_scheme t1 where t1.lotteryId = #{lid} and t1.schemeType = 4
+        <choose>
+            <when test="sid != null and sid != ''">
+                and t1.id = #{sid}
+            </when>
+            <otherwise>
+                <if test="minCreateTime != null and minCreateTime != ''">
+                    and t1.createTime &gt;= #{minCreateTime}
+                </if>
+                <if test="minEndTime != null and minEndTime != ''">
+                    and t1.endTime &gt; #{minEndTime}
+                </if>
+                <if test="maxEndTime != null and maxEndTime != ''">
+                    and t1.endTime &lt; #{maxEndTime}
+                </if>
+                <if test="suserId != null and suserId != ''">
+                    and t1.schemeUserId = #{suserId}
+                </if>
+                <if test="completeFlag == 1">
+                    and t1.redSafeHuardMoney &lt; t1.safeguardMoney
+                </if>
+                <if test="excludeIds != null and excludeIds != ''">
+                    and t1.id not in (#{excludeIds})
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询用户神单方案信息 -->
+    <select id="queryUserSdSchemeInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.lotteryId,
+        t1.lotteryName,
+        t1.schemeUserId,
+        t1.playTypeId,
+        t1.schemeOrderId,
+        t1.schemeType,
+        t1.schemeMultiple,
+        t1.schemeZs,
+        t1.schemeMoney,
+        t1.schemeContent,
+        t1.schemeSpContent,
+        t1.schemeYhContent,
+        t1.hideType,
+        t1.minParticipant,
+        t1.remuneration,
+        t1.safeguardMoney,
+        t1.redSafeHuardMoney,
+        t1.profitMargin,
+        t1.openStatus,
+        t1.prizeTax,
+        t1.prizeSubjoinTax,
+        t1.prizeSubjoinSiteTax,
+        t1.rewardPrize,
+        t1.period,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        t2.gmrc
+        from tb_scheme t1
+        left join (select senderSchemeId,count(0) gmrc from tb_scheme_follow where schemeStatus = 1 group by senderSchemeId)t2
+        on t2.senderSchemeId = t1.schemeOrderId
+        where t1.lotteryId = #{lid} and t1.schemeType = 4
+        <choose>
+            <when test="sid != null and sid != ''">
+                and t1.id = #{sid}
+            </when>
+            <otherwise>
+                <if test="minCreateTime != null and minCreateTime != ''">
+                    and t1.createTime &gt;= #{minCreateTime}
+                </if>
+                <if test="minEndTime != null and minEndTime != ''">
+                    and t1.endTime &gt; #{minEndTime}
+                </if>
+                <if test="maxEndTime != null and maxEndTime != ''">
+                    and t1.endTime &lt; #{maxEndTime}
+                </if>
+                <if test="suserId != null and suserId != ''">
+                    and t1.schemeUserId = #{suserId}
+                </if>
+                <if test="completeFlag == 1">
+                    and t1.redSafeHuardMoney &lt; t1.safeguardMoney
+                </if>
+                <if test="excludeIds != null and excludeIds != ''">
+                    and t1.id not in (#{excludeIds})
+                </if>
+                <choose>
+                    <when test="psorts != null and psorts != ''">
+                        order by ${psorts}
+                    </when>
+                    <otherwise>
+                        order by t1.createTime desc
+                    </otherwise>
+                </choose>
+                <if test="psize != null and psize != ''">
+                    limit ${pstart},${psize}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询用户神单方案信息总记录数 -->
+    <select id="queryUserSdSchemeInfoCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="long">
+        select count(0) from tb_scheme t1 where t1.lotteryId = #{lid} and t1.schemeType = 4
+        <choose>
+            <when test="sid != null and sid != ''">
+                and t1.id = #{sid}
+            </when>
+            <otherwise>
+                <if test="minCreateTime != null and minCreateTime != ''">
+                    and t1.createTime &gt;= #{minCreateTime}
+                </if>
+                <if test="minEndTime != null and minEndTime != ''">
+                    and t1.endTime &gt; #{minEndTime}
+                </if>
+                <if test="maxEndTime != null and maxEndTime != ''">
+                    and t1.endTime &lt; #{maxEndTime}
+                </if>
+                <if test="suserId != null and suserId != ''">
+                    and t1.schemeUserId = #{suserId}
+                </if>
+                <if test="completeFlag == 1">
+                    and t1.redSafeHuardMoney &lt; t1.safeguardMoney
+                </if>
+                <if test="excludeIds != null and excludeIds != ''">
+                    and t1.id not in (#{excludeIds})
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询神单统计榜单 -->
+    <select id="querySdTj" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s1.*,
+        s2.nickName,
+        s2.avatar
+        from (select
+        t1.userId,
+        t1.orderSums,
+        t1.hitSums,
+        t1.hitRate,
+        t1.buyMoney,
+        t1.hitMoney,
+        t1.winRate,
+        t1.runRedSums,
+        t1.hitDescribe,
+        t1.followSums,
+        t1.followMoneySums,
+        t1.weekOrderSums,
+        t1.weekHitSums,
+        t1.weekHitRate,
+        t1.weekBuyMoney,
+        t1.weekHitMoney,
+        t1.weekWinRate,
+        t1.weekHitDescribe,
+        t1.weekRunRedSums,
+        t1.monthOrderSums,
+        t1.monthHitSums,
+        t1.monthHitRate,
+        t1.monthBuyMoney,
+        t1.monthHitMoney,
+        t1.monthWinRate,
+        t1.monthHitDescribe,
+        t1.monthRunRedSums,
+        t1.tenOrderTrend,
+        t1.rewardMoney,
+        t2.sdcount
+        from tb_user_follow_statis t1
+        left join (select m1.schemeUserId as userId,count(0) as sdcount from tb_scheme m1
+        where m1.schemeType = 4 and m1.redSafeHuardMoney &lt; safeguardMoney
+        and endTime &gt; now() and m1.lotteryId = #{lid}
+        <if test="userId != null and userId != ''">
+            and m1.schemeUserId = #{userId}
+        </if>
+        group by schemeUserId)t2
+        on t2.userId = t1.userId
+        where t1.lotteryId = #{lid}
+        <if test="userId != null and userId != ''">
+            and t1.userId = #{userId}
+        </if>
+        )s1,tb_user s2
+        where s2.id = s1.userId
+        <if test="minMonthOrderSums != null and minMonthOrderSums != ''">
+            and s1.monthOrderSums &gt;= #{minMonthOrderSums}
+        </if>
+        <if test="minMonthHitSums != null and minMonthHitSums != ''">
+            and s1.monthHitSums &gt;= #{minMonthHitSums}
+        </if>
+        <if test="minWeekOrderSums != null and minWeekOrderSums != ''">
+            and s1.weekOrderSums &gt;= #{minWeekOrderSums}
+        </if>
+        <if test="minWeekHitSums != null and minWeekHitSums != ''">
+            and s1.weekHitSums &gt;= #{minWeekHitSums}
+        </if>
+        <if test="minMonthWinRate != null and minMonthWinRate != ''">
+            and s1.monthWinRate &gt;= #{minMonthWinRate}
+        </if>
+        <if test="minWeekWinRate != null and minWeekWinRate != ''">
+            and s1.weekWinRate &gt;= #{minWeekWinRate}
+        </if>
+        <if test="minMonthRunRedSums != null and minMonthRunRedSums != ''">
+            and s1.monthRunRedSums &gt;= #{minMonthRunRedSums}
+        </if>
+        <if test="minWeekRunRedSums != null and minWeekRunRedSums != ''">
+            and s1.weekRunRedSums &gt;= #{minWeekRunRedSums}
+        </if>
+        <if test="userId != null and userId != ''">
+            and s2.id = #{userId}
+        </if>
+        <if test="psorts != null and psorts != ''">
+            order by ${psorts}
+        </if>
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询神单统计榜单总记录数 -->
+    <select id="querySdTjCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="long">
+        select count(0) from tb_user_follow_statis t1 where t1.lotteryId = #{lid}
+        <if test="userId != null and userId != ''">
+            and t1.userId = #{userId}
+        </if>
+        <if test="minMonthOrderSums != null and minMonthOrderSums != ''">
+            and t1.monthOrderSums &gt;= #{minMonthOrderSums}
+        </if>
+        <if test="minMonthHitSums != null and minMonthHitSums != ''">
+            and t1.monthHitSums &gt;= #{minMonthHitSums}
+        </if>
+        <if test="minWeekOrderSums != null and minWeekOrderSums != ''">
+            and t1.weekOrderSums &gt;= #{minWeekOrderSums}
+        </if>
+        <if test="minWeekHitSums != null and minWeekHitSums != ''">
+            and t1.weekHitSums &gt;= #{minWeekHitSums}
+        </if>
+        <if test="minMonthWinRate != null and minMonthWinRate != ''">
+            and t1.monthWinRate &gt;= #{minMonthWinRate}
+        </if>
+        <if test="minWeekWinRate != null and minWeekWinRate != ''">
+            and t1.weekWinRate &gt;= #{minWeekWinRate}
+        </if>
+        <if test="minMonthRunRedSums != null and minMonthRunRedSums != ''">
+            and t1.monthRunRedSums &gt;= #{minMonthRunRedSums}
+        </if>
+        <if test="minWeekRunRedSums != null and minWeekRunRedSums != ''">
+            and t1.weekRunRedSums &gt;= #{minWeekRunRedSums}
+        </if>
+    </select>
+
+    <!-- 保存跟单方案 -->
+    <insert id="saveFollowScheme" parameterType="com.caipiao.domain.base.SchemeBean">
+
+        <!-- 获取待新增记录的主键值 -->
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+
+        <!-- 新增方案记录 -->
+        insert into tb_scheme
+        (clientSource,clientSourceName,schemeUserId,lotteryId,lotteryName,playTypeId,schemeOrderId,schemeType,schemeMultiple,
+        schemeZs,schemeMoney,schemeStatus,schemeStatusDesc,schemePlayType,schemeContent,schemeSpContent,schemeYhContent,
+        period,endTime,schemeSource,theoryPrize,profitMargin,createTime,userNickName,copySchemeId,hideType)
+        values
+        (#{clientSource},#{clientSourceName},#{userId},#{lid},#{lname},#{playTypeId},#{scode},#{stype},#{smultiple},
+        #{szs},#{money},#{status},#{sdesc},#{wtype},#{tzcontent},#{tzspcontent},#{yhinfos},
+        #{period},#{etime},#{source},#{lprize},#{profitMargin},now(),#{unick},#{copySchemeId},#{hideType})
+    </insert>
+
+    <!-- 保存神单跟单 -->
+    <insert id="saveSdFollow" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        insert into tb_scheme_follow
+        (senderUserId,senderSchemeId,rewardProportion,followUserId,followSchemeId,followNickName,followTime,followMoney)
+        values (#{senderUserId},#{senderSchemeId},#{rewardProportion},#{followUserId},#{followSchemeId},#{followNickName},#{followTime},#{followMoney})
+    </insert>
+
+    <!-- 更新神单 -->
+    <update id="updateSdScheme" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_scheme set updateTime = now()
+        <if test="redSafeHuardMoney != null and redSafeHuardMoney != ''">
+            ,redSafeHuardMoney = redSafeHuardMoney + #{redSafeHuardMoney}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 查询神单用户 -->
+    <select id="querySdUser" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.nickName,
+        t1.avatar
+        from tb_user t1,tb_user_follow_statis t2
+        where t2.userId = t1.id
+        and t1.nickName regexp #{unick}
+        and t2.orderSums &gt; 0 and t2.lotteryId = #{lotteryId}
+    </select>
+
+    <!-- 查询神单跟买记录 -->
+    <select id="querySdFollow" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.schemeStatus,
+        t1.schemeMoney,
+        t1.openStatus,
+        t1.prizeTax,
+        t1.rewardPrize,
+        date_format(t1.createTime,'%m-%d %H:%i') createTime,
+        t2.nickName
+        from tb_scheme t1,tb_user t2
+        where t2.id = t1.schemeUserId
+        and t1.schemeType = 3 and t1.copySchemeId = #{sid}
+        and t1.schemeStatus &gt; 0
+    </select>
+
+    <!-- 查询用户关注 -->
+    <select id="queryUserFollow" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s2.nickName,
+        s2.avatar,
+        s3.*
+        from
+        tb_user_follow_fans s1,
+        tb_user s2,
+        (select
+        t1.userId,
+        t1.hitMoney,
+        t2.sdcount
+        from tb_user_follow_statis t1
+        left join (select m1.schemeUserId as userId,count(0) as sdcount from tb_scheme m1
+        where m1.schemeType = 4 and m1.redSafeHuardMoney &lt; safeguardMoney
+        and endTime &gt; now() and m1.lotteryId = 1700
+        group by schemeUserId)t2 on t2.userId = t1.userId
+        where t1.lotteryId = 1700)s3
+        where s2.id = s1.suserId and s3.userId = s1.suserId and s1.userId = #{userId}
+        <if test="suserId != null and suserId != ''">
+            and s1.suserId = #{suserId}
+        </if>
+        order by s1.createTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户关注总记录数 -->
+    <select id="queryUserFollowCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="long">
+        select count(0) from tb_user_follow_fans t1
+        where t1.userId = #{userId}
+        <if test="suserId != null and suserId != ''">
+            and t1.suserId = #{suserId}
+        </if>
+    </select>
+
+    <!-- 查询用户粉丝 -->
+    <select id="queryUserFans" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.userId,
+        date_format(t1.createTime,'%m-%d %H:%i') createTime,
+        t2.nickName,
+        t2.avatar
+        from tb_user_follow_fans t1,tb_user t2
+        where t2.id = t1.userId
+        and t1.suserId = #{suserId}
+        order by t1.createTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户粉丝 -->
+    <select id="queryUserFansCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="long">
+        select count(0) from tb_user_follow_fans t1 where t1.suserId = #{suserId}
+    </select>
+
+    <!-- 审核错误方案回退-竞彩 -->
+    <update id="updateErrorReAwardSchemeJc" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        UPDATE tb_scheme s, tb_scheme_matches m
+        SET s.prize = 0, s.prizeTax = 0, s.prizeDetail = '', s.prizeBarrier = '', s.openStatus = 0, s.prizeStatus = 0
+        WHERE
+	    s.schemeOrderId = m.schemeOrderId
+        AND s.lotteryId = #{lotteryId}
+        AND m.matchCode = #{matchCode}
+        AND s.schemeStatus = 3
+        AND s.openStatus > 0
+    </update>
+
+    <!-- 审核错误票回退-竞彩 -->
+    <update id="updateErrorReAwardTicketJc" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        UPDATE tb_ticket t, tb_scheme s, tb_scheme_matches m
+        SET t.bonusState = 0, t.isWin = 0
+        WHERE
+	    t.schemeId = s.schemeOrderId
+        AND s.schemeOrderId = m.schemeOrderId
+        AND s.lotteryId = #{lotteryId}
+        AND m.matchCode = #{matchCode}
+        AND s.schemeStatus = 3
+        AND t.ticketStatus > 1
+    </update>
+
+    <!-- 审核错误普通方案回退-数字彩 -->
+    <update id="updateErrorReAwardSchemeSzc" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        UPDATE tb_scheme
+        SET prize = 0, prizeTax = 0, prizeDetail = '', prizeBarrier = '', openStatus = 0, prizeStatus = 0
+        WHERE
+        lotteryId = #{lotteryId}
+        AND period = #{matchCode}
+        AND openStatus > 0
+        AND schemeStatus = 3
+    </update>
+
+    <!-- 审核错误追号方案回退-数字彩 -->
+    <update id="updateErrorReAwardSchemeSzcZhuiHao" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        UPDATE tb_scheme_zhuihao
+        SET prize = 0, prizeTax = 0, prizeDetail = '', prizeBarrier = '', openStatus = 0, prizeStatus = 0
+        WHERE
+        lotteryId = #{lotteryId}
+        AND period = #{matchCode}
+        AND openStatus > 0
+        AND schemeStatus = 3
+    </update>
+
+    <!-- 审核错误普通票回退-数字彩 -->
+    <update id="updateErrorReAwardTicketSzc" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        UPDATE tb_ticket t, tb_scheme s
+        SET t.bonusState = 0, t.isWin = 0
+        WHERE
+        t.schemeId = s.schemeOrderId
+        AND s.lotteryId = #{lotteryId}
+        AND t.period = #{matchCode}
+        AND s.schemeStatus = 3
+        AND t.ticketStatus > 1
+    </update>
+
+    <!-- 审核错误追号票回退-数字彩 -->
+    <update id="updateErrorReAwardTicketSzcZhuiHao" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        UPDATE tb_ticket t, tb_scheme_zhuihao s
+        SET t.bonusState = 0, t.isWin = 0
+        WHERE
+        t.schemeId = s.schemeOrderId
+        AND s.lotteryId = #{lotteryId}
+        AND t.period = #{matchCode}
+        AND s.schemeStatus = 3
+        AND t.ticketStatus > 1
+    </update>
+</mapper>

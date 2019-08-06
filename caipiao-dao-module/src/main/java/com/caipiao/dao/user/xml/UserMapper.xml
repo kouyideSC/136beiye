@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.user.UserMapper" >
+
+    <!--查询到客户端显示的属性-->
+    <sql id="baseQueryColumn" >
+        u.id, u.nickName, u.password, u.updateUserNameNum, u.realName, u.idCard, u.avatar, u.mobile, u.status,
+        u.vipLevel, u.lastLoginTime, u.lastLoginIp,u.openId, u.bankInfo, u.bankIsBind, userType, u.followNum, u.fansNum, u.isWhite,
+        u.isSale,u.isAdmin, u.score, u.continuitySignDay,u.question, u.answer, u.qq, u.registerIp, registerTime
+    </sql>
+
+    <!--根据用户编号查询用户信息-->
+    <select id="queryUserInfoById" resultType="com.caipiao.domain.user.User">
+        select
+        <include refid="baseQueryColumn" />
+        from tb_user u where u.id = #{userId}
+    </select>
+
+    <!--根据用户编号查询完整用户信息-包括余额和token-->
+    <select id="queryUserInfoBalaceById" resultType="com.caipiao.domain.vo.UserVo">
+        select u.id, u.nickName, u.avatar, u.status, u.vipLevel, u.lastLoginTime, u.lastLoginIp, u.isWhite,
+        u.isSale,u.isAdmin, t.tkey `key`, t.token, a.balance, u.updateUserNameNum, u.qq code, u.mobile,
+        (case when u.realName is NULL or u.realName = '' then 0 else 1 end) as idCardIsBind,
+        (case when u.bankIsBind = 1 and u.bankInfo is not NULL and u.bankInfo != '' then 1 else 0 end) as bankIsBind
+        from tb_user u, tb_user_token t, tb_user_account a
+        where
+        u.id = t.userId and u.id = a.userId
+        and u.id = #{userId}
+    </select>
+
+    <!--查询用户昵称是否存在-->
+    <select id="queryUserNickNameIsExists" resultType="java.lang.Integer">
+        select count(1) from tb_user where nickName = #{nickName}
+    </select>
+
+    <!--查询邀请码是否存在-->
+    <select id="queryUserCodeIsExists" resultType="com.caipiao.domain.user.User">
+        select * from tb_user where qq = #{code}
+    </select>
+
+    <!--根据手机号查询用户-->
+    <select id="queryUserInfoByMobile" resultType="com.caipiao.domain.user.User">
+        select
+        <include refid="baseQueryColumn" />
+        from tb_user u
+        where
+        u.mobile = #{mobile}
+    </select>
+
+    <!-- 查询微信/QQ联合登录用户 -->
+    <select id="queryWeixinQqUserInfo" resultType="com.caipiao.domain.user.User">
+        select
+        <include refid="baseQueryColumn" />
+        from tb_user u
+        where 1 = 1
+        <choose>
+            <when test="loginType == 2">
+                and u.weixinOpenId = #{openId}
+            </when>
+            <when test="loginType == 3">
+                and u.QqOpenId = #{openId}
+            </when>
+            <otherwise>
+                and 1 != 1
+            </otherwise>
+        </choose>
+
+    </select>
+
+    <!--根据用户编号查询用户信息-->
+    <select id="queryUserBackBalanceById" resultType="com.caipiao.domain.user.UserAccount">
+        select a.* from tb_user u, tb_user_account a where u.id = a.userId and u.id = #{userId} and u.status = 1 and u.isSale != 1
+    </select>
+
+    <!-- 查询虚拟用户列表 -->
+    <select id="queryUserListByUserType" resultType="java.lang.Integer">
+        select id from tb_user u where userType >= 8000
+    </select>
+
+    <!-- 查询黑名单用户列表 -->
+    <select id="queryUserListByBlackType" resultType="java.lang.Integer">
+        select id from tb_user u where isWhite = 2
+    </select>
+
+    <!--用户注册-->
+    <insert id="insertUserRegister">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user (
+        mobile, password, nickName, avatar, sex, province, registerIp, userType,
+        registerFrom, marketFrom, higherUid, higherTime, device, isWhite,weixinOpenId,QqOpenId
+        ) values (
+        #{mobile}, #{password}, #{nickName}, #{avatar}, #{sex}, #{province},
+        #{registerIp}, #{userType}, #{registerFrom}, #{marketFrom},
+        #{higherUid}, #{higherTime}, #{device}, #{isWhite},#{weixinOpenId},#{QqOpenId}
+        )
+    </insert>
+
+    <!--更新用户登录相关信息-->
+    <update id="updateUserLoginInfo">
+        update tb_user
+        <set>
+            <if test="ip != null">
+                lastLoginIp = #{ip},
+            </if>
+            <if test="device != null">
+                device = #{device},
+            </if>
+            loginDegree = loginDegree + 1, lastLoginTime = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--用户密码重置-->
+    <update id="updateResetUserPassword">
+        update tb_user
+        <set>
+            <if test="device != null">
+                device = #{device},
+            </if>
+            password = #{password}, updateTime = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 查询用户列表(管理后台) -->
+    <select id="queryUserList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        u.id, u.nickName, u.updateUserNameNum, u.realName, u.idCard, u.avatar, u.sex, u.address,
+        u.email, u.qq, u.question, u.answer, u.mobile, u.status, u.device, u.vipLevel,
+        u.loginDegree, u.openId, u.lastLoginIp, u.registerIp, u.province, u.bankInfo, u.bankIsBind,
+        u.userType,u.registerFrom,
+        IFNULL((select marketName from tb_app_market where marketShort = u.marketFrom),'未知') marketFrom,
+        u.followNum, u.fansNum, u.isWhite, u.isSale,u.isAdmin,
+        u.higherUid, u.score, u.continuitySignDay,
+        date_format(u.lastLoginTime,'%Y-%m-%d %H:%i:%s') lastLoginTime,
+        date_format(u.registerTime,'%Y-%m-%d %H:%i:%s') registerTime,
+        date_format(u.openWhiteTime,'%Y-%m-%d %H:%i:%s') openWhiteTime,
+        date_format(u.higherTime,'%Y-%m-%d %H:%i:%s') higherTime,
+        date_format(u.isSaleTime,'%Y-%m-%d %H:%i:%s') isSaleTime,
+        a.totalConsume consume, a.balance
+        from tb_user u, tb_user_account a
+        where a.userId = u.id
+        <if test="id != null and id != ''">
+          and u.id = #{id}
+        </if>
+        <if test="nickName != null and nickName != ''">
+            and u.nickName like CONCAT('%',#{nickName},'%')
+        </if>
+        <if test="realName != null and realName != ''">
+            and u.realName = #{realName}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile = #{mobile}
+        </if>
+        <if test="status != null and status != ''">
+            and u.status = #{status}
+        </if>
+        <if test="vipLevel != null and vipLevel != ''">
+            and u.vipLevel = #{vipLevel}
+        </if>
+        <if test="userType != null and userType != ''">
+            and u.userType = #{userType}
+        </if>
+        <if test="registerFrom != null and registerFrom != ''">
+            and u.registerFrom = #{registerFrom}
+        </if>
+        <if test="marketFrom != null and marketFrom != ''">
+            and u.marketFrom = #{marketFrom}
+        </if>
+        <if test="isWhite != null and isWhite != ''">
+            and u.isWhite = #{isWhite}
+        </if>
+        <if test="isSale != null and isSale != ''">
+            and u.isSale = #{isSale}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and u.registerTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and u.registerTime &lt;= #{endTime}
+        </if>
+        order by u.registerTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户列表(管理后台) -->
+    <select id="queryUserListCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select
+        count(0)
+        from tb_user u where 1 = 1
+        <if test="id != null and id != ''">
+            and u.id = #{id}
+        </if>
+        <if test="nickName != null and nickName != ''">
+            and u.nickName = #{nickName}
+        </if>
+        <if test="realName != null and realName != ''">
+            and u.realName = #{realName}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile = #{mobile}
+        </if>
+        <if test="status != null and status != ''">
+            and u.status = #{status}
+        </if>
+        <if test="vipLevel != null and vipLevel != ''">
+            and u.vipLevel = #{vipLevel}
+        </if>
+        <if test="userType != null and userType != ''">
+            and u.userType = #{userType}
+        </if>
+        <if test="registerFrom != null and registerFrom != ''">
+            and u.registerFrom = #{registerFrom}
+        </if>
+        <if test="marketFrom != null and marketFrom != ''">
+            and u.marketFrom = #{marketFrom}
+        </if>
+        <if test="isWhite != null and isWhite != ''">
+            and u.isWhite = #{isWhite}
+        </if>
+        <if test="isSale != null and isSale != ''">
+            and u.isSale = #{isSale}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and u.registerTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and u.registerTime &lt;= #{endTime}
+        </if>
+    </select>
+
+    <!-- 更新用户信息(管理后台) -->
+    <update id="updateUserInfoByAdmin" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user set
+        <if test="status != null and status != ''">
+            status = #{status},
+        </if>
+        <if test="isWhite != null and isWhite != ''">
+            isWhite = #{isWhite},
+            openWhiteTime = now(),
+        </if>
+        <if test="isSale != null and isSale != ''">
+            isSale = #{isSale},
+            isSaleTime = now(),
+        </if>
+        <if test="userCode != null and userCode != ''">
+            qq = #{userCode},
+        </if>
+        updateTime = now()
+        where id = #{id}
+    </update>
+
+    <!-- 更新用户头像信息 -->
+    <update id="updateUserAvatar" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user set avatar = #{avatar} where id = #{userId}
+    </update>
+
+    <!-- 更新用户银行卡信息 -->
+    <update id="updateUserBank" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user set bankInfo = #{bankInfo},bankIsBind = 1 where id = #{userId}
+    </update>
+
+    <!-- 更新用户实名信息 -->
+    <update id="updateUserIdentity" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user set realName = #{name},idCard = #{idcard} where id = #{userId}
+    </update>
+
+    <!-- 更新用户用户联合登录标识信息 -->
+    <update id="updateUserOpenId" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user set updateTime = now()
+        <if test="weixinOpenId != null">
+            ,weixinOpenId = #{weixinOpenId}
+        </if>
+        <if test="QqOpenId != null">
+            ,QqOpenId = #{QqOpenId}
+        </if>
+        where id = #{userId}
+    </update>
+
+    <!--用户日报表统计-->
+    <insert id="userDayDateStatis" parameterType="java.lang.String">
+        replace into tb_user_daystatis
+        select
+        #{date} `date`,
+        a.loginNumber_I, a.loginNumber_A, b.registerNumber_I, b.registerNumber_A, c.orderNumber_I, c.orderNumber_A,
+        c.orderMoney_I, c.orderMoney_A, d.rechargeNumber_I, d.rechargeNumber_A, d.rechargeMoney_I, d.rechargeMoney_A,
+        e.withdrawNumber, e.withdrawMoney, f.winNumber, f.winMoney, now()
+        from (
+        select
+        IFNULL(sum(case when u.registerFrom = 1 then 1 else 0 end),0) loginNumber_I,
+        IFNULL(sum(case when u.registerFrom = 1 then 0 else 1 end),0) loginNumber_A
+        from tb_user u where u.lastLoginTime > #{date} and u.lastLoginTime &lt; DATE_ADD(#{date},INTERVAL 1 DAY)
+        ) a,
+        (
+        select
+        IFNULL(sum(case when u.registerFrom = 1 then 1 else 0 end),0) registerNumber_I,
+        IFNULL(sum(case when u.registerFrom = 1 then 0 else 1 end),0) registerNumber_A
+        from tb_user u where u.registerTime > #{date} and u.registerTime &lt; DATE_ADD(#{date},INTERVAL 1 DAY)
+        ) b,
+        (
+        select
+        IFNULL(sum(case when s.clientSource = 1 then 1 else 0 end),0) orderNumber_I,
+        IFNULL(sum(case when s.clientSource = 1 then 0 else 1 end),0) orderNumber_A,
+        IFNULL(sum(case when s.clientSource = 1 then s.schemeMoney else 0 end),0) orderMoney_I,
+        IFNULL(sum(case when s.clientSource = 1 then 0 else s.schemeMoney end),0) orderMoney_A
+        from tb_scheme s, tb_user u
+        where s.schemeUserId = u.id
+        and s.schemeStatus > 0 and s.createTime > #{date} and s.createTime &lt; DATE_ADD(#{date},INTERVAL 1 DAY)
+        and u.userType != 8888
+        ) c,
+        (
+        select
+        IFNULL(sum(case when p.clientFrom = 1 then 1 else 0 end),0) rechargeNumber_I,
+        IFNULL(sum(case when p.clientFrom = 1 then 0 else 1 end),0) rechargeNumber_A,
+        IFNULL(sum(case when p.clientFrom = 1 then money else 0 end),0) rechargeMoney_I,
+        IFNULL(sum(case when p.clientFrom = 1 then 0 else money end),0) rechargeMoney_A
+        from tb_user_pay p
+        where p.status = 3 and p.payType = 0 and p.doneTime > #{date} and p.doneTime &lt; DATE_ADD(#{date},INTERVAL 1 DAY)
+        ) d,
+        (
+        select
+        IFNULL(count(1),0) withdrawNumber,
+        IFNULL(sum(p.money),0) withdrawMoney
+        from tb_user_pay p
+        where p.status = 3 and p.payType = 1 and p.doneTime > #{date} and p.doneTime &lt; DATE_ADD(#{date},INTERVAL 1 DAY)
+        ) e,
+        (
+        select
+        IFNULL(count(1),0) winNumber,
+        IFNULL(sum(s.prizeTax),0) winMoney
+        from tb_scheme s, tb_user u
+        where s.schemeUserId = u.id
+        and s.schemeStatus = 3 and s.openStatus = 2 and s.openTime > #{date} and s.openTime &lt; DATE_ADD(#{date},INTERVAL 1 DAY)
+        and u.userType != 8888
+        ) f
+    </insert>
+
+    <!-- 查询用户日报表数据(管理后台) -->
+    <select id="queryUserDayStatis" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        `date`,loginNumber_I, loginNumber_A,
+        registerNumber_I, registerNumber_A,
+        orderNumber_I, orderNumber_A,
+        orderMoney_I, orderMoney_A,
+        rechargeNumber_I, rechargeNumber_A,
+        rechargeMoney_I, rechargeMoney_A,
+        withdrawNumber, withdrawMoney,
+        winNumber, winMoney,
+        date_format(createTime,'%Y-%m-%d %H:%i:%s') createTime
+        from tb_user_daystatis where 1 = 1
+        <if test="beginTime != null and beginTime != ''">
+            and date &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and date &lt;= #{endTime}
+        </if>
+        order by date desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户日报表数据总数(管理后台) -->
+    <select id="queryUserDayStatisCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(1) from tb_user_daystatis where 1 = 1
+        <if test="beginTime != null and beginTime != ''">
+            and date &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and date &lt;= #{endTime}
+        </if>
+    </select>
+
+    <!--根据用户编号查询是否设置返点比例-->
+    <select id="queryIsSetNumberForUserId" resultType="java.lang.Integer">
+        select count(1) from tb_user_rebate where userId = #{userId} and rate > 0
+    </select>
+
+    <!--用户返点比例查询-->
+    <select id="queryUserLotteryRebateList" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select r.id, l.id lotteryId, l.shortName, r.rate, date_format(r.createTime,'%Y-%m-%d %H:%i:%s') createTime
+        from
+        tb_lottery l LEFT JOIN tb_user_rebate r on l.id = r.lotteryId
+        and r.userId = #{userId} where l.appStatus = 1
+    </select>
+
+    <!--根据用户编号和彩种查询返点比例-->
+    <select id="queryUserRebateListForLotteryId" resultType="com.caipiao.domain.user.UserRebate">
+        select * from tb_user_rebate where userId = #{userId} and lotteryId = #{lotteryId} limit 1
+    </select>
+
+    <!-- 查询销售下级用户列表(销售后台) -->
+    <select id="querySaleLowerUserList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s.id, s.nickName, date_format(s.registerTime,'%Y-%m-%d %H:%i:%s') registerTime,
+        s.loginDegree, date_format(s.lastLoginTime,'%Y-%m-%d %H:%i:%s') lastLoginTime,
+        s.bankIsBind, s.isWhite, s.higherTime, s.isSale, t.isSale tsale, s.qq,
+        IFNULL((select marketName from tb_app_market where marketShort = s.marketFrom),'未知') marketFrom,
+        a.balance, a.totalRecharge, a.totalWithDraw, a.totalConsume, a.totalAward, a.totalBack,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        <if test="(beginTime == null or beginTime == '') and (endTime == null or endTime == '')">
+            and ts.createTime > s.higherTime
+        </if>
+        ) yhSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        <if test="(beginTime == null or beginTime == '') and (endTime == null or endTime == '')">
+            and ts.createTime > s.higherTime
+        </if>
+        ) yhSaleZhuiHaoMoney
+        from tb_user s, tb_user t, tb_user_account a
+        where
+        s.higherUid = t.id and s.id = a.userId and t.mobile = #{mobile} and t.isSale > 0 and s.isSale = 0
+        <if test="nickName != null and nickName != ''">
+            and s.nickName like CONCAT('%',#{nickName},'%')
+        </if>
+        order by s.registerTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询销售下级用户总数(销售后台) -->
+    <select id="querySaleLowerUserCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(1)
+        from tb_user s, tb_user t, tb_user_account a
+        where
+        s.higherUid = t.id and s.id = a.userId and t.mobile = #{mobile} and t.isSale > 0 and s.isSale = 0
+        <if test="nickName != null and nickName != ''">
+            and s.nickName like CONCAT('%',#{nickName},'%')
+        </if>
+    </select>
+
+    <!--保存用户对应彩种的返点信息-->
+    <insert id="insertUserRebate">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user_rebate (
+        userId, lotteryId, rate
+        ) values (
+        #{userId}, #{lotteryId}, #{rate}
+        )
+    </insert>
+
+    <!--更新用户对应彩种的返点信息-->
+    <update id="updateUserRebate">
+        update tb_user_rebate set rate = #{rate}, updateTime = now()
+        where id = #{id}
+    </update>
+
+    <!--根据手机号查询销售的最大返点范围-->
+    <select id="querySaleMaxRateRange" resultType="com.caipiao.domain.user.UserRebate">
+        select r.* from tb_user u, tb_user_rebate r
+        where
+        u.id = r.userId and u.isSale = #{isSale}
+        and u.mobile = #{mobile} and r.lotteryId = #{lotteryId}
+    </select>
+
+    <!--将用户设置为代理员-->
+    <update id="updateSetUserProxy">
+        update tb_user set isSale = ${isSale}, isSaleTime = now(), updateTime = now()
+        <if test="userCode != null and userCode != ''">
+            ,qq = #{userCode}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!--销售下属用户转出到新的销售员名下-->
+    <update id="updateSaleUserChange">
+        update tb_user u, (select id from tb_user where mobile = #{mobile} limit 1) t set u.higherUid = t.id, u.higherTime = now()
+        where u.higherUid = #{saleId}
+    </update>
+
+    <!--为用户或代理绑定上级归属-->
+    <update id="updateUserHigherUser">
+        update tb_user u, (select id from tb_user where mobile = #{smobile} limit 1) t set u.higherUid = t.id, u.higherTime = now()
+        where u.id = #{uid}
+    </update>
+
+    <!-- 查询销售代理用户列表(销售后台) -->
+    <select id="querySaleProxyUserList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s.id, s.nickName, date_format(s.registerTime,'%Y-%m-%d %H:%i:%s') registerTime,
+        s.loginDegree, date_format(s.lastLoginTime,'%Y-%m-%d %H:%i:%s') lastLoginTime,
+        s.bankIsBind, s.isWhite, s.higherTime, s.isSale, s.qq,
+        IFNULL((select marketName from tb_app_market where marketShort = s.marketFrom),'未知') marketFrom,
+        a.balance, a.totalRecharge, a.totalWithDraw, a.totalConsume, a.totalAward, a.totalBack,
+        (select count(1) from tb_user tu where tu.higherUid = s.id and tu.isSale = 0
+        <if test="beginTime != null and beginTime != ''">
+            and tu.higherTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and tu.higherTime &lt;= #{endTime}
+        </if>
+        ) tgUserNumber,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > s.higherTime
+        and ts.createTime > s.isSaleTime
+        ) dlSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > s.higherTime
+        and ts.createTime > s.isSaleTime
+        ) dlSaleZhuiHaoMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 0 and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tu.higherTime
+        ) dlUserSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and tu.isSale = 0 and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tu.higherTime
+        ) dlUserZhuiHaoSaleMoney
+        from tb_user s, tb_user t, tb_user_account a
+        where
+        s.higherUid = t.id and s.id = a.userId and t.mobile = #{mobile} and t.isSale = 1 and s.isSale = 2
+        <if test="nickName != null and nickName != ''">
+            and s.nickName like CONCAT('%',#{nickName},'%')
+        </if>
+        order by s.registerTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询销售代理用户总数(销售后台) -->
+    <select id="querySaleProxyUserCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(1)
+        from tb_user s, tb_user t, tb_user_account a
+        where
+        s.higherUid = t.id and s.id = a.userId and t.mobile = #{mobile} and t.isSale = 1 and s.isSale = 2
+        <if test="nickName != null and nickName != ''">
+            and s.nickName like CONCAT('%',#{nickName},'%')
+        </if>
+    </select>
+
+    <!-- 查询销售人员列表(销售后台) -->
+    <select id="querySaleUserList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s.id, s.nickName, s.realName, date_format(s.registerTime,'%Y-%m-%d %H:%i:%s') registerTime,
+        s.loginDegree, date_format(s.lastLoginTime,'%Y-%m-%d %H:%i:%s') lastLoginTime,
+        s.bankIsBind, s.isWhite, s.higherTime, s.isSale, s.qq,
+        IFNULL((select marketName from tb_app_market where marketShort = s.marketFrom),'未知') marketFrom,
+        a.balance, a.totalRecharge, a.totalWithDraw, a.totalConsume, a.totalAward, a.totalBack,
+        (select count(1) from tb_user tu where tu.higherUid = s.id
+        <if test="beginTime != null and beginTime != ''">
+            and tu.higherTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and tu.higherTime &lt;= #{endTime}
+        </if>
+        ) tgUserNumber,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > s.isSaleTime
+        ) zjSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > s.isSaleTime
+        ) zjSaleZhuiHaoMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 2 and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tu.higherTime
+        and ts.createTime > tu.isSaleTime
+        ) dlSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and tu.isSale = 2 and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tu.higherTime
+        and ts.createTime > tu.isSaleTime
+        ) dlZhuiHaoSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tb, tb_user tu, tb_scheme ts where
+        tb.higherUid = tu.id and tu.higherUid = s.id and
+        tb.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 2 and tb.isSale = 0
+        and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tb.higherTime
+        ) dlUserSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tb, tb_user tu, tb_scheme_zhuihao ts where
+        tb.higherUid = tu.id and tu.higherUid = s.id and
+        tb.id = ts.schemeUserId and tu.isSale = 2 and tb.isSale = 0
+        and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tb.higherTime
+        ) dlUserZhuiHaoSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 0 and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tu.higherTime
+        ) yhSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and tu.isSale = 0 and ts.schemeStatus = 3
+        <if test="beginTime != null and beginTime != ''">
+            and ts.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and ts.createTime &lt;= #{endTime}
+        </if>
+        and ts.createTime > tu.higherTime
+        ) yhZhuiHaoSaleMoney
+        from tb_user s, tb_user_account a
+        where
+        s.id = a.userId and s.isSale = 1
+        <if test="nickName != null and nickName != ''">
+            and s.nickName like CONCAT('%',#{nickName},'%')
+        </if>
+        order by s.registerTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询销售人员总数列表(销售后台) -->
+    <select id="querySaleUserCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(1)
+        from tb_user s, tb_user_account a
+        where
+        s.id = a.userId and s.isSale = 1
+        <if test="nickName != null and nickName != ''">
+            and s.nickName like CONCAT('%',#{nickName},'%')
+        </if>
+    </select>
+
+    <!--更新用户累计消费金额-->
+    <update id="updateUserConsume">
+        update tb_user_account set totalConsume = totalConsume + #{money}, updateTime = now() where userId = #{userId}
+    </update>
+
+    <!--保存用户返利明细-->
+    <insert id="insertUserRebateDetail">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user_rebate_detail (
+        `type`, userId, lotteryId, schemeUserId, schemeOrderId, schemeMoney, rate, currentRebateMoney,
+        balanceRebate, lastBalanceRebate
+        ) values (
+        #{type}, #{userId}, #{lotteryId}, #{schemeUserId}, #{schemeOrderId}, #{schemeMoney}, #{rate},
+        #{currentRebateMoney}, #{balanceRebate}, #{lastBalanceRebate}
+        )
+    </insert>
+
+    <!--更新用户返利金额-->
+    <update id="updateUserBack">
+        update tb_user_account set balanceBack = balanceBack + #{money}, totalBack = totalBack + #{money},
+        updateTime = now() where userId = #{userId}
+    </update>
+
+    <!--查询用户返点明细-->
+    <select id="queryUserBackDetail" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        r.type, IFNULL(l.shortName,'---') shortName, u.nickName, IFNULL(r.schemeOrderId,'---') schemeOrderId,
+        IFNULL(r.schemeMoney,'---') schemeMoney, IFNULL(r.rate,'---') rate, r.lastBalanceRebate,
+        r.currentRebateMoney, r.balanceRebate, date_format(r.createTime,'%Y-%m-%d %H:%i:%s') createTime
+        from (tb_user_rebate_detail r LEFT JOIN tb_user u on r.schemeUserId = u.id) LEFT JOIN tb_lottery l on r.lotteryId = l.id
+        where
+        r.userId = #{userId}
+        <if test="lotteryId != null">
+            and r.lotteryId = #{lotteryId}
+        </if>
+        <if test="schemeOrderId != null">
+            and r.schemeOrderId = #{schemeOrderId}
+        </if>
+        <if test="beginTime != null">
+            and r.createTime > #{beginTime}
+        </if>
+        <if test="endTime != null">
+            and r.createTime &lt; #{endTime}
+        </if>
+        order by r.createTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!--查询用户返点明细-总条数-->
+    <select id="queryUserBackDetailCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select
+        count(1)
+        from tb_user_rebate_detail
+        where
+        userId = #{userId}
+        <if test="lotteryId != null">
+            and r.lotteryId = #{lotteryId}
+        </if>
+        <if test="schemeOrderId != null">
+            and r.schemeOrderId = #{schemeOrderId}
+        </if>
+        <if test="beginTime != null">
+            and r.createTime > #{beginTime}
+        </if>
+        <if test="endTime != null">
+            and r.createTime &lt; #{endTime}
+        </if>
+    </select>
+
+    <!--查询销售当月和历史总销量-->
+    <select id="queryUserSaleSumMoney" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        (select count(1) from tb_user tu where tu.higherUid = s.id) tgUserNumber,
+        (select count(1) from tb_user tu where tu.higherUid = s.id and tu.higherTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day) and tu.higherTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)) localMonthTgUserNumber,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        ) localMonthZjSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        and ts.createTime > s.isSaleTime
+        ) zjSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        ) localMonthZjSaleZhuiHaoMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.createTime > s.isSaleTime
+        ) zjSaleZhuiHaoMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 2 and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tu.higherTime
+        and ts.createTime > tu.isSaleTime
+        ) localMonthDlSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 2 and ts.schemeStatus = 3
+        and ts.createTime > tu.higherTime
+        and ts.createTime > tu.isSaleTime
+        ) dlSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and tu.isSale = 2 and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tu.higherTime
+        and ts.createTime > tu.isSaleTime
+        ) localMonthDlZhuiHaoSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and tu.isSale = 2 and ts.schemeStatus = 3
+        and ts.createTime > tu.higherTime
+        and ts.createTime > tu.isSaleTime
+        ) dlZhuiHaoSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tb, tb_user tu, tb_scheme ts where
+        tb.higherUid = tu.id and tu.higherUid = s.id and
+        tb.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 2 and tb.isSale = 0
+        and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tb.higherTime
+        ) localMonthDlUserSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tb, tb_user tu, tb_scheme ts where
+        tb.higherUid = tu.id and tu.higherUid = s.id and
+        tb.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 2 and tb.isSale = 0
+        and ts.schemeStatus = 3
+        and ts.createTime > tb.higherTime
+        ) dlUserSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tb, tb_user tu, tb_scheme_zhuihao ts where
+        tb.higherUid = tu.id and tu.higherUid = s.id and
+        tb.id = ts.schemeUserId and tu.isSale = 2 and tb.isSale = 0
+        and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tb.higherTime
+        ) localMonthDlUserZhuiHaoSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tb, tb_user tu, tb_scheme_zhuihao ts where
+        tb.higherUid = tu.id and tu.higherUid = s.id and
+        tb.id = ts.schemeUserId and tu.isSale = 2 and tb.isSale = 0
+        and ts.schemeStatus = 3
+        and ts.createTime > tb.higherTime
+        ) dlUserZhuiHaoSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 0 and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tu.higherTime
+        ) localMonthYhSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 0 and ts.schemeStatus = 3
+        and ts.createTime > tu.higherTime
+        ) yhSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and tu.isSale = 0 and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tu.higherTime
+        ) localMonthYhZhuiHaoSaleMoney,
+        (select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = s.id and
+        tu.id = ts.schemeUserId and tu.isSale = 0 and ts.schemeStatus = 3
+        and ts.createTime > tu.higherTime
+        ) yhZhuiHaoSaleMoney
+        from tb_user s, tb_user_account a
+        where
+        s.id = a.userId and s.isSale = 1 and s.mobile = #{mobile} limit 1
+    </select>
+
+    <!--查询销售月销量明细-->
+    <select id="queryUserSaleMoneyDetail" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        jg.nickName, date_format(jg.registerTime,'%Y-%m-%d %H:%i:%s') registerTime,
+        jg.loginDegree, date_format(jg.lastLoginTime,'%Y-%m-%d %H:%i:%s') lastLoginTime, jg.isSale,
+        (jg.localMonthSaleMoney+jg.localMonthSaleZhuiHaoMoney) saleMoney
+        from (
+        select
+        u.nickName, u.registerTime, u.loginDegree, u.lastLoginTime, u.isSale,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = u.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > u.higherTime
+        ) localMonthSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = u.id and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > u.higherTime
+        ) localMonthSaleZhuiHaoMoney
+        from tb_user s, tb_user u
+        where
+        s.id = u.higherUid
+        and s.mobile = #{mobile} and s.isSale = 1 and u.isSale = 0
+        UNION
+        select
+        s.nickName, s.registerTime, s.loginDegree, s.lastLoginTime, s.isSale,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > s.isSaleTime
+        ) localMonthSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = s.id and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > s.isSaleTime
+        ) localMonthSaleZhuiHaoMoney
+        from tb_user s
+        where
+        s.mobile = #{mobile} and s.isSale = 1
+        UNION
+        select
+        tm.nickName, tm.registerTime, tm.loginDegree, tm.lastLoginTime, tm.isSale,
+        (tm.localMonthDlSaleMoney+tm.localMonthDlYhSaleMoney) localMonthSaleMoney,
+        (tm.localMonthDlSaleZhuiHaoMoney+tm.localMonthDlYhSaleZhuiHaoMoney) localMonthSaleZhuiHaoMoney
+        from (
+        select
+        u.nickName, u.id, u.registerTime, u.loginDegree, u.lastLoginTime, u.isSale,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme ts where ts.schemeUserId = u.id and ts.schemeStatus = 3
+        and ts.schemeType != 1
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > u.higherTime
+        and ts.createTime > u.isSaleTime
+        ) localMonthDlSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_scheme_zhuihao ts where ts.schemeUserId = u.id and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > u.higherTime
+        and ts.createTime > u.isSaleTime
+        ) localMonthDlSaleZhuiHaoMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme ts where tu.higherUid = u.id
+        and tu.id = ts.schemeUserId and ts.schemeType != 1 and tu.isSale = 0 and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tu.higherTime
+        ) localMonthDlYhSaleMoney,
+        (
+        select IFNULL(sum(ts.schemeMoney),0) from tb_user tu, tb_scheme_zhuihao ts where tu.higherUid = u.id
+        and tu.id = ts.schemeUserId and tu.isSale = 0 and ts.schemeStatus = 3
+        and ts.createTime >= DATE_ADD(curdate(),interval -day(curdate())+1 day)
+        and ts.createTime &lt; DATE_ADD(curdate()-day(curdate())+1,interval 1 month)
+        and ts.createTime > tu.higherTime
+        ) localMonthDlYhSaleZhuiHaoMoney
+        from tb_user s, tb_user u
+        where
+        s.id = u.higherUid
+        and s.mobile = #{mobile} and s.isSale = 1 and u.isSale = 2
+        ) tm
+        ) jg order by (jg.localMonthSaleMoney+jg.localMonthSaleZhuiHaoMoney) desc
+    </select>
+
+    <!--用户返利账户余额转出-->
+    <update id="updateUserBackBalance">
+        update tb_user_account set balance = balance + #{money}, withDraw = withDraw + #{money},
+        balanceBack = balanceBack - #{money}, updateTime = now()
+        where userId = #{userId}
+    </update>
+
+    <!-- 查询用户列表(管理后台) -->
+    <select id="queryUserFanliList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+        t.id,
+        t.type,
+        t.nickName nickName,
+        t.shortName,
+        t.schemeOrderId,
+        tu.nickName schemeUserName,
+        t.schemeMoney,
+        t.rate,
+        t.currentRebateMoney,
+        t.lastBalanceRebate,
+        t.balanceRebate,
+        date_format(t.createTime,'%Y-%m-%d %H:%i:%s') createTime
+        FROM
+        (
+        SELECT
+        d.id,
+        d.type,
+        u.nickName,
+        l.shortName,
+        d.schemeOrderId,
+        d.schemeUserId,
+        d.schemeMoney,
+        d.rate,
+        d.currentRebateMoney,
+        d.lastBalanceRebate,
+        d.balanceRebate,
+        d.createTime
+        FROM
+        tb_user_rebate_detail d,
+        tb_user u,
+        tb_lottery l
+        WHERE
+        d.userId = u.id
+        AND d.lotteryId = l.id
+        <if test="type != null and type != ''">
+            and d.type = #{type}
+        </if>
+        <if test="userId != null and userId != ''">
+            and d.userId = #{userId}
+        </if>
+        <if test="mobile != null and mobile != ''">
+            and u.mobile = #{mobile}
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and d.lotteryId = #{lotteryId}
+        </if>
+        <if test="schemeOrderId != null and schemeOrderId != ''">
+            and d.schemeOrderId = #{schemeOrderId}
+        </if>
+        ) t,
+        tb_user tu
+        WHERE
+        t.schemeUserId = tu.id
+        order by t.createTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户返利数据总数(管理后台) -->
+    <select id="queryUserFanliListCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        SELECT count(1) FROM
+        tb_user_rebate_detail d,
+        tb_user u,
+        tb_lottery l
+        WHERE
+        d.userId = u.id
+        AND d.lotteryId = l.id
+        <if test="type != null and type != ''">
+            and d.type = #{type}
+        </if>
+        <if test="userId != null and userId != ''">
+            and d.userId = #{userId}
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and d.lotteryId = #{lotteryId}
+        </if>
+        <if test="schemeOrderId != null and schemeOrderId != ''">
+            and d.schemeOrderId = #{schemeOrderId}
+        </if>
+    </select>
+
+    <!--查询销售自购的各彩种总销量以及各彩种提成比例-->
+    <select id="querySellOwnTotalMoney" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+            s.lotteryId,
+            IFNULL(sum(s.schemeMoney),0) money,
+            s.schemeUserId
+        FROM
+            tb_scheme s
+        WHERE
+            s.schemeUserId = #{userId}
+            AND s.schemeStatus = 3
+            AND s.createTime &gt; #{beginTime}
+            AND s.createTime &lt; #{endTime}
+        GROUP BY
+            s.lotteryId
+    </select>
+
+    <!--查询销售下级用户的各彩种总销量以及各彩种提成比例-->
+    <select id="querySellLowerUserTotalMoney" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+        t.lotteryId,
+        t.money,
+        t.schemeUserId userId,
+        IFNULL(r.rate,0) rate
+        FROM
+        (
+            SELECT
+            s.lotteryId,
+            IFNULL(sum(s.schemeMoney),0) money,
+            s.schemeUserId
+            FROM
+            tb_scheme s,
+            tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND u.higherUid = #{userId}
+            AND u.isSale = 0
+            AND s.schemeStatus = 3
+            AND s.createTime &gt; #{beginTime}
+            AND s.createTime &lt; #{endTime}
+            AND s.createTime &gt; u.higherTime
+            GROUP BY
+            s.lotteryId, s.schemeUserId
+        ) t
+        LEFT JOIN
+        tb_user_rebate r
+        ON
+        t.schemeUserId = r.userId
+        AND t.lotteryId = r.lotteryId
+    </select>
+
+    <!--查询销售下级代理及代理下的用户的各彩种总销量以及各彩种提成比例-->
+    <select id="querySellProxyUserTotalMoney" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+        t.lotteryId,
+        t.money,
+        t.schemeUserId userId,
+        IFNULL(r.rate, 0) rate
+        FROM
+        (
+        SELECT
+        a.lotteryId,
+        IFNULL(sum(a.money), 0) money,
+        a.schemeUserId
+        FROM
+        (
+            SELECT
+            s.lotteryId,
+            IFNULL(sum(s.schemeMoney), 0) money,
+            s.schemeUserId
+            FROM
+            tb_scheme s,
+            tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND u.higherUid = #{userId}
+            AND u.isSale = 2
+            AND s.schemeStatus = 3
+            AND s.createTime &gt; #{beginTime}
+            AND s.createTime &lt; #{endTime}
+            AND s.createTime &gt; u.higherTime
+            AND s.createTime &gt; u.isSaleTime
+            GROUP BY
+            s.lotteryId,
+            s.schemeUserId
+            UNION
+            SELECT
+            ds.lotteryId,
+            IFNULL(sum(ds.schemeMoney), 0) ymoney,
+            du.id schemeUserId
+            FROM
+            tb_scheme ds,
+            tb_user tu,
+            tb_user du
+            WHERE
+            ds.schemeUserId = tu.id
+            AND tu.higherUid = du.id
+            AND tu.isSale = 0
+            AND du.higherUid = #{userId}
+            AND ds.schemeStatus = 3
+            AND ds.createTime &gt; #{beginTime}
+            AND ds.createTime &lt; #{endTime}
+            AND ds.createTime &gt; tu.higherTime
+            GROUP BY
+            ds.lotteryId,
+            du.id
+        ) a
+        GROUP BY
+        a.lotteryId,
+        a.schemeUserId
+        ) t
+        LEFT JOIN tb_user_rebate r ON t.lotteryId = r.lotteryId
+        AND t.schemeUserId = r.userId
+    </select>
+
+    <!--查询用户对应彩种的返点信息-->
+    <select id="queryUserRebateList" resultType="com.caipiao.domain.user.UserRebate">
+        select * from tb_user_rebate u where u.userId = #{userId}
+    </select>
+
+    <!--查询某个销售总销量-->
+    <select id="querySellTotalMoney" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Double">
+        SELECT
+        SUM(t.money)
+        FROM
+        (
+            SELECT
+            IFNULL(sum(s.schemeMoney),0) money
+            FROM
+            tb_scheme s,
+            tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND u.higherUid = #{userId}
+            AND u.isSale = 0
+            AND s.schemeStatus = 3
+            AND s.createTime &gt; #{beginTime}
+            AND s.createTime &lt; #{endTime}
+            AND s.createTime &gt; u.higherTime
+            UNION
+            SELECT
+            IFNULL(sum(s.schemeMoney), 0) money
+            FROM
+            tb_scheme s,
+            tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND u.higherUid = #{userId}
+            AND u.isSale = 2
+            AND s.schemeStatus = 3
+            AND s.createTime &gt; #{beginTime}
+            AND s.createTime &lt; #{endTime}
+            AND s.createTime &gt; u.higherTime
+            AND s.createTime &gt; u.isSaleTime
+            UNION
+            SELECT
+            IFNULL(sum(ds.schemeMoney), 0) money
+            FROM
+            tb_scheme ds,
+            tb_user tu,
+            tb_user du
+            WHERE
+            ds.schemeUserId = tu.id
+            AND tu.higherUid = du.id
+            AND tu.isSale = 0
+            AND du.higherUid = #{userId}
+            AND ds.schemeStatus = 3
+            AND ds.createTime &gt; #{beginTime}
+            AND ds.createTime &lt; #{endTime}
+            AND ds.createTime &gt; tu.higherTime
+        ) t
+    </select>
+
+    <!--保存销售月提成数据-->
+    <insert id="insertUserSellMoney">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user_sellmoney (
+        `month`, userId, proxyMoney, proxyMoneySellTc, userMoney, userMoneySellTc, saleZjMoney, saleZjMoneyTc,
+        totalMoney, totalMoneySellTc, totalMoneyDetail
+        ) values (
+        #{month}, #{userId}, #{proxyMoney}, #{proxyMoneySellTc}, #{userMoney}, #{userMoneySellTc}, #{saleZjMoney},
+        #{saleZjMoneyTc}, #{totalMoney}, #{totalMoneySellTc}, #{totalMoneyDetail}
+        )
+    </insert>
+
+    <!-- 查询销售月提成列表(管理后台) -->
+    <select id="queryUserMonthCommList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s.`month`,
+        u.nickName,
+        IFNULL(s.proxyMoney,0) proxyMoney,
+        IFNULL(s.proxyMoneySellTc,0) proxyMoneySellTc,
+        IFNULL(s.userMoney,0) userMoney,
+        IFNULL(s.userMoneySellTc,0) userMoneySellTc,
+        IFNULL(s.saleZjMoney,0) saleZjMoney,
+        IFNULL(s.saleZjMoneyTc,0) saleZjMoneyTc,
+        IFNULL(s.totalMoney,0) totalMoney,
+        IFNULL(s.totalMoneySellTc,0) totalMoneySellTc,
+        s.totalMoneyDetail,
+        date_format(s.createTime,'%Y-%m-%d %H:%i:%s') createTime
+        from tb_user_sellmoney s, tb_user u where
+        s.userId = u.id
+        <if test="month != null and month != ''">
+            and s.`month` = #{month}
+        </if>
+        <if test="userId != null and userId != ''">
+            and s.userId = #{userId}
+        </if>
+        order by s.`month` desc, s.totalMoney desc, s.totalMoneySellTc desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询销售月提成列表数据总数(管理后台) -->
+    <select id="queryUserMonthCommListCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(1) from tb_user_sellmoney where 1 = 1
+        <if test="month != null and month != ''">
+            and `month` = #{month}
+        </if>
+        <if test="userId != null and userId != ''">
+            and userId = #{userId}
+        </if>
+    </select>
+
+    <!-- 关注用户 -->
+    <insert id="insertFollowUser" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        insert into tb_user_follow_fans(userId,suserId,createTime) values (#{userId},#{suserId},now())
+    </insert>
+
+    <!-- 取消关注用户 -->
+    <delete id="deleteFollowUser" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        delete from tb_user_follow_fans where userId = #{userId} and suserId = #{suserId}
+    </delete>
+
+    <!-- 更新用户关注数/粉丝数 -->
+    <update id="updateUserFollowFans" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user set updateTime = now()
+        <if test="follownum != null">
+            ,followNum = followNum + #{follownum}
+        </if>
+        <if test="fansnum != null">
+            ,fansNum = fansNum + #{fansnum}
+        </if>
+        where id = #{userId}
+    </update>
+</mapper>

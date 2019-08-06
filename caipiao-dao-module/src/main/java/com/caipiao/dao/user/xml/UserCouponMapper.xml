@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.user.UserCouponMapper" >
+
+    <!-- 查询用户优惠券信息 -->
+    <select id="queryUserCoupons" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id cid,
+        t1.name cName,
+        t1.money cMoney,
+        t1.useType cUseType,
+        t1.limitMoney cLimitMoney,
+        t1.status cStatus,
+        t1.days cDays,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') as cCreateTime,
+        date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') as cUpdateTime,
+        t1.lotteryId cLotteryId,
+        t2.id cuid,
+        t2.userId,
+        t2.type cuType,
+        t2.status cuStatus,
+        date_format(t2.statusTime,'%Y-%m-%d %H:%i:%s') as cuStatusTime,
+        date_format(t2.createTime,'%Y-%m-%d %H:%i:%s') as cuCreateTime,
+        date_format(t2.expireTime,'%Y-%m-%d %H:%i:%s') as cuExpireTime,
+        date_format(t2.beginTime,'%Y-%m-%d %H:%i:%s') as cuBeginTime,
+        date_format(t2.endTime,'%Y-%m-%d %H:%i:%s') as cuEndTime,
+        t2.schemeId cuSchemeId,
+        t2.isShow cuIsShow
+        from tb_coupon t1,tb_coupon_user t2
+        where t2.couponId = t1.id
+        <if test="cid != null and cid != ''">
+            and t1.id = #{cid}
+        </if>
+        <if test="cuid != null and cuid != ''">
+            and t2.id = #{cuid}
+        </if>
+        <if test="userId != null and userId != ''">
+            and t2.userId = #{userId}
+        </if>
+        <if test="type != null and type != ''">
+            and t2.type = #{type}
+        </if>
+        <if test="useStatus != null and useStatus != ''">
+            and t2.status = #{useStatus}
+        </if>
+        <if test="maxUseStatus != null and maxUseStatus != ''">
+            and t2.status &lt;= #{maxUseStatus}
+        </if>
+        <if test="couponId != null and couponId != ''">
+            and t2.couponId = #{couponId}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            and t2.activityId = #{activityId}
+        </if>
+        <if test="minCreateTime != null and minCreateTime != ''">
+            and t2.createTime &gt;= #{minCreateTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+            and t2.createTime &lt;= #{createTime}
+        </if>
+        <if test="fxxzqxgqtime != null and fxxzqxgqtime != ''">
+            and t2.endTime &lt; #{fxxzqxgqtime}
+        </if>
+        <if test="fxsyqxgqtime != null and fxsyqxgqtime != ''">
+            and t2.expireTime &lt; #{fxsyqxgqtime}
+        </if>
+        <if test="useLotteryId != null and useLotteryId != ''">
+            and (t1.lotteryId is NULL or t1.lotteryId = #{useLotteryId})
+        </if>
+        <if test="schemeId != null and schemeId != ''">
+            and t2.schemeId = #{schemeId}
+        </if>
+        order by t2.createTime desc,t2.type,t1.useType
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询用户优惠券总记录数 -->
+    <select id="queryUserCouponsCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="long">
+        select count(0) from tb_coupon t1,tb_coupon_user t2 where t2.couponId = t1.id
+        <if test="cid != null and cid != ''">
+            and t1.id = #{cid}
+        </if>
+        <if test="cuid != null and cuid != ''">
+            and t2.id = #{cuid}
+        </if>
+        <if test="userId != null and userId != ''">
+            and t2.userId = #{userId}
+        </if>
+        <if test="type != null and type != ''">
+            and t2.type = #{type}
+        </if>
+        <if test="useStatus != null and useStatus != ''">
+            and t2.status = #{useStatus}
+        </if>
+        <if test="maxUseStatus != null and maxUseStatus != ''">
+            and t2.status &lt;= #{maxUseStatus}
+        </if>
+        <if test="couponId != null and couponId != ''">
+            and t2.couponId = #{couponId}
+        </if>
+        <if test="activityId != null and activityId != ''">
+            and t2.activityId = #{activityId}
+        </if>
+        <if test="minCreateTime != null and minCreateTime != ''">
+            and t2.createTime &gt;= #{minCreateTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+            and t2.createTime &lt;= #{createTime}
+        </if>
+        <if test="fxxzqxgqtime != null and fxxzqxgqtime != ''">
+            and t2.endTime &lt; #{fxxzqxgqtime}
+        </if>
+        <if test="fxsyqxgqtime != null and fxsyqxgqtime != ''">
+            and t2.expireTime &lt; #{fxsyqxgqtime}
+        </if>
+        <if test="useLotteryId != null and useLotteryId != ''">
+            and (t1.lotteryId is NULL or t1.lotteryId = #{useLotteryId})
+        </if>
+        <if test="schemeId != null and schemeId != ''">
+            and t2.schemeId = #{schemeId}
+        </if>
+    </select>
+
+    <!-- 更改用户优惠券状态(后台管理) -->
+    <update id="updateUserCoupon" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_coupon_user set statusTime = now()
+        <if test="status != null and status != ''">
+            ,status = #{status}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            ,endTime = #{endTime}
+        </if>
+        <if test="expireTime != null and expireTime != ''">
+            ,expireTime = #{expireTime}
+        </if>
+        where id = #{id}
+    </update>
+
+    <!-- 查询优惠券信息(后台管理) -->
+    <select id="queryCoupons" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.name,
+        t1.money,
+        t1.useType,
+        t1.limitMoney,
+        t1.status,
+        t1.days,
+        t1.lotteryId,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+        date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') as updateTime
+        from tb_coupon t1
+        where 1= 1
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <choose>
+                    <when test="sorts != null and sorts != ''">
+                        order by ${sorts}
+                    </when>
+                    <otherwise>
+                        order by t1.createTime desc
+                    </otherwise>
+                </choose>
+                <if test="psize != null and psize != ''">
+                    limit ${pstart},${psize}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 添加用户优惠券 -->
+    <insert id="addUserCoupon" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        insert into tb_coupon_user (type,userId,couponId,activityId,createTime,expireTime,beginTime,endTime,schemeId)
+        values (#{type},#{userId},#{couponId},#{activityId},now(),#{expireTime},#{beginTime},#{endTime},#{schemeId})
+    </insert>
+
+</mapper>

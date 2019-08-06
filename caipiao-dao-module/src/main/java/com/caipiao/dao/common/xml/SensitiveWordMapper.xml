@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.SensitiveWordMapper" >
+
+  <!--查询敏感词列表-->
+  <select id="querySensitiveWordList" resultType="com.caipiao.domain.common.SensitiveWord">
+    select * from tb_sensitiveword
+    where 1=1
+    <if test="word != null and word != ''">
+      and word = #{word}
+    </if>
+    order by createTime desc
+  </select>
+
+  <!--新增敏感词-->
+  <insert id="insertSensitiveWord">
+    insert into tb_sensitiveword (
+      word, createTime
+    )
+    values (
+      #{word}, #{createtime}
+    )
+  </insert>
+
+</mapper>

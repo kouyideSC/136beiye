@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.PayWayChannelMapper" >
+
+  <!-- 查询充值渠道配置 -->
+  <select id="queryPayWayChannels" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.PayWayChannel">
+    select
+    t1.id,
+    t1.paywayId,
+    t1.paychannelId,
+    t1.merchantNo,
+    t1.appNo,
+    t1.appName,
+    t1.apiUrl,
+    t1.notifyUrl,
+    t1.returnUrl,
+    t1.signType,
+    t1.secretKey,
+    t1.rsaPublicKey,
+    t1.rsaPrivateKey,
+    t1.deviceInfo,
+    t1.webAddress,
+    t1.clientTypes,
+    t1.model,
+    t1.timeRangeStart,
+    t1.timeRangeEnd,
+    t1.timeCharacter,
+    t1.weight,
+    t1.maxMoney,
+    t1.minMoney,
+    t1.fixedMoney,
+    t1.status,
+    t1.createTime,
+    t1.updateTime
+    from tb_payway_channel t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="paywayId != null and paywayId != ''">
+          and t1.paywayId = #{paywayId}
+        </if>
+        <if test="paychannelId != null and paychannelId != ''">
+          and t1.paychannelId = #{paychannelId}
+        </if>
+        <if test="payCode != null and payCode != ''">
+          and t1.paywayId = (select id from tb_payway tp where tp.payCode = #{payCode} limit 1)
+        </if>
+        <if test="channelCode != null and channelCode != ''">
+          and t1.paychannelId = (select id from tb_paychannel tpc where tpc.channelCode = #{channelCode} limit 1)
+        </if>
+        <if test="channelStatus != null and channelStatus != ''">
+          and exists (select id from tb_paychannel tpc where tpc.id = t1.paychannelId and tpc.status = #{channelStatus})
+        </if>
+        <if test="clientTypes != null and clientTypes != ''">
+          and find_in_set(#{clientTypes},t1.clientTypes)
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询充值渠道配置总记录数 -->
+  <select id="queryPayWayChannelsCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+    select count(0) from tb_payway_channel t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="paywayId != null and paywayId != ''">
+          and t1.paywayId = #{paywayId}
+        </if>
+        <if test="paychannelId != null and paychannelId != ''">
+          and t1.paychannelId = #{paychannelId}
+        </if>
+        <if test="payCode != null and payCode != ''">
+          and t1.paywayId = (select id from tb_payway tp where tp.payCode = #{payCode} limit 1)
+        </if>
+        <if test="channelCode != null and channelCode != ''">
+          and t1.paychannelId = (select id from tb_paychannel tpc where tpc.channelCode = #{channelCode} limit 1)
+        </if>
+        <if test="channelStatus != null and channelStatus != ''">
+          and exists (select id from tb_paychannel tpc where tpc.id = t1.paychannelId and tpc.status = #{channelStatus})
+        </if>
+        <if test="clientTypes != null and clientTypes != ''">
+          and find_in_set(#{clientTypes},t1.clientTypes)
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 更新充值渠道配置 -->
+  <update id="updatePayWayChannel" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_payway_channel set updateTime = now()
+    <if test="appNo != null">
+      ,appNo = #{appNo}
+    </if>
+    <if test="appName != null">
+      ,appName = #{appName}
+    </if>
+    <if test="apiUrl != null">
+      ,apiUrl = #{apiUrl}
+    </if>
+    <if test="notifyUrl != null">
+      ,notifyUrl = #{notifyUrl}
+    </if>
+    <if test="returnUrl != null">
+      ,returnUrl = #{returnUrl}
+    </if>
+    <if test="signType != null">
+      ,signType = #{signType}
+    </if>
+    <if test="secretKey != null">
+      ,secretKey = #{secretKey}
+    </if>
+    <if test="rsaPublicKey != null">
+      ,rsaPublicKey = #{rsaPublicKey}
+    </if>
+    <if test="rsaPrivateKey != null">
+      ,rsaPrivateKey = #{rsaPrivateKey}
+    </if>
+    <if test="deviceInfo != null">
+      ,deviceInfo = #{deviceInfo}
+    </if>
+    <if test="webAddress != null">
+      ,webAddress = #{webAddress}
+    </if>
+    <if test="clientTypes != null">
+      ,clientTypes = #{clientTypes}
+    </if>
+    <if test="model != null">
+      ,model = #{model}
+    </if>
+    <if test="timeRangeStart != null">
+      ,timeRangeStart = #{timeRangeStart}
+    </if>
+    <if test="timeRangeEnd != null">
+      ,timeRangeEnd = #{timeRangeEnd}
+    </if>
+    <if test="timeCharacter != null">
+      ,timeCharacter = #{timeCharacter}
+    </if>
+    <if test="weight != null">
+      ,weight = #{weight}
+    </if>
+    <if test="status != null">
+      ,status = #{status}
+    </if>
+    where id = #{id}
+  </update>
+
+</mapper>

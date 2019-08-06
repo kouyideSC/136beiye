@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.ticket.TicketMapper" >
+
+    <!--根据编号查询票信息-->
+    <select id="queryTicketInfoById" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t.id, t.lotteryId, l.shortName, t.playTypeId, t.schemeId, t.period, t.money, t.multiple,
+        t.codes, t.codesSp, t.ticketStatus, t.ticketDesc, t.ticketId,
+        date_format(t.sendTicketTime,'%Y-%m-%d %H:%i:%s') sendTicketTime,
+        date_format(t.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime, t.codesSp,
+        date_format(t.awardTime,'%Y-%m-%d %H:%i:%s') awardTime, t.bonusState, t.bonusInfo,
+        t.voteTicketId, v.voteName, t.votePrize, t.votePrizeTax, t.isZhuiHao, t.isWin,
+        t.ticketPrize, t.ticketPrizeTax, t.ticketSubjoinPrize, t.ticketSubjoinPrizeTax,
+        t.drawNumber, t.numberBonusInfo,
+        date_format(t.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t.bonusStateTime,'%Y-%m-%d %H:%i:%s') bonusStateTime,
+        date_format(t.endTime,'%Y-%m-%d %H:%i:%s') endTime
+        from
+        tb_ticket t, tb_ticket_vote v, tb_lottery l
+        where t.voteId = v.voteId
+		and t.lotteryId = l.id and t.id = #{id}
+    </select>
+
+    <!-- 查询出票列表(管理后台) -->
+    <select id="queryTicketList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t.id, t.lotteryId, t.playTypeId, t.schemeId, t.period, t.money, t.multiple,
+        t.codes, t.codesSp, t.ticketStatus, t.ticketDesc, t.ticketId,
+        date_format(t.sendTicketTime,'%Y-%m-%d %H:%i:%s') sendTicketTime,
+        date_format(t.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime, t.codesSp,
+        date_format(t.awardTime,'%Y-%m-%d %H:%i:%s') awardTime, t.bonusState, t.bonusInfo,
+        t.voteTicketId, t.voteId, v.voteName, t.votePrize, t.votePrizeTax, t.isZhuiHao, t.isWin,
+        t.ticketPrize, t.ticketPrizeTax, t.ticketSubjoinPrize, t.ticketSubjoinPrizeTax, t.drawNumber,
+        t.numberBonusInfo, date_format(t.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t.bonusStateTime,'%Y-%m-%d %H:%i:%s') bonusStateTime,
+        date_format(t.endTime,'%Y-%m-%d %H:%i:%s') endTime
+        from
+        tb_ticket t, tb_ticket_vote v
+        where t.voteId = v.voteId
+        <if test="schemeId != null and schemeId != ''">
+            and locate(#{schemeId},t.schemeId) &gt; 0
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t.period = #{period}
+        </if>
+        <if test="playTypeId != null and playTypeId != ''">
+            and t.playTypeId = #{playTypeId}
+        </if>
+        <if test="ticketStatus != null and ticketStatus != ''">
+            and t.ticketStatus = #{ticketStatus}
+        </if>
+        <if test="voteId != null and voteId != ''">
+            and t.voteId = #{voteId}
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+            and t.ticketId = #{ticketId}
+        </if>
+        <if test="voteTicketId != null and voteTicketId != ''">
+            and t.voteTicketId = #{voteTicketId}
+        </if>
+        <if test="isZhuiHao != null and isZhuiHao == 1">
+            and t.isZhuiHao = #{isZhuiHao}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and t.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and t.createTime &lt;= #{endTime}
+        </if>
+        <if test="isWin != null and isWin == 1">
+            and t.isWin = 2
+        </if>
+        <if test="change != null and change != ''">
+            and not EXISTS (
+            SELECT
+            1
+            FROM
+            tb_scheme s
+            WHERE
+            s.schemeOrderId = t.schemeId
+            AND (s.schemeStatus = 3 or s.schemeStatus = 4 or s.schemeStatus = 5 or s.schemeStatus = 7)
+            )
+        </if>
+        order by t.createTime desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询出票列表(管理后台) -->
+    <select id="queryTicketListShop" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select * from (
+        (select
+        t.id, t.lotteryId, t.playTypeId, t.schemeId, t.period, t.money, t.multiple,
+        t.codes, t.codesSp, t.ticketStatus, t.ticketDesc, t.ticketId,
+        date_format(t.sendTicketTime,'%Y-%m-%d %H:%i:%s') sendTicketTime,
+        date_format(t.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        date_format(t.awardTime,'%Y-%m-%d %H:%i:%s') awardTime, t.bonusState, t.bonusInfo,
+        t.voteTicketId, t.voteId, v.voteName, t.votePrize, t.votePrizeTax, t.isZhuiHao, t.isWin,
+        t.ticketPrize, t.ticketPrizeTax, t.ticketSubjoinPrize, t.ticketSubjoinPrizeTax, t.drawNumber,
+        t.numberBonusInfo, date_format(t.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t.bonusStateTime,'%Y-%m-%d %H:%i:%s') bonusStateTime,
+        date_format(t.endTime,'%Y-%m-%d %H:%i:%s') endTime
+        from
+        tb_ticket t, tb_ticket_vote v
+        where t.voteId = v.voteId
+        and t.ticketStatus = 0
+        <if test="schemeId != null and schemeId != ''">
+            and locate(#{schemeId},t.schemeId) &gt; 0
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t.period = #{period}
+        </if>
+        <if test="playTypeId != null and playTypeId != ''">
+            and t.playTypeId = #{playTypeId}
+        </if>
+        <if test="ticketStatus != null and ticketStatus != ''">
+            and t.ticketStatus = #{ticketStatus}
+        </if>
+        <if test="voteId != null and voteId != ''">
+            and t.voteId = #{voteId}
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+            and t.ticketId = #{ticketId}
+        </if>
+        <if test="voteTicketId != null and voteTicketId != ''">
+            and t.voteTicketId = #{voteTicketId}
+        </if>
+        <if test="isZhuiHao != null and isZhuiHao == 1">
+            and t.isZhuiHao = #{isZhuiHao}
+        </if>
+        <if test="isWin != null and isWin == 1">
+            and t.isWin = 2
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and t.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and t.createTime &lt;= #{endTime}
+        </if>
+        <if test="tbeginTime != null and tbeginTime != ''">
+            and t.endTime &gt;= #{tbeginTime}
+        </if>
+        <if test="tendTime != null and tendTime != ''">
+            and t.endTime &lt;= #{tendTime}
+        </if>
+        <if test="change != null and change != ''">
+            and not EXISTS (
+            SELECT
+            1
+            FROM
+            tb_scheme s
+            WHERE
+            s.schemeOrderId = t.schemeId
+            AND (s.schemeStatus = 3 or s.schemeStatus = 4 or s.schemeStatus = 5 or s.schemeStatus = 7)
+            )
+        </if>
+        order by t.endTime asc, t.schemeId
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+        )
+        UNION
+        (select
+        t.id, t.lotteryId, t.playTypeId, t.schemeId, t.period, t.money, t.multiple,
+        t.codes, t.codesSp, t.ticketStatus, t.ticketDesc, t.ticketId,
+        date_format(t.sendTicketTime,'%Y-%m-%d %H:%i:%s') sendTicketTime,
+        date_format(t.outTicketTime,'%Y-%m-%d %H:%i:%s') outTicketTime,
+        date_format(t.awardTime,'%Y-%m-%d %H:%i:%s') awardTime, t.bonusState, t.bonusInfo,
+        t.voteTicketId, t.voteId, v.voteName, t.votePrize, t.votePrizeTax, t.isZhuiHao, t.isWin,
+        t.ticketPrize, t.ticketPrizeTax, t.ticketSubjoinPrize, t.ticketSubjoinPrizeTax, t.drawNumber,
+        t.numberBonusInfo, date_format(t.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t.bonusStateTime,'%Y-%m-%d %H:%i:%s') bonusStateTime,
+        date_format(t.endTime,'%Y-%m-%d %H:%i:%s') endTime
+        from
+        tb_ticket t, tb_ticket_vote v
+        where t.voteId = v.voteId
+        and t.ticketStatus != 0
+        <if test="schemeId != null and schemeId != ''">
+            and locate(#{schemeId},t.schemeId) &gt; 0
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t.period = #{period}
+        </if>
+        <if test="playTypeId != null and playTypeId != ''">
+            and t.playTypeId = #{playTypeId}
+        </if>
+        <if test="ticketStatus != null and ticketStatus != ''">
+            and t.ticketStatus = #{ticketStatus}
+        </if>
+        <if test="voteId != null and voteId != ''">
+            and t.voteId = #{voteId}
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+            and t.ticketId = #{ticketId}
+        </if>
+        <if test="voteTicketId != null and voteTicketId != ''">
+            and t.voteTicketId = #{voteTicketId}
+        </if>
+        <if test="isZhuiHao != null and isZhuiHao == 1">
+            and t.isZhuiHao = #{isZhuiHao}
+        </if>
+        <if test="isWin != null and isWin == 1">
+            and t.isWin = 2
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and t.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and t.createTime &lt;= #{endTime}
+        </if>
+        <if test="tbeginTime != null and tbeginTime != ''">
+            and t.endTime &gt;= #{tbeginTime}
+        </if>
+        <if test="tendTime != null and tendTime != ''">
+            and t.endTime &lt;= #{tendTime}
+        </if>
+        <if test="change != null and change != ''">
+            and not EXISTS (
+            SELECT
+            1
+            FROM
+            tb_scheme s
+            WHERE
+            s.schemeOrderId = t.schemeId
+            AND (s.schemeStatus = 3 or s.schemeStatus = 4 or s.schemeStatus = 5 or s.schemeStatus = 7)
+            )
+        </if>
+        order by t.createTime desc, t.schemeId
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+        )) c
+        <if test="psize != null and psize != ''">
+            limit 0,${psize}
+        </if>
+    </select>
+
+    <!-- 查询出票列表(管理后台) -->
+    <select id="queryTicketListCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select count(0) from
+        tb_ticket t, tb_ticket_vote v
+        where t.voteId = v.voteId
+        <if test="schemeId != null and schemeId != ''">
+            and locate(#{schemeId},t.schemeId) &gt; 0
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and t.lotteryId = #{lotteryId}
+        </if>
+        <if test="period != null and period != ''">
+            and t.period = #{period}
+        </if>
+        <if test="playTypeId != null and playTypeId != ''">
+            and t.playTypeId = #{playTypeId}
+        </if>
+        <if test="ticketStatus != null and ticketStatus != ''">
+            and t.ticketStatus = #{ticketStatus}
+        </if>
+        <if test="voteId != null and voteId != ''">
+            and t.voteId = #{voteId}
+        </if>
+        <if test="ticketId != null and ticketId != ''">
+            and t.ticketId = #{ticketId}
+        </if>
+        <if test="voteTicketId != null and voteTicketId != ''">
+            and t.voteTicketId = #{voteTicketId}
+        </if>
+        <if test="isZhuiHao != null and isZhuiHao == 1">
+            and t.isZhuiHao = #{isZhuiHao}
+        </if>
+        <if test="isWin != null and isWin == 1">
+            and t.isWin = 2
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and t.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and t.createTime &lt;= #{endTime}
+        </if>
+        <if test="tbeginTime != null and tbeginTime != ''">
+            and t.endTime &gt;= #{tbeginTime}
+        </if>
+        <if test="tendTime != null and tendTime != ''">
+            and t.endTime &lt;= #{tendTime}
+        </if>
+        <if test="change != null and change != ''">
+            and not EXISTS (
+            SELECT
+            1
+            FROM
+            tb_scheme s
+            WHERE
+            s.schemeOrderId = t.schemeId
+            AND (s.schemeStatus = 3 or s.schemeStatus = 4 or s.schemeStatus = 5 or s.schemeStatus = 7)
+            )
+        </if>
+    </select>
+
+    <!-- 新票入库 -->
+    <insert id="saveTicket" parameterType="com.caipiao.domain.ticket.SchemeTicket">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_ticket(
+        lotteryId, schemeId, period, money, multiple, codes, ticketStatus, ticketDesc,
+        ticketId, voteId, isZhuiHao, playTypeId, codesSp, endTime
+        )
+        values(
+        #{lotteryId}, #{schemeId}, #{period}, #{money}, #{multiple}, #{codes},
+        #{ticketStatus}, #{ticketDesc}, #{ticketId}, #{voteId}, #{isZhuiHao},
+        #{playTypeId}, #{codesSp}, #{endTime}
+        )
+    </insert>
+
+    <!-- 手动批量切票入库 -->
+    <update id="changeTicket" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_ticket set voteId = #{voteId}, ticketStatus=0, ticketDesc = '手动切票' where id= #{id}
+    </update>
+
+    <!-- 根据出票商查询票列表 -->
+    <select id="queryTicketListForVote" resultType="com.caipiao.domain.ticket.SchemeTicket">
+        select t.* from tb_ticket t
+        where
+        t.voteId = #{voteId} and t.ticketStatus = #{ticketStatus}
+        order by t.createTime
+    </select>
+
+    <!-- 查询票列表(出票)-条件无期号 -->
+    <select id="queryNoPeriodTicketList" resultType="com.caipiao.domain.ticket.SchemeTicket">
+        select t.* from tb_ticket t
+        where
+        t.voteId = #{voteId} and t.playTypeId = #{playTypeId} and ticketStatus = #{ticketStatus}
+        <if test="ticketStatus != null and ticketStatus == 2">
+            and bonusState > 0
+        </if>
+        order by t.createTime limit 1200
+    </select>
+
+    <!-- 查询票列表(出票)-条件包括期号 -->
+    <select id="queryPeriodTicketList" resultType="com.caipiao.domain.ticket.SchemeTicket">
+        select t.* from tb_ticket t
+        where
+        t.voteId = #{voteId} and t.playTypeId = #{playTypeId} and period = #{period} and ticketStatus = #{ticketStatus}
+        <if test="ticketStatus != null and ticketStatus == 2">
+            and bonusState > 0
+        </if>
+        order by t.createTime limit 1200
+    </select>
+
+    <!-- 更新提票状态(出票) -->
+    <update id="updateCastTicketStatus">
+        update tb_ticket set ticketStatus = #{ticketStatus},
+            sendTicketTime = now(), ticketDesc = #{ticketDesc}, voteTicketId = #{voteTicketId}
+        <if test="ticketStatus != null and ticketStatus == -1">
+            ,outTicketTime = now()
+        </if>
+        where ticketId= #{ticketId} and ticketStatus = 0
+    </update>
+
+    <!-- 更新出票商9696出票状态 -->
+    <update id="update9696OutTicketStatus">
+        update tb_ticket set ticketStatus = #{ticketStatus},sendTicketTime = now(),
+        outTicketTime = DATE_ADD(now(), INTERVAL #{random} SECOND), ticketDesc = #{ticketDesc}, voteTicketId = #{voteTicketId}
+        where id= #{id}
+    </update>
+
+    <!-- 更新出票状态(出票) -->
+    <update id="updateOutTicketStatus">
+        update tb_ticket set ticketStatus = #{ticketStatus},
+            outTicketTime = now(), ticketDesc = #{ticketDesc},
+          <if test="voteTicketId != null and voteTicketId != ''">
+              voteTicketId = #{voteTicketId},
+          </if>
+        codesSP = #{codesSP} where ticketId= #{ticketId} and ticketStatus = 1
+    </update>
+
+    <!-- 实体店打票更新出票状态 -->
+    <update id="updateShopOutTicketStatus">
+        update tb_ticket set ticketStatus = #{ticketStatus},sendTicketTime = now(),
+        outTicketTime = DATE_ADD(now(), INTERVAL #{random} SECOND), ticketDesc = #{ticketDesc}, voteTicketId = #{voteTicketId},
+        codesSP = #{codesSP}
+        where id= #{id}
+    </update>
+
+    <!-- 更新兑奖状态(出票) -->
+    <update id="updateAwardTicketStatus">
+        update tb_ticket set ticketStatus = #{ticketStatus},
+            awardTime = now(), ticketDesc = #{ticketDesc}, votePrize = #{votePrize}, votePrizeTax = #{votePrizeTax}
+            where ticketId= #{ticketId} and ticketStatus = 2
+    </update>
+
+    <!-- 更新大乐透乐善号码(出票) -->
+    <update id="updateOutTicketDrawNumber">
+        update tb_ticket set drawNumber = #{drawNumber} where ticketId= #{ticketId}
+    </update>
+
+    <!-- 更新大乐透乐善玩法过关状态 -->
+    <update id="updateOutTicketNumberBonusInfo">
+        update tb_ticket set numberBonusInfo = #{info}
+        <if test="lsWin == 2">
+            ,isWin = 2
+        </if>
+        where ticketId= #{ticketId}
+    </update>
+
+    <!-- 根据网站票号查询票信息(接收出票通知) -->
+    <select id="queryNoticeTicketInfo" resultType="com.caipiao.domain.ticket.SchemeTicket">
+        select * from tb_ticket where ticketId = #{ticketId} and ticketStatus = 1 limit 1
+    </select>
+
+    <!-- 根据方案编号查询票列表 -->
+    <select id="queryTicketListBySchemeId" resultType="com.caipiao.domain.ticket.SchemeTicket">
+        select * from tb_ticket where schemeId = #{schemeId} and ticketStatus != -4 order by id
+    </select>
+
+    <!-- 根据方案编号查询需要过关的票列表 -->
+    <select id="queryGuoGuanTicketListBySchemeId" resultType="com.caipiao.domain.ticket.SchemeTicket">
+        select * from tb_ticket where schemeId = #{schemeId} and bonusState = #{bonusState} and ticketStatus != -4
+        and isWin = 0 order by id
+    </select>
+
+    <!-- 根据期次号查询需要过关的票列表 -->
+    <select id="queryGuoGuanTicketListByPeriod" resultType="com.caipiao.domain.ticket.SchemeTicket">
+        select * from tb_ticket
+        where
+        lotteryId = #{lotteryId} and period = #{period} and bonusState = #{bonusState} and ticketStatus != -4
+        <if test="bonusState != null and bonusState == 0">
+            and isWin = 0
+        </if>
+        <if test="bonusState != null and bonusState == 1">
+            and isWin &gt; 0
+        </if>
+        order by id
+    </select>
+
+    <!-- 更新票状态及中奖奖金 -->
+    <update id="updateTicketPrizeMoney">
+        update tb_ticket set bonusState = #{bonusState}, bonusInfo = #{bonusInfo}, isWin = #{isWin},
+        ticketPrize = #{ticketPrize}, ticketSubjoinPrize = #{ticketSubjoinPrize},ticketPrizeTax = #{ticketPrizeTax},
+        ticketSubjoinPrizeTax = #{ticketSubjoinPrizeTax}, bonusStateTime = now(), winTime = now()
+        <if test="ticketStatus != null and ticketStatus == 99">
+            ,ticketStatus = 3
+        </if>
+        where id= #{id}
+    </update>
+
+    <!-- 根据场次查询需要汇总奖金的票-竞彩 -->
+    <select id="queryTicketPrizeSummaryForMatch" resultType="java.lang.String">
+        select tm.schemeId from (
+          select t.schemeId, count(1) num, SUM(CASE WHEN t.bonusState=2 THEN 1 ELSE 0 END) sucnum
+          from tb_ticket t, tb_scheme_matches m
+          where
+          t.schemeId = m.schemeOrderId and m.matchCode = #{matchCode} and m.lotteryId = #{lotteryId}
+          and t.ticketStatus != -4
+          group by t.schemeId
+        ) tm
+    where tm.num = tm.sucnum
+    </select>
+
+    <!-- 根据期次查询需要汇总奖金的票-数字彩 -->
+    <select id="queryTicketPrizeSummaryForPeriod" resultType="java.lang.String">
+        select tm.schemeId from (
+        select t.schemeId, count(1) num, SUM(CASE WHEN t.bonusState=2 THEN 1 ELSE 0 END) sucnum
+        from tb_ticket t
+        where
+        t.lotteryId = #{lotteryId} and t.period = #{period} and t.ticketStatus != -4 group by t.schemeId
+        ) tm
+        where tm.num = tm.sucnum
+    </select>
+
+    <!-- 更新票计奖状态 -->
+    <update id="updateTicketBonusState">
+        update tb_ticket set bonusState = #{bonusState}, bonusStateTime = now() where schemeId= #{schemeId} and ticketStatus != -4
+    </update>
+
+    <!-- 系统自动撤单中-根据票号更新票状态 -->
+    <update id="updateOutTicketStatusForCancel">
+        update tb_ticket set ticketStatus = #{ticketStatus}, outTicketTime = now(), ticketDesc = #{ticketDesc} where ticketId= #{ticketId}
+    </update>
+
+    <!-- 根据方案号更新票状态 -->
+    <update id="updateOutTicketStatusForSchemeId">
+        update tb_ticket set ticketStatus = #{ticketStatus}, outTicketTime = now(), ticketDesc = #{ticketDesc}
+        where schemeId= #{schemeId}
+    </update>
+</mapper>

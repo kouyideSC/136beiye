@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.PayWayMapper" >
+
+  <!--新增充值方式-->
+  <insert id="insertPayWay">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_payway (
+      payName, payShort,payCode,payDesc,
+      clientTypes, payThumbUrl,
+      status, orderValue, createTime
+      )
+    values (
+      #{payName}, #{payShort},#{payCode},#{payDesc},
+      #{clientTypes}, #{payThumbUrl},
+      #{status}, #{orderValue}, #{createTime}
+    )
+  </insert>
+
+  <!-- 查询充值方式 -->
+  <select id="queryPayWays" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.PayWay">
+    select
+    t1.id,
+    t1.payName,
+    t1.payShort,
+    t1.payCode,
+    t1.payDesc,
+    t1.showDesc,
+    t1.clientTypes,
+    t1.payThumbUrl,
+    t1.status,
+    t1.orderValue,
+    t1.createTime,
+    t1.updateTime
+    from tb_payway t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="clientTypes != null and clientTypes != ''">
+          and find_in_set(#{clientTypes},t1.clientTypes)
+        </if>
+        <if test="payCode != null and payCode != ''">
+          and t1.payCode = #{payCode}
+        </if>
+        <if test="maxPayCode != null and maxPayCode != ''">
+          and t1.payCode &lt;= #{maxPayCode}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.orderValue
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询充值方式(管理后台) -->
+  <select id="queryPayWayInfos" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.payName,
+    t1.payShort,
+    t1.payCode,
+    t1.payDesc,
+    t1.showDesc,
+    t1.clientTypes,
+    t1.payThumbUrl,
+    t1.status,
+    t1.orderValue,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+    from tb_payway t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="payName != null and payName != ''">
+          and t1.payName = #{payName}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="clientType != null and clientType != ''">
+          and find_in_set(#{clientType},t1.clientTypes)
+        </if>
+        <if test="payCode != null and payCode != ''">
+          and t1.payCode = #{payCode}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.orderValue
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询充值方式总记录数(管理后台) -->
+  <select id="queryPayWayInfosCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+    select count(0) from tb_payway t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="payName != null and payName != ''">
+          and t1.payName = #{payName}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="clientType != null and clientType != ''">
+          and find_in_set(#{clientType},t1.clientTypes)
+        </if>
+        <if test="payCode != null and payCode != ''">
+          and t1.payCode = #{payCode}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 编辑充值方式 -->
+  <update id="editPayway" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_payway set updateTime = now()
+    <if test="payName != null and payName != ''">
+      ,payName = #{payName}
+    </if>
+    <if test="payShort != null and payShort != ''">
+      ,payShort = #{payShort}
+    </if>
+    <if test="status != null and status != ''">
+      ,status = #{status}
+    </if>
+    <if test="clientTypes != null">
+      ,clientTypes = #{clientTypes}
+    </if>
+    <if test="showDesc != null">
+      ,showDesc = #{showDesc}
+    </if>
+    <if test="payThumbUrl != null">
+      ,payThumbUrl = #{payThumbUrl}
+    </if>
+    <if test="orderValue != null">
+      ,orderValue = #{orderValue}
+    </if>
+    where id = #{id}
+  </update>
+
+</mapper>

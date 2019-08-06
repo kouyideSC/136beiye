@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.check.CheckMapper" >
+
+    <!-- 查询平台资金报表 -->
+    <select id="queryPlatFormCapital" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        dateStr,
+        beginCapital,
+        endCapital,
+        (prizeSubjoinSiteTax+zhuiHaoPrizeSubjoinSiteTax) prizeSubjoinSiteTax,
+        rechargeMoney,
+        generalOrderMoney,
+        generalOrderMoneyCoupon,
+        zhuiHaoOrderMoney,
+        generalOrderSendPrize,
+        zhuiHaoOrderSendPrize,
+        withDrawMoney,
+        rebateIntoMoney,
+        manualAddMoney,
+        manualReduceMoney,
+        generalOrderCancelMoney,
+        generalOrderCancelMoneyCoupon,
+        zhuiHaoOrderCancelMoney,
+        withDrawRefundMoney,
+        date_format(createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+        date_format(updateTime,'%Y-%m-%d %H:%i:%s') as updateTime,
+        beginCapital+rechargeMoney+generalOrderSendPrize+generalOrderMoneyCoupon+zhuiHaoOrderSendPrize+rebateIntoMoney+manualAddMoney+generalOrderCancelMoney+zhuiHaoOrderCancelMoney-generalOrderMoney-zhuiHaoOrderMoney-withDrawMoney-manualReduceMoney-generalOrderCancelMoneyCoupon-prizeSubjoinSiteTax-zhuiHaoPrizeSubjoinSiteTax-endCapital difference
+        from tb_check_platform_capital
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+        order by dateStr desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询平台资金报表-总条数 -->
+    <select id="queryPlatFormCapitalCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select
+        count(1) number
+        from tb_check_platform_capital
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+    </select>
+
+    <!-- 查询平台方案和票报表 -->
+    <select id="querySchemeTicket" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        dateStr,
+        generalOrderMoney+zhuiHaoOrderMoney orderSuccessMoney,
+        ticketMoney,
+        generalOrderFailMoney+zhuiHaoOrderFailMoney orderFailMoney,
+        generalOrderVirtualMoney+zhuiHaoOrderVirtualMoney orderVirtualMoney,
+        orderVirtualPrizeMoney,
+        generalOrderCancelOutMoney+zhuiHaoOrderCancelOutMoney orderCancelMoney,
+        generalOrderMoney+generalOrderCancelOutMoney+zhuiHaoOrderCancelOutMoney+zhuiHaoOrderMoney-ticketMoney-generalOrderFailMoney-zhuiHaoOrderFailMoney-generalOrderVirtualMoney-zhuiHaoOrderVirtualMoney difference,
+        date_format(createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+        date_format(updateTime,'%Y-%m-%d %H:%i:%s') as updateTime
+        from tb_check_scheme_ticket
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+        order by dateStr desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询平台方案和票报表-总条数 -->
+    <select id="querySchemeTicketCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select
+        count(1) number
+        from tb_check_scheme_ticket
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+    </select>
+
+    <!-- 查询平台兑奖计奖报表 -->
+    <select id="queryVoteSitePrize" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        dateStr,
+        votePrize,
+        sitePrize,
+        differNumber,
+        differPrize,
+        date_format(createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+        date_format(updateTime,'%Y-%m-%d %H:%i:%s') as updateTime
+        from tb_check_vote_site_prize
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+        order by dateStr desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询平台兑奖计奖报表-总条数 -->
+    <select id="queryVoteSitePrizeCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select
+        count(1) number
+        from tb_check_vote_site_prize
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+    </select>
+
+    <!-- 查询平台兑奖报表 -->
+    <select id="queryVoteSiteAward" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+        date_format(#{beginTime}, '%Y-%m-%d') dateStr,
+        count(1) num,
+        sum(t.money) money,
+        IFNULL(sum(t.ticketPrizeTax+t.ticketSubjoinPrizeTax),0) prize,
+        SUM(CASE WHEN t.isWin = 2 THEN 1 ELSE 0 END) znum,
+        v.voteName
+        FROM tb_ticket t, tb_ticket_vote v
+        WHERE
+        t.voteId = v.voteId
+        AND t.ticketStatus > 1
+        AND t.outTicketTime &gt; #{beginTime}
+        AND t.outTicketTime &lt; DATE_ADD(#{beginTime},INTERVAL 1 day)
+        AND t.voteId != '9696'
+        GROUP BY t.voteId
+    </select>
+
+    <!-- 汇总某天平台总加奖金额 -->
+    <select id="queryDateSchemeSubjoin" resultType="java.lang.Double">
+        SELECT
+        IFNULL(sum(s.prizeSubjoinSiteTax),0) subjoin
+        FROM tb_scheme s, tb_user u
+        WHERE
+        s.schemeUserId = u.id
+        AND s.schemeStatus = 3
+        AND s.openStatus = 2
+        AND s.prizeStatus = 2
+        AND s.outTicketTime &gt; #{beginTime}
+        AND s.outTicketTime &lt; DATE_ADD(#{beginTime},INTERVAL 1 day)
+        AND u.userType != 8888
+    </select>
+
+    <!-- 查询平台用户返利报表 -->
+    <select id="queryUserRebate" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        dateStr,
+        beginRebate,
+        endRebate,
+        getRebate,
+        outRebate,
+        calErrorNumber,
+        date_format(createTime,'%Y-%m-%d %H:%i:%s') as createTime,
+        date_format(updateTime,'%Y-%m-%d %H:%i:%s') as updateTime,
+        beginRebate+getRebate-outRebate-endRebate difference
+        from tb_check_user_rebate
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+        order by dateStr desc
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询平台用户返利报表-总条数 -->
+    <select id="queryUserRebateCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Integer">
+        select
+        count(1) number
+        from tb_check_user_rebate
+        where 1=1
+        <if test="beginTime != null and beginTime != ''">
+            and dateStr &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and dateStr &lt;= #{endTime}
+        </if>
+    </select>
+
+    <!-- 查询平台资金报表 -->
+    <select id="sumPlatFormCapital" resultType="java.lang.Double">
+        SELECT
+        IFNULL(sum(a.balance),0) beginCapital
+        FROM tb_user_account a, tb_user u
+        where
+        a.userId = u.id AND u.userType != 8888
+    </select>
+
+    <!-- 初始期初数据入库 -->
+    <insert id="savePlatFormCapital">
+        INSERT INTO tb_check_platform_capital(
+	      dateStr, beginCapital
+        )
+        VALUES
+        (
+          CURDATE(), #{beginCapital}
+        )
+    </insert>
+
+    <!-- 更新平台资金统计数据 -->
+    <update id="updatePlatFormCapital" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_check_platform_capital set
+            endCapital = #{endCapital},
+            prizeSubjoinSiteTax = #{prizeSubjoinSiteTax},
+            rechargeMoney = #{rechargeMoney},
+            generalOrderMoney = #{generalOrderMoney},
+            generalOrderMoneyCoupon = #{generalOrderMoneyCoupon},
+            zhuiHaoOrderMoney = #{zhuiHaoOrderMoney},
+            generalOrderSendPrize = #{generalOrderSendPrize},
+            zhuiHaoOrderSendPrize = #{zhuiHaoOrderSendPrize},
+            withDrawMoney = #{withDrawMoney},
+            rebateIntoMoney = #{rebateIntoMoney},
+            manualAddMoney = #{manualAddMoney},
+            manualReduceMoney = #{manualReduceMoney},
+            generalOrderCancelMoney = #{generalOrderCancelMoney},
+            generalOrderCancelMoneyCoupon = #{generalOrderCancelMoneyCoupon},
+            zhuiHaoOrderCancelMoney = #{zhuiHaoOrderCancelMoney},
+            withDrawRefundMoney = #{withDrawRefundMoney},
+            updateTime = now()
+        where dateStr = #{dateStr}
+    </update>
+
+    <!-- 初始订单和票对账数据入库 -->
+    <insert id="saveOrderAndTicket">
+        INSERT INTO tb_check_scheme_ticket(
+        dateStr, generalOrderMoney, zhuiHaoOrderMoney, ticketMoney, generalOrderFailMoney, zhuiHaoOrderFailMoney,
+        generalOrderVirtualMoney, zhuiHaoOrderVirtualMoney, generalOrderCancelOutMoney, zhuiHaoOrderCancelOutMoney
+        )
+        SELECT
+        date_format(DATE_SUB(CURDATE(),INTERVAL 1 day), '%Y-%m-%d') dateStr,
+        a.generalOrderMoney, b.zhuiHaoOrderMoney, c.ticketMoney, d.generalOrderFailMoney, e.zhuiHaoOrderFailMoney,
+        f.generalOrderVirtualMoney, g.zhuiHaoOrderVirtualMoney, h.generalOrderCancelOutMoney, i.zhuiHaoOrderCancelOutMoney
+        FROM
+        (
+        SELECT
+        IFNULL(sum(s.schemeMoney),0) generalOrderMoney
+        FROM tb_scheme s, tb_user u
+        WHERE
+        s.schemeUserId = u.id
+        AND s.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND s.outTicketTime &lt; CURDATE()
+        AND s.schemeStatus = 3
+        AND s.schemeType != 1
+        AND u.userType != 8888
+        ) a,
+        (
+        SELECT
+        IFNULL(sum(s.schemeMoney),0) zhuiHaoOrderMoney
+        FROM tb_scheme_zhuihao s, tb_user u
+        WHERE
+        s.schemeUserId = u.id
+        AND s.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND s.outTicketTime &lt; CURDATE()
+        AND s.schemeStatus = 3
+        AND u.userType != 8888
+        ) b,
+        (
+        SELECT
+        IFNULL(sum(t.money),0) ticketMoney
+        FROM tb_ticket t
+        WHERE 1=1
+        AND t.ticketStatus > 1
+        AND t.voteId != 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        ) c,
+        (
+        SELECT
+        IFNULL(sum(t.money),0) generalOrderFailMoney
+        FROM tb_ticket t, tb_scheme s, tb_user u
+        WHERE 1=1
+        AND t.schemeId = s.schemeOrderId
+        AND S.schemeUserId = u.id
+        AND s.schemeStatus = 3
+        AND t.ticketStatus in (-1, -2)
+        AND t.voteId != 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) d,
+        (
+        SELECT
+        IFNULL(sum(t.money),0) zhuiHaoOrderFailMoney
+        FROM tb_ticket t, tb_scheme_zhuihao s, tb_user u
+        WHERE 1=1
+        AND t.schemeId = s.schemeOrderId
+        AND S.schemeUserId = u.id
+        AND s.schemeStatus = 3
+        AND t.ticketStatus in (-1, -2)
+        AND t.voteId != 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) e,
+        (
+        SELECT
+        IFNULL(sum(t.money),0) generalOrderVirtualMoney
+        FROM tb_ticket t, tb_scheme s, tb_user u
+        WHERE 1=1
+        AND s.schemeUserId = u.id
+        AND t.schemeId = s.schemeOrderId
+        AND s.schemeStatus = 3
+        AND t.ticketStatus > 1
+        AND t.voteId = 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND s.schemeType != 1
+        AND u.userType != 8888
+        ) f,
+        (
+        SELECT
+        IFNULL(sum(t.money),0) zhuiHaoOrderVirtualMoney
+        FROM tb_ticket t, tb_scheme_zhuihao s, tb_user u
+        WHERE 1=1
+        AND s.schemeUserId = u.id
+        AND t.schemeId = s.schemeOrderId
+        AND s.schemeStatus = 3
+        AND t.ticketStatus > 1
+        AND t.voteId = 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) g,
+        (
+        SELECT
+        IFNULL(sum(t.money),0) generalOrderCancelOutMoney
+        FROM tb_ticket t, tb_scheme s, tb_user u
+        WHERE 1=1
+        AND s.schemeUserId = u.id
+        AND t.schemeId = s.schemeOrderId
+        AND s.schemeStatus = 5
+        AND t.ticketStatus > 1
+        AND t.voteId != 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) h,
+        (
+        SELECT
+        IFNULL(sum(t.money),0) zhuiHaoOrderCancelOutMoney
+        FROM tb_ticket t, tb_scheme_zhuihao s, tb_user u
+        WHERE 1=1
+        AND s.schemeUserId = u.id
+        AND t.schemeId = s.schemeOrderId
+        AND s.schemeStatus = 5
+        AND t.ticketStatus > 1
+        AND t.voteId != 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) i
+    </insert>
+
+    <!-- 初始出票商兑奖奖金与系统计奖奖金对账数据入库 -->
+    <insert id="saveVoteAndSitePrize">
+        INSERT INTO tb_check_vote_site_prize(
+        dateStr, votePrize, sitePrize, differNumber, differPrize
+        )
+        SELECT
+        date_format(DATE_SUB(CURDATE(),INTERVAL 1 day), '%Y-%m-%d') dateStr,
+        a.votePrize, a.sitePrize, b.differNumber, IFNULL(ABS(a.votePrize-a.sitePrize),0) differPrize
+        FROM
+        (
+        SELECT
+        IFNULL(sum(t.votePrizeTax),0) votePrize,
+        IFNULL(sum(t.ticketPrizeTax),0) sitePrize
+        FROM
+        tb_ticket t
+        WHERE 1=1
+        AND t.ticketStatus = 3
+        AND t.awardTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.awardTime &lt; CURDATE()
+        ) a,
+        (
+        SELECT
+        IFNULL(count(1),0) differNumber
+        FROM
+        tb_ticket t
+        WHERE 1=1
+        AND t.ticketStatus = 3
+        AND t.awardTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.awardTime &lt; CURDATE()
+        and t.votePrizeTax != t.ticketPrizeTax
+        ) b
+    </insert>
+
+    <!-- 查询平台返利余额报表 -->
+    <select id="sumUserRebate" resultType="java.lang.Double">
+        SELECT
+        IFNULL(sum(a.balanceBack),0) beginRebate
+        FROM
+        tb_user_account a, tb_user u
+        where
+        a.userId = u.id
+        AND u.userType != 8888
+    </select>
+
+    <!-- 初始期初返利数据入库 -->
+    <insert id="saveUserRebate">
+        INSERT INTO tb_check_user_rebate(
+        dateStr, beginRebate
+        )
+        VALUES
+        (
+        CURDATE(), #{beginRebate}
+        )
+    </insert>
+
+    <!-- 查询当天平台资金报表期末数据 -->
+    <select id="queryPlatFormCapitalStatisData" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+            date_format(DATE_SUB(CURDATE(),INTERVAL 1 day), '%Y-%m-%d') dateStr,
+            b.rechargeMoney,
+            a.generalOrderMoney,
+            n.generalOrderMoneyCoupon,
+            d.zhuiHaoOrderMoney,
+            e.generalOrderSendPrize,
+            f.zhuiHaoOrderSendPrize,
+            p.prizeSubjoinSiteTax,
+            q.zhuiHaoPrizeSubjoinSiteTax,
+            g.withDrawMoney,
+            h.rebateIntoMoney,
+            i.manualAddMoney,
+            j.manualReduceMoney,
+            k.generalOrderCancelMoney,
+            o.generalOrderCancelMoneyCoupon,
+            l.zhuiHaoOrderCancelMoney,
+            m.withDrawRefundMoney
+            FROM
+            (
+            SELECT
+            IFNULL(sum(p.money),0) rechargeMoney
+            FROM tb_user_pay p, tb_user u
+            where
+            p.userId = u.id
+            AND p.payCode in (4100,4101,4102,4103,4104,4105,4106)
+            AND p.doneTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND p.doneTime &lt; CURDATE()
+            AND p.payType = 0
+            AND p.`status` = 3 AND u.userType != 8888
+            ) b,
+            (
+            SELECT
+            IFNULL(sum(s.schemeMoney),0) generalOrderMoney
+            FROM tb_scheme s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.createTime &lt; CURDATE()
+            AND s.schemeStatus > 0
+            AND s.schemeType != 1
+            AND u.userType != 8888
+            ) a,
+            (
+            SELECT
+            IFNULL(sum(d.money),0) generalOrderMoneyCoupon
+            FROM tb_user_detail d, tb_user u
+            WHERE
+            d.userId = u.id
+            AND channelCode = 301
+            AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND d.createTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) n,
+            (
+            SELECT
+            IFNULL(sum(s.schemeMoney),0) zhuiHaoOrderMoney
+            FROM tb_scheme_zhuihao s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.createTime &lt; CURDATE()
+            AND s.schemeStatus &gt; 0
+            AND u.userType != 8888
+            ) d,
+            (
+            SELECT
+            IFNULL(sum(s.prizeTax),0) generalOrderSendPrize
+            FROM tb_scheme s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.schemeStatus = 3
+            AND s.openStatus = 2
+            AND s.prizeStatus = 2
+            AND s.prizeTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.prizeTime &lt; CURDATE()
+            AND s.schemeType != 1
+            AND u.userType != 8888
+            ) e,
+            (SELECT
+            IFNULL(sum(s.prizeSubjoinSiteTax),0) prizeSubjoinSiteTax
+            FROM tb_scheme s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.schemeStatus = 3
+            AND s.openStatus = 2
+            AND s.prizeStatus = 2
+            AND s.prizeTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.prizeTime &lt; CURDATE()
+            AND s.schemeType != 1
+            AND u.userType != 8888
+            ) p,
+            (
+            SELECT
+            IFNULL(sum(s.prizeTax),0) zhuiHaoOrderSendPrize
+            FROM tb_scheme_zhuihao s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.schemeStatus = 3
+            AND s.openStatus = 2
+            AND s.prizeStatus = 2
+            AND s.prizeTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.prizeTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) f,
+            (SELECT
+            IFNULL(sum(s.prizeSubjoinSiteTax),0) zhuiHaoPrizeSubjoinSiteTax
+            FROM tb_scheme_zhuihao s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.schemeStatus = 3
+            AND s.openStatus = 2
+            AND s.prizeStatus = 2
+            AND s.prizeTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.prizeTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) q,
+            (
+            SELECT
+            IFNULL(sum(p.money),0) withDrawMoney
+            FROM tb_user_pay p, tb_user u
+            where
+            p.userId = u.id
+            AND p.channelCode in (3100,3101,3102,3103)
+            AND p.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND p.createTime &lt; CURDATE()
+            AND p.payType = 1
+            AND p.`status` &gt;= 0 AND u.userType != 8888
+            ) g,
+            (
+            SELECT
+            IFNULL(sum(d.currentRebateMoney),0) rebateIntoMoney
+            FROM tb_user_rebate_detail d, tb_user u
+            where
+            d.userId = u.id
+            AND d.type = 1
+            AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND d.createTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) h,
+            (
+            SELECT
+            IFNULL(sum(d.money),0) manualAddMoney
+            FROM tb_user_detail d, tb_user u
+            where
+            d.userId = u.id
+            AND d.channelCode = 406
+            AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND d.createTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) i,
+            (
+            SELECT
+            IFNULL(sum(d.money),0) manualReduceMoney
+            FROM tb_user_detail d, tb_user u
+            where
+            d.userId = u.id
+            AND d.channelCode = 306
+            AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND d.createTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) j,
+            (
+            SELECT
+            IFNULL(sum(s.schemeMoney),0) generalOrderCancelMoney
+            FROM tb_scheme s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.schemeStatus = 5
+            AND s.prizeTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.prizeTime &lt; CURDATE()
+            AND s.schemeType != 1
+            AND u.userType != 8888
+            ) k,
+            (
+            SELECT
+            IFNULL(sum(d.money),0) generalOrderCancelMoneyCoupon
+            FROM tb_user_detail d, tb_user u
+            WHERE
+            d.userId = u.id
+            AND channelCode = 412
+            AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND d.createTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) o,
+            (
+            SELECT
+            IFNULL(sum(s.schemeMoney),0) zhuiHaoOrderCancelMoney
+            FROM tb_scheme_zhuihao s, tb_user u
+            WHERE
+            s.schemeUserId = u.id
+            AND s.schemeStatus = 5
+            AND s.prizeTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND s.prizeTime &lt; CURDATE()
+            AND u.userType != 8888
+            ) l,
+            (
+            SELECT
+            IFNULL(sum(p.money),0) withDrawRefundMoney
+            FROM tb_user_pay p, tb_user u
+            where
+            p.userId = u.id
+            AND p.channelCode in (3100,3101)
+            AND p.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+            AND p.createTime &lt; CURDATE()
+            AND p.payType = 1
+            AND p.`status` = -1 AND u.userType != 8888
+            ) m
+    </select>
+
+    <!-- 查询当天用户返利报表数据 -->
+    <select id="queryUserRebateStatisData" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+        date_format(DATE_SUB(CURDATE(),INTERVAL 1 day), '%Y-%m-%d') dateStr,
+        b.getRebate,
+        a.outRebate,
+        d.calErrorNumber
+        FROM
+        (
+        SELECT
+        IFNULL(sum(d.currentRebateMoney),0) getRebate
+        FROM
+        tb_user_rebate_detail d, tb_user u
+        where
+        d.userId = u.id
+        AND d.type = 0
+        AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND d.createTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) b,
+        (
+        SELECT
+        IFNULL(sum(d.currentRebateMoney),0) outRebate
+        FROM tb_user_rebate_detail d, tb_user u
+        where
+        d.userId = u.id
+        AND d.type = 1
+        AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND d.createTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) a,
+        (
+        SELECT
+        IFNULL(count(1),0) calErrorNumber
+        FROM
+        tb_user_rebate_detail d, tb_user u
+        where
+        d.userId = u.id
+        AND d.type = 0
+        AND d.createTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND d.createTime &lt; CURDATE()
+        AND u.userType != 8888
+        AND d.currentRebateMoney != d.schemeMoney * d.rate
+        ) d
+    </select>
+
+    <!-- 更新用户返利报表对账数据入库 -->
+    <insert id="updateUserRebate">
+        update tb_check_user_rebate set endRebate = #{endRebate}, getRebate = #{getRebate}, outRebate = #{outRebate},
+        calErrorNumber = #{calErrorNumber}, updateTime = now() where dateStr = #{dateStr}
+    </insert>
+
+    <!-- 统计彩票系统上一天测试票中奖奖金总额 -->
+    <select id="sumYesterdayTestTicketPrizeMoney" resultType="java.lang.Double">
+        SELECT SUM(money) money FROM (
+        SELECT
+        IFNULL(sum(t.ticketPrizeTax+t.ticketSubjoinPrizeTax),0) money
+        FROM tb_ticket t, tb_scheme s, tb_user u
+        WHERE 1=1
+        AND s.schemeUserId = u.id
+        AND t.schemeId = s.schemeOrderId
+        AND s.schemeStatus = 3
+        AND t.ticketStatus > 1
+        AND t.voteId = 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND u.userType != 8888
+        UNION
+        SELECT
+        IFNULL(sum(t.ticketPrizeTax+t.ticketSubjoinPrizeTax),0) money
+        FROM tb_ticket t, tb_scheme_zhuihao s, tb_user u
+        WHERE 1=1
+        AND s.schemeUserId = u.id
+        AND t.schemeId = s.schemeOrderId
+        AND s.schemeStatus = 3
+        AND t.ticketStatus > 1
+        AND t.voteId = 9696
+        AND t.outTicketTime &gt; DATE_SUB(CURDATE(),INTERVAL 1 day)
+        AND t.outTicketTime &lt; CURDATE()
+        AND u.userType != 8888
+        ) a
+    </select>
+
+    <!--更新彩票系统上一天测试票中奖奖金统计数据-->
+    <update id="updateYesterdayTestTicketPrizeMoney">
+        update tb_check_scheme_ticket set orderVirtualPrizeMoney = #{endCapital}, updateTime = now()
+        where dateStr = date_format(DATE_SUB(CURDATE(),INTERVAL 1 day), '%Y-%m-%d')
+    </update>
+
+    <!--统计世界杯期间-用户购彩金额前10名-->
+    <insert id="saveWorldCupGcMoneyStatic">
+        insert into tb_worldcup_gc_rank (
+        dateStr, userId, nickName, money, avatar
+        )
+        select DATE_SUB(CURDATE(),INTERVAL 1 day), s.schemeUserId, u.nickName, sum(s.schemeMoney) money, u.avatar
+        from tb_scheme s, tb_user u
+        where
+        s.schemeUserId = u.id and s.createTime &gt; '2018-06-14' and s.createTime &lt; CURDATE() and s.schemeStatus = 3
+        and s.createTime &lt; '2018-07-16'
+        group by s.schemeUserId
+        order by money desc
+        limit 30
+    </insert>
+
+    <!-- 查询某天世界杯期间购彩榜单 -->
+    <select id="getWorldCupRankList" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        dateStr, nickName, userId, avatar, money
+        from tb_worldcup_gc_rank
+        where
+        dateStr = #{dateStr}
+        order by money desc
+    </select>
+</mapper>

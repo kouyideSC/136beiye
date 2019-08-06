@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.match.MatchBasketBallSpMapper" >
+
+  <!--根据竞彩场次号-查询竞彩篮球对阵信息-->
+  <select id="queryMatchBasketBallSpByMatchCode" resultType="com.caipiao.domain.match.MatchBasketBallSp">
+    select
+    id, matchId, matchCode, jcId, period, zs15, zs610, zs1115, zs1620, zs2125, zs26, ks15, ks610, ks1115,
+    ks1620, ks2125, ks26, sheng, fu, rSheng, rfu, df, xf, dxf, lose
+    from tb_match_basketball_sp where matchCode = #{matchCode}
+  </select>
+
+  <!--更新竞彩赔率数据-->
+  <update id="updateMatchBasketBallSp">
+    update tb_match_basketball_sp
+    <set>
+      <if test="matchId != null">
+        matchId = #{matchId},
+      </if>
+      <if test="matchCode != null">
+        matchCode = #{matchCode},
+      </if>
+      <if test="jcId != null">
+        jcId = #{jcId},
+      </if>
+      <if test="period != null">
+        period = #{period},
+      </if>
+      <if test="zs15 != null">
+        zs15 = #{zs15},
+      </if>
+      <if test="zs610 != null">
+        zs610 = #{zs610},
+      </if>
+      <if test="zs1115 != null">
+        zs1115 = #{zs1115},
+      </if>
+      <if test="zs1620 != null">
+        zs1620 = #{zs1620},
+      </if>
+      <if test="zs2125 != null">
+        zs2125 = #{zs2125},
+      </if>
+      <if test="zs26 != null">
+        zs26 = #{zs26},
+      </if>
+      <if test="ks15 != null">
+        ks15 = #{ks15},
+      </if>
+      <if test="ks610 != null">
+        ks610 = #{ks610},
+      </if>
+      <if test="ks1115 != null">
+        ks1115 = #{ks1115},
+      </if>
+      <if test="ks1620 != null">
+        ks1620 = #{ks1620},
+      </if>
+      <if test="ks2125 != null">
+        ks2125 = #{ks2125},
+      </if>
+      <if test="ks26 != null">
+        ks26 = #{ks26},
+      </if>
+      <if test="sheng != null">
+        sheng = #{sheng},
+      </if>
+      <if test="fu != null">
+        fu = #{fu},
+      </if>
+      <if test="rSheng != null">
+        rSheng = #{rSheng},
+      </if>
+      <if test="rfu != null">
+        rfu = #{rfu},
+      </if>
+      <if test="df != null">
+        df = #{df},
+      </if>
+      <if test="xf != null">
+        xf = #{xf},
+      </if>
+      <if test="dxf != null">
+        dxf = #{dxf},
+      </if>
+      <if test="lose != null">
+        lose = #{lose},
+      </if>
+      updateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--新增篮球场次sp记录-->
+  <insert id="insertMatchBasketBallSp">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_match_basketball_sp (
+    matchId, matchCode, jcId, period, zs15, zs610, zs1115, zs1620, zs2125, zs26, ks15, ks610, ks1115, ks1620,
+    ks2125, ks26, sheng, fu, rSheng, rfu, df, xf, dxf, lose, updateTime
+    )
+    values (
+    #{matchId}, #{matchCode}, #{jcId}, #{period}, #{zs15}, #{zs610}, #{zs1115}, #{zs1620}, #{zs2125}, #{zs26},
+    #{ks15}, #{ks610}, #{ks1115}, #{ks1620}, #{ks2125}, #{ks26}, #{sheng}, #{fu}, #{rSheng}, #{rfu}, #{df}, #{xf},
+    #{dxf}, #{lose}, now()
+    )
+  </insert>
+
+  <!-- 根据竞彩场次号查询篮球赔率信息 -->
+  <select id="queryBasketBallSp" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    sheng `SF3`,
+    fu `SF0`,
+    rsheng `RFSF3`,
+    rfu `RFSF0`,
+    df `DXF3`,
+    xf `DXF0`,
+    zs15 `SFC01`,
+    zs610 `SFC02`,
+    zs1115 `SFC03`,
+    zs1620 `SFC04`,
+    zs2125 `SFC05`,
+    zs26 `SFC06`,
+    ks15 `SFC11`,
+    ks610 `SFC12`,
+    ks1115 `SFC13`,
+    ks1620 `SFC14`,
+    ks2125 `SFC15`,
+    ks26 `SFC16`,
+    lose,
+    dxf
+    from tb_match_basketball_sp where matchCode = #{matchCode}
+  </select>
+
+</mapper>

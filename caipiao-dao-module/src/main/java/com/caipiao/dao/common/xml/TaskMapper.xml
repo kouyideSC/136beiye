@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.TaskMapper" >
+
+  <!--查询未执行的任务列表-->
+  <select id="queryTaskInfo" resultType="com.caipiao.domain.common.Task">
+    select DISTINCT taskName from tb_task
+    where
+    taskName = #{taskName} and status = 0 and beginTime &lt;= now()
+  </select>
+
+  <!--新建任务记录-->
+  <insert id="insertTask">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_task (taskName, beginTime) values (#{taskName}, #{beginTime})
+  </insert>
+
+  <!--更新任务记录-->
+  <update id="updateTask">
+    update tb_task set status = 1, spendTime = #{spendTime}, executeTime=now()
+    where taskName = #{taskName}
+  </update>
+</mapper>

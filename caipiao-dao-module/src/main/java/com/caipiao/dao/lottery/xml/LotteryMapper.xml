@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caipiao.dao.lottery.LotteryMapper">
+
+	<!--查询在售彩种列表-->
+	<select id="queryLotterySaleList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.vo.LotteryVo">
+		select
+		id lid, shortName `name`, orderValue `order`, backGround `open`, message `desc`,
+		maxSellMoney maxMoney, maxSellMultiple maxMul,maxZhNum,activityImg aimg
+		from tb_lottery
+		where
+		<if test="client != null and client == 1">
+			appStatus = 1
+		</if>
+		<if test="client != null and client == 2">
+			h5Status = 1
+		</if>
+		<if test="client != null and client == 3">
+			webStatus = 1
+		</if>
+		<if test="showInHome != null and showInHome != ''">
+			and showInHome = #{showInHome}
+		</if>
+		order by orderValue
+	</select>
+
+	<!--根据彩种编号查询彩种信息-->
+	<select id="queryLotteryInfo" resultType="com.caipiao.domain.lottery.Lottery">
+		select
+		name, shortName, prizeGrade, appStatus, webStatus, h5Status, consoleStatus,orderValue,message, backGround,
+		maxSellMultiple,maxSellMoney,minSellMoney,minSellMultiple,xzMaxSellMoney,xzMaxSellMultiple,xzMinSellMoney,xzMinSellMultiple,
+		ggfsFlag,maxZhNum,activityImg,updateTime
+		from tb_lottery where id = #{lotteryId}
+	</select>
+
+	<!-- 查询彩种信息(管理后台) -->
+	<select id="queryLotterys" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		t1.id,
+		t1.name,
+		t1.shortName,
+		t1.prizeGrade,
+		t1.appStatus,
+		t1.webStatus,
+		t1.h5Status,
+		t1.consoleStatus,
+		t1.orderValue,
+		t1.showInHome,
+		t1.message,
+		t1.backGround,
+		t1.maxSellMultiple,
+		t1.maxSellMoney,
+		t1.minSellMoney,
+		t1.minSellMultiple,
+		t1.xzMaxSellMoney,
+		t1.xzMaxSellMultiple,
+		t1.xzMinSellMoney,
+		t1.xzMinSellMultiple,
+		t1.ggfsFlag,
+		t1.maxZhNum,
+		t1.activityImg,
+		date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+		from tb_lottery t1 where 1 = 1
+		<choose>
+			<when test="id != null and id != ''">
+				and t1.id = #{id}
+			</when>
+			<otherwise>
+				<if test="lotteryName != null and lotteryName != ''">
+					and t1.name = #{lotteryName}
+				</if>
+				<if test="consoleStatus != null and consoleStatus != ''">
+					and t1.consoleStatus = #{consoleStatus}
+				</if>
+				<if test="appStatus != null and appStatus != ''">
+					and t1.appStatus = #{appStatus}
+				</if>
+				<if test="showInHome != null and showInHome != ''">
+					and t1.showInHome = #{showInHome}
+				</if>
+				order by orderValue
+				<if test="psize != null and psize != ''">
+					limit ${pstart},${psize}
+				</if>
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询彩种总记录条数(管理后台) -->
+	<select id="queryLotterysCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+		select count(0) from tb_lottery t1 where 1 = 1
+		<if test="lotteryName != null and lotteryName != ''">
+			and t1.name = #{lotteryName}
+		</if>
+		<if test="consoleStatus != null and consoleStatus != ''">
+			and t1.consoleStatus = #{consoleStatus}
+		</if>
+		<if test="appStatus != null and appStatus != ''">
+			and t1.appStatus = #{appStatus}
+		</if>
+		<if test="showInHome != null and showInHome != ''">
+			and t1.showInHome = #{showInHome}
+		</if>
+	</select>
+
+	<!-- 编辑彩种(管理后台) -->
+	<update id="editLottery" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		update tb_lottery t
+		set t.name = #{name},
+		t.shortName = #{shortName},
+		t.prizeGrade = #{prizeGrade},
+		t.appStatus = #{appStatus},
+		t.webStatus = #{webStatus},
+		t.h5Status = #{h5Status},
+		t.consoleStatus = #{consoleStatus},
+		t.orderValue = #{orderValue},
+		t.showInHome = #{showInHome},
+		t.message = #{message},
+		t.backGround = #{backGround},
+		t.maxSellMultiple = #{maxSellMultiple},
+		t.maxSellMoney = #{maxSellMoney},
+		t.minSellMoney = #{minSellMoney},
+		t.minSellMultiple = #{minSellMultiple},
+		t.xzMaxSellMoney = #{xzMaxSellMoney},
+		t.xzMaxSellMultiple = #{xzMaxSellMultiple},
+		t.xzMinSellMoney = #{xzMinSellMoney},
+		t.xzMinSellMultiple = #{xzMinSellMultiple},
+		t.ggfsFlag = #{ggfsFlag},
+		t.maxZhNum = #{maxZhNum},
+		t.activityImg = #{activityImg},
+		t.updateTime = now()
+		where t.id = #{id}
+	</update>
+
+	<!-- 编辑彩种销售状态(管理后台) -->
+	<update id="editLotterySaleStatus" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+		update tb_lottery t set t.updateTime = now()
+		<if test="appStatus != null and appStatus != ''">
+			,t.appStatus = #{appStatus}
+		</if>
+		<if test="webStatus != null and webStatus != ''">
+			,t.webStatus = #{webStatus}
+		</if>
+		<if test="h5Status != null and h5Status != ''">
+			,t.h5Status = #{h5Status}
+		</if>
+		<if test="consoleStatus != null and consoleStatus != ''">
+			,t.consoleStatus = #{consoleStatus}
+		</if>
+		where t.id = #{id}
+	</update>
+
+</mapper>

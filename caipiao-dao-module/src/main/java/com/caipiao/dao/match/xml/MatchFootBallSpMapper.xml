@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.match.MatchFootBallSpMapper" >
+
+  <!--根据竞彩场次号-查询竞彩足球对阵信息-->
+  <select id="queryMatchFootBallSpByMatchCode" resultType="com.caipiao.domain.match.MatchFootBallSp">
+    select
+      id, matchId, matchCode, jcId, period, f01, f02, f03, f04, f05, f12, f13, f14, f15, f23, f24, f25, fOther,
+      p00, p11, p22, p33, pOther, s10, s20, s30, s40, s50, s21, s31, s41, s51, s32, s42, s52, sOther, ff, fp,
+      fs, pf, pp, ps, sf, sp, ss, sheng, ping, fu, rSheng, rPing, rfu, t0, t1, t2, t3, t4, t5, t6, t7
+    from tb_match_football_sp where matchCode = #{matchCode}
+  </select>
+
+  <!--更新竞彩赔率数据-->
+  <update id="updateMatchFootBallSp">
+    update tb_match_football_sp
+    <set>
+      <if test="matchId != null">
+        matchId = #{matchId},
+      </if>
+      <if test="matchCode != null">
+        matchCode = #{matchCode},
+      </if>
+      <if test="jcId != null">
+        jcId = #{jcId},
+      </if>
+      <if test="period != null">
+        period = #{period},
+      </if>
+      <if test="f01 != null">
+        f01 = #{f01},
+      </if>
+      <if test="f02 != null">
+        f02 = #{f02},
+      </if>
+      <if test="f03 != null">
+        f03 = #{f03},
+      </if>
+      <if test="f04 != null">
+        f04 = #{f04},
+      </if>
+      <if test="f05 != null">
+        f05 = #{f05},
+      </if>
+      <if test="f12 != null">
+        f12 = #{f12},
+      </if>
+      <if test="f13 != null">
+        f13 = #{f13},
+      </if>
+      <if test="f14 != null">
+        f14 = #{f14},
+      </if>
+      <if test="f15 != null">
+        f15 = #{f15},
+      </if>
+      <if test="f23 != null">
+        f23 = #{f23},
+      </if>
+      <if test="f24 != null">
+        f24 = #{f24},
+      </if>
+      <if test="f25 != null">
+        f25 = #{f25},
+      </if>
+      <if test="fOther != null">
+        fOther = #{fOther},
+      </if>
+      <if test="p00 != null">
+        p00 = #{p00},
+      </if>
+      <if test="p11 != null">
+        p11 = #{p11},
+      </if>
+      <if test="p22 != null">
+        p22 = #{p22},
+      </if>
+      <if test="p33 != null">
+        p33 = #{p33},
+      </if>
+      <if test="pOther != null">
+        pOther = #{pOther},
+      </if>
+      <if test="s10 != null">
+        s10 = #{s10},
+      </if>
+      <if test="s20 != null">
+        s20 = #{s20},
+      </if>
+      <if test="s30 != null">
+        s30 = #{s30},
+      </if>
+      <if test="s40 != null">
+        s40 = #{s40},
+      </if>
+      <if test="s50 != null">
+        s50 = #{s50},
+      </if>
+      <if test="s21 != null">
+        s21 = #{s21},
+      </if>
+      <if test="s31 != null">
+        s31 = #{s31},
+      </if>
+      <if test="s41 != null">
+        s41 = #{s41},
+      </if>
+      <if test="s51 != null">
+        s51 = #{s51},
+      </if>
+      <if test="s32 != null">
+        s32 = #{s32},
+      </if>
+      <if test="s42 != null">
+        s42 = #{s42},
+      </if>
+      <if test="s52 != null">
+        s52 = #{s52},
+      </if>
+      <if test="sOther != null">
+        sOther = #{sOther},
+      </if>
+      <if test="ff != null">
+        ff = #{ff},
+      </if>
+      <if test="fp != null">
+        fp = #{fp},
+      </if>
+      <if test="fs != null">
+        fs = #{fs},
+      </if>
+      <if test="pf != null">
+        pf = #{pf},
+      </if>
+      <if test="pp != null">
+        pp = #{pp},
+      </if>
+      <if test="ps != null">
+        ps = #{ps},
+      </if>
+      <if test="sf != null">
+        sf = #{sf},
+      </if>
+      <if test="sp != null">
+        sp = #{sp},
+      </if>
+      <if test="ss != null">
+        ss = #{ss},
+      </if>
+      <if test="sheng != null">
+        sheng = #{sheng},
+      </if>
+      <if test="ping != null">
+        ping = #{ping},
+      </if>
+      <if test="fu != null">
+        fu = #{fu},
+      </if>
+      <if test="rSheng != null">
+        rSheng = #{rSheng},
+      </if>
+      <if test="rPing != null">
+        rPing = #{rPing},
+      </if>
+      <if test="rfu != null">
+        rfu = #{rfu},
+      </if>
+      <if test="t0 != null">
+        t0 = #{t0},
+      </if>
+      <if test="t1 != null">
+        t1 = #{t1},
+      </if>
+      <if test="t2 != null">
+        t2 = #{t2},
+      </if>
+      <if test="t3 != null">
+        t3 = #{t3},
+      </if>
+      <if test="t4 != null">
+        t4 = #{t4},
+      </if>
+      <if test="t5 != null">
+        t5 = #{t5},
+      </if>
+      <if test="t6 != null">
+        t6 = #{t6},
+      </if>
+      <if test="t7 != null">
+        t7 = #{t7},
+      </if>
+      updateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--新增足球场次sp记录-->
+  <insert id="insertMatchFootBallSp">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_match_football_sp (
+      matchId, matchCode, jcId, period, f01, f02, f03, f04, f05, f12, f13, f14, f15, f23, f24, f25, fOther,
+      p00, p11, p22, p33, pOther, s10, s20, s30, s40, s50, s21, s31, s41, s51, s32, s42, s52, sOther, ff, fp,
+      fs, pf, pp, ps, sf, sp, ss, sheng, ping, fu, rSheng, rPing, rfu, t0, t1, t2, t3, t4, t5, t6, t7, updateTime
+    )
+    values (
+      #{matchId}, #{matchCode}, #{jcId}, #{period}, #{f01}, #{f02}, #{f03}, #{f04}, #{f05}, #{f12}, #{f13}, #{f14},
+      #{f15}, #{f23}, #{f24}, #{f25}, #{fOther}, #{p00}, #{p11}, #{p22}, #{p33}, #{pOther}, #{s10}, #{s20}, #{s30},
+      #{s40}, #{s50}, #{s21}, #{s31}, #{s41}, #{s51}, #{s32}, #{s42}, #{s52}, #{sOther}, #{ff}, #{fp}, #{fs}, #{pf},
+      #{pp}, #{ps}, #{sf}, #{sp}, #{ss}, #{sheng}, #{ping}, #{fu}, #{rSheng}, #{rPing}, #{rfu}, #{t0}, #{t1}, #{t2},
+      #{t3}, #{t4}, #{t5}, #{t6}, #{t7}, now()
+    )
+  </insert>
+
+  <!-- 根据竞彩场次号查询足球赔率信息 -->
+  <select id="queryFootBallSp" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    f01 `CBF0:1`,
+    f02 `CBF0:2`,
+    f03 `CBF0:3`,
+    f04 `CBF0:4`,
+    f05 `CBF0:5`,
+    f12 `CBF1:2`,
+    f13 `CBF1:3`,
+    f14 `CBF1:4`,
+    f15 `CBF1:5`,
+    f23 `CBF2:3`,
+    f24 `CBF2:4`,
+    f25 `CBF2:5`,
+    fother `CBF0:9`,
+    p00 `CBF0:0`,
+    p11 `CBF1:1`,
+    p22 `CBF2:2`,
+    p33 `CBF3:3`,
+    pother `CBF9:9`,
+    s10 `CBF1:0`,
+    s20 `CBF2:0`,
+    s30 `CBF3:0`,
+    s40 `CBF4:0`,
+    s50 `CBF5:0`,
+    s21 `CBF2:1`,
+    s31 `CBF3:1`,
+    s41 `CBF4:1`,
+    s51 `CBF5:1`,
+    s32 `CBF3:2`,
+    s42 `CBF4:2`,
+    s52 `CBF5:2`,
+    sother `CBF9:0`,
+    ff `BQC0-0`,
+    fp `BQC0-1`,
+    fs `BQC0-3`,
+    pf `BQC1-0`,
+    pp `BQC1-1`,
+    ps `BQC1-3`,
+    sf `BQC3-0`,
+    sp `BQC3-1`,
+    ss `BQC3-3`,
+    sheng `SPF3`,
+    ping `SPF1`,
+    fu `SPF0`,
+    rsheng `RQSPF3`,
+    rping `RQSPF1`,
+    rfu `RQSPF0`,
+    t0 `JQS0`,
+    t1 `JQS1`,
+    t2 `JQS2`,
+    t3 `JQS3`,
+    t4 `JQS4`,
+    t5 `JQS5`,
+    t6 `JQS6`,
+    t7 `JQS7`
+    from tb_match_football_sp where matchCode = #{matchCode}
+  </select>
+
+</mapper>

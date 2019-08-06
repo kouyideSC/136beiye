@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.ChannelMapper" >
+
+	<!--查询渠道列表-->
+	<select id="queryChannelDtoList" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select
+		c.id,
+		c.channelName,
+		c.channelCode,
+		c.authKey,
+		c.contactMobile,
+		c.status,
+		c.notifyStatus,
+		c.notifyUrl,
+		a.userId outAccountUserId,
+		c.overstepAccount,
+		date_format(c.beginTime,'%Y-%m-%d %H:%i:%s') beginTime,
+    	date_format(c.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+		c.ipLimit,
+		c.remark,
+		a.balance,
+		date_format(c.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+    	date_format(c.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+		from tb_channel c LEFT JOIN tb_user_account a ON
+		c.outAccountUserId = a.userId
+		WHERE 1=1
+		<if test="id != null">
+			and c.id = #{id}
+		</if>
+		<if test="channelCode != null">
+			and channelCode = #{channelCode}
+		</if>
+		<if test="contactMobile != null">
+			and contactMobile = #{contactMobile}
+		</if>
+	</select>
+
+	<!--查询渠道列表-->
+	<select id="queryChannelList" resultType="com.caipiao.domain.common.Channel">
+		select * from tb_channel where 1=1
+		<if test="notifyStatus != null and notifyStatus != ''">
+			and notifyStatus = #{notifyStatus}
+		</if>
+		<if test="status != null and status != ''">
+			and status = #{status}
+		</if>
+	</select>
+
+	<!--根据渠道编号查询渠道-->
+	<select id="queryChannelInfo" resultType="com.caipiao.domain.common.Channel">
+    	select * from tb_channel where channelCode = #{channelCode} order by createTime desc limit 1
+  	</select>
+
+	<!--删除渠道数据-->
+	<delete id="deleteChannel">
+		delete from tb_channel where id = #{id}
+	</delete>
+
+	<!--保存渠道-->
+  	<insert id="insertChannel">
+    	<selectKey keyProperty="id" resultType="java.lang.Long">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+		insert into tb_channel (
+		channelName, channelCode, secret, authKey, contactMobile, status, notifyStatus, notifyUrl,
+		outAccountUserId, beginTime, endTime, remark, ipLimit
+		)
+		values (
+		#{channelName}, #{channelCode}, #{secret}, #{authKey}, #{contactMobile}, #{status},
+		#{notifyStatus}, #{notifyUrl}, #{outAccountUserId}, #{beginTime}, #{endTime}, #{remark}, #{ipLimit}
+		)
+  	</insert>
+
+	<!--更新渠道-->
+  	<update id="updateChannel">
+		update tb_channel
+		<set>
+			<if test="channelName != null">
+				channelName = #{channelName},
+			</if>
+			<if test="channelCode != null">
+				channelCode = #{channelCode},
+			</if>
+			<if test="secret != null">
+				secret = #{secret},
+			</if>
+			<if test="authKey != null">
+				authKey = #{authKey},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="contactMobile != null">
+				contactMobile = #{contactMobile},
+			</if>
+			<if test="notifyStatus != null">
+				notifyStatus = #{notifyStatus},
+			</if>
+			<if test="notifyUrl != null">
+				notifyUrl = #{notifyUrl},
+			</if>
+			<if test="outAccountUserId != null">
+				outAccountUserId = #{outAccountUserId},
+			</if>
+			<if test="ipLimit != null">
+				ipLimit = #{ipLimit},
+			</if>
+			<if test="beginTime != null">
+				beginTime = #{beginTime},
+			</if>
+			<if test="endTime != null">
+				endTime = #{endTime},
+			</if>
+			<if test="remark != null">
+				remark = #{remark},
+			</if>
+			updateTime = now()
+		</set>
+		where id = #{id}
+  	</update>
+
+</mapper>

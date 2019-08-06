@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.match.MatchFootBallResultMapper" >
+
+  <!--根据场次号-查询竞彩足球赛果信息-->
+  <select id="queryJczqResultInfo" resultType="com.caipiao.domain.match.MatchFootBallResult">
+    select * from tb_match_football_result where matchCode = #{matchCode}
+  </select>
+
+  <!--根据参数-查询竞彩足球赛果列表-前端接口展示使用-->
+  <select id="queryJczqResultList" resultType="com.caipiao.domain.vo.JczqResultVo">
+    select
+    leagueName name, period, jcId mid, hostName hname, guestName gname, matchTime mtime,
+    halfScore hscore, score, spfResult spfr, spfSp spfs, rqspfResult rqspfr, rqspfSp rqspfs,
+    zjqResult zjqr, zjqSp zjqs, bqcResult bqcr, bqcSp bqcs, bfResult bfr, bfSp bfs
+    from tb_match_football_result
+    where
+    period &gt;= #{begin} and period &lt;= #{end} order by matchCode desc
+  </select>
+
+  <!--更新竞彩场次赛果数据-->
+  <update id="updateJczqResult">
+    update tb_match_football_result
+    <set>
+      <if test="lose != null">
+        lose = #{lose},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="matchTime != null">
+        matchTime = #{matchTime},
+      </if>
+      <if test="halfScore != null">
+        halfScore = #{halfScore},
+      </if>
+      <if test="score != null">
+        score = #{score},
+      </if>
+      <if test="spfResult != null">
+        spfResult = #{spfResult},
+      </if>
+      <if test="spfSp != null">
+        spfSp = #{spfSp},
+      </if>
+      <if test="rqspfResult != null">
+        rqspfResult = #{rqspfResult},
+      </if>
+      <if test="rqspfSp != null">
+        rqspfSp = #{rqspfSp},
+      </if>
+      <if test="zjqResult != null">
+        zjqResult = #{zjqResult},
+      </if>
+      <if test="zjqSp != null">
+        zjqSp = #{zjqSp},
+      </if>
+      <if test="bqcResult != null">
+        bqcResult = #{bqcResult},
+      </if>
+      <if test="bqcSp != null">
+        bqcSp = #{bqcSp},
+      </if>
+      <if test="bfResult != null">
+        bfResult = #{bfResult},
+      </if>
+      <if test="bfSp != null">
+        bfSp = #{bfSp},
+      </if>
+      updateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--新增足球赛果记录-->
+  <insert id="insertFootBallResult">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_match_football_result (
+      leagueName, matchId, matchCode, jcId, period, hostName, guestName, lose, matchTime, halfScore, score,
+      status, spfResult, spfSp, rqspfResult, rqspfSp, zjqResult, zjqSp, bqcResult, bqcSp, bfResult, bfSp, updateTime)
+    values (
+      #{leagueName}, #{matchId}, #{matchCode}, #{jcId}, #{period}, #{hostName}, #{guestName}, #{lose},
+      #{matchTime}, #{halfScore}, #{score}, #{status}, #{spfResult}, #{spfSp}, #{rqspfResult}, #{rqspfSp},
+      #{zjqResult}, #{zjqSp}, #{bqcResult}, #{bqcSp}, #{bfResult}, #{bfSp}, now()
+    )
+  </insert>
+
+</mapper>

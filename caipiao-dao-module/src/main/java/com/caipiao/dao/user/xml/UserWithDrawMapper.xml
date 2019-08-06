@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.user.UserWithDrawMapper" >
+
+  <!--保存提现交易信息-->
+  <insert id="insertUserWith">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_user_withdraw (
+      userId, realName,
+      money, status, payId, 
+      channelPayId, clientFrom, requestIp, 
+      createTime, doneTime, bankProvince, 
+      bankCode, bankName, bankCard, 
+      subBankName)
+    values (
+      #{userid}, #{realname},
+      #{money,jdbcType=DECIMAL}, #{status}, #{payid}, 
+      #{channelpayid}, #{clientfrom}, #{requestip}, 
+      #{createtime}, #{donetime}, #{bankprovince}, 
+      #{bankcode}, #{bankname}, #{bankcard}, 
+      #{subbankname})
+  </insert>
+
+</mapper>

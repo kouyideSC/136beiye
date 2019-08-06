@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.common.ParameterMapper" >
+
+    <!--获取系统配置参数表数据-->
+    <select id="queryParameterList" resultType="com.caipiao.domain.common.Parameter">
+        select id, pmKey, pmValue, pmDescribe from tb_parameter order by id
+    </select>
+
+    <!-- 根据条件查询参数配置 -->
+    <select id="queryParameter" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.pmKey,
+        t1.pmValue,
+        t1.pmDescribe
+        from tb_parameter t1
+        where t1.pmKey = #{pmKey}
+        limit 1
+    </select>
+
+    <!-- 根据条件查询参数配置信息  -->
+    <select id="queryParameters" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.pmKey,
+        t1.pmValue,
+        t1.pmDescribe,
+        date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+        from tb_parameter t1
+        where 1 = 1
+        <if test="id != null and id != ''">
+            and t1.id = #{id}
+        </if>
+        <if test="pmKey != null and pmKey != ''">
+            and t1.pmKey = #{pmKey}
+        </if>
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+
+    <!--更新配置参数-->
+    <update id="updateParameter">
+        update tb_parameter set pmKey=#{pmKey}, pmValue=#{pmValue}, pmDescribe=#{pmDescribe}
+        where id = #{id}
+    </update>
+
+    <!--删除配置参数-->
+    <delete id="deleteParams">
+        delete from tb_parameter where id = #{id}
+    </delete>
+
+    <!--保存配置参数-->
+    <insert id="saveParams">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_parameter (pmKey, pmValue, pmDescribe) values (#{pmKey}, #{pmValue}, #{pmDescribe})
+    </insert>
+</mapper>

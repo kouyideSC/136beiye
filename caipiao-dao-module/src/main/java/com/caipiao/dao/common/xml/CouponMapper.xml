@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.CouponMapper" >
+
+  <!-- 查询优惠券 -->
+  <select id="queryCoupons" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.name,
+    t1.money,
+    t1.useType,
+    t1.limitMoney,
+    t1.status,
+    t1.days,
+    t1.lotteryId,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime,
+    t2.name lotteryName
+    from tb_coupon t1 left join tb_lottery t2
+    on t2.id = t1.lotteryId where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="name != null and name != ''">
+          and t1.name = #{name}
+        </if>
+        <if test="useType != null and useType != ''">
+          and t1.useType = #{useType}
+        </if>
+        <if test="minCreateTime != null and minCreateTime != ''">
+          and t1.createTime &gt;= #{minCreateTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+          and t1.createTime &lt;= #{maxCreateTime}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.createTime desc
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询优惠券总记录条数(管理后台) -->
+  <select id="queryCouponsCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+    select count(0) from tb_coupon t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="name != null and name != ''">
+          and t1.name = #{name}
+        </if>
+        <if test="useType != null and useType != ''">
+          and t1.useType = #{useType}
+        </if>
+        <if test="minCreateTime != null and minCreateTime != ''">
+          and t1.createTime &gt;= #{minCreateTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+          and t1.createTime &lt;= #{maxCreateTime}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 新增优惠券 -->
+  <insert id="addCoupons" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    insert into tb_coupon (name,money,useType,limitMoney,status,days,lotteryId,createTime)
+    values (#{name},#{money},#{useType},#{limitMoney},#{status},#{days},#{lotteryId},now())
+  </insert>
+
+  <!-- 编辑优惠券 -->
+  <update id="updateCoupons" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_coupon set updateTime = now()
+    <if test="name != null and name != ''">
+      ,name = #{name}
+    </if>
+    <if test="money != null and money != ''">
+      ,money = #{money}
+    </if>
+    <if test="useType != null and useType != ''">
+      ,useType = #{useType}
+    </if>
+    <if test="limitMoney != null and limitMoney != ''">
+      ,limitMoney = #{limitMoney}
+    </if>
+    <if test="status != null and status != ''">
+      ,status = #{status}
+    </if>
+    <if test="days != null and days != ''">
+      ,days = #{days}
+    </if>
+    <if test="lotteryId != null and lotteryId != ''">
+      ,lotteryId = #{lotteryId}
+    </if>
+    where id = #{id}
+  </update>
+
+</mapper>

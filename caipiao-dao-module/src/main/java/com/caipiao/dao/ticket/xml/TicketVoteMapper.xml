@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.ticket.TicketVoteMapper" >
+
+    <!-- 查询分票规则列表 -->
+    <select id="queryTicketRuleAll" resultType="com.caipiao.domain.ticket.TicketVoteRule">
+        select r.* from tb_ticket_vote_rule r, tb_ticket_vote v where r.voteId = v.voteId and v.status = 1 and r.rate > 0
+    </select>
+
+    <!-- 查询控制参数列表 -->
+    <select id="queryTicketConfigAll" resultType="com.caipiao.domain.ticket.TicketConfig">
+        select lotteryId, lotteryName, playType, playName,
+        IFNULL(maxMultiple, 0) maxMultiple, IFNULL(maxMoney, 0) maxMoney,
+        IFNULL(maxPrize, 0) maxPrize, maxPassType
+        from tb_ticket_config
+    </select>
+
+    <!-- 查询出票商信息 -->
+    <select id="queryTicketVoteInfo" resultType="com.caipiao.domain.ticket.TicketVote">
+        select * from tb_ticket_vote where voteId = #{voteId} limit 1
+    </select>
+
+    <!-- 查询出票商列表(管理后台) -->
+    <select id="queryTicketVoteList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        id, voteId, voteName, status, apiUrl, `key`, `desc`
+        from tb_ticket_vote where 1 = 1
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+        <if test="voteId != null and voteId != ''">
+            and voteId = #{voteId}
+        </if>
+        <if test="status != null and status != ''">
+            and status = #{status}
+        </if>
+        order by id desc
+    </select>
+
+    <!-- 新增出票商(管理后台) -->
+    <insert id="saveTicketVote" parameterType="java.util.HashMap">
+        insert into tb_ticket_vote(
+          voteId, voteName, status, apiUrl, `key`, `desc`
+        )
+        values(
+          #{voteId}, #{voteName}, #{status}, #{apiUrl}, #{key}, #{desc}
+        )
+    </insert>
+
+    <!-- 删除出票商(管理后台) -->
+    <delete id="deleteTicketVote" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        delete from tb_ticket_vote where id = #{id}
+    </delete>
+
+    <!-- 更新出票商信息(管理后台) -->
+    <update id="updateTicketVote" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_ticket_vote set
+          voteId = #{voteId}, voteName = #{voteName}, status = #{status},
+          apiUrl = #{apiUrl}, `key` = #{key}, `desc` = #{desc}
+        where id = #{id}
+    </update>
+
+    <!-- 更新出票商余额(管理后台) -->
+    <update id="updateVoteBalance">
+        update tb_ticket_vote set `desc` = #{money} where voteId = #{voteId}
+    </update>
+
+    <!-- 查询分票规则列表(管理后台) -->
+    <select id="queryTicketRuleList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        r.id, r.voteId, v.voteName, r.lotteryId, r.lotteryName,
+        r.playType, r.playName, r.rate, r.receiveTime
+        from tb_ticket_vote v, tb_ticket_vote_rule r
+        where v.voteId = r.voteId
+        <if test="id != null and id != ''">
+            and r.id = #{id}
+        </if>
+        <if test="voteId != null and voteId != ''">
+            and r.voteId = #{voteId}
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and r.lotteryId = #{lotteryId}
+        </if>
+        order by r.lotteryId
+    </select>
+
+    <!-- 新增分票规则(管理后台) -->
+    <insert id="saveTicketRule" parameterType="java.util.HashMap">
+        insert into tb_ticket_vote_rule(
+        voteId, lotteryId, lotteryName, playType, playName, rate, receiveTime
+        )
+        values(
+        #{voteId}, #{lotteryId}, #{lotteryName}, #{playType}, #{playName}, #{rate}, #{receiveTime}
+        )
+    </insert>
+
+    <!-- 删除分票规则(管理后台) -->
+    <delete id="deleteTicketRule" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        delete from tb_ticket_vote_rule where id = #{id}
+    </delete>
+
+    <!-- 更新分票规则信息(管理后台) -->
+    <update id="updateTicketRule" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_ticket_vote_rule set
+        voteId = #{voteId}, lotteryId = #{lotteryId}, lotteryName = #{lotteryName},
+        playType = #{playType}, playName = #{playName}, rate = #{rate}, receiveTime = #{receiveTime}
+        where id = #{id}
+    </update>
+
+    <!-- 查询出票控制参数列表(管理后台) -->
+    <select id="queryTicketConfigList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select * from tb_ticket_config
+        where 1=1
+        <if test="id != null and id != ''">
+            and id = #{id}
+        </if>
+        <if test="lotteryId != null and lotteryId != ''">
+            and lotteryId = #{lotteryId}
+        </if>
+        order by lotteryId
+    </select>
+
+    <!-- 更新出票控制参数(管理后台) -->
+    <update id="updateTicketConfig" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_ticket_config set
+        maxMultiple = #{maxMultiple}, maxMoney = #{maxMoney}, maxPrize = #{maxPrize},
+        maxPassType = #{maxPassType}
+        where id = #{id}
+    </update>
+
+    <!-- 查询出票商支持彩种编号(出票) -->
+    <select id="queryTicketVoteLotteryList" resultType="com.caipiao.domain.vo.VoteVo">
+        select
+        v.voteId, v.voteName, v.status, v.apiUrl, v.`key`, r.playType, r.playName,
+        r.receiveTime
+        from tb_ticket_vote v, tb_ticket_vote_rule r
+        where
+        v.voteId = r.voteId and v.status = 1 and v.voteId = #{voteId}
+    </select>
+</mapper>

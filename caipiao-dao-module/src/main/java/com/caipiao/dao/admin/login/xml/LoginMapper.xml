@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caipiao.dao.admin.login.LoginMapper">
+
+	<!-- 查询帐户信息 -->
+	<select id="queryLoginUsers" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select 
+		t1.id,
+        t1.account_name as accountName,
+        t1.personal_name as personalName,
+        t1.password as password,
+        t1.is_lock as isLock,
+        case t1.is_lock when 1 then '已锁定' else '正常' end as lockStatus,
+        t1.organization_id as organizationId,
+        t1.job_type_id as jobTypeId,
+        t1.email as email,
+        t1.avatar,
+        t1.idcard,
+        t1.mobile,
+        t1.creator as creator,
+        date_format(t1.create_time,'%Y-%m-%d %H:%i:%s') createTime,
+        t1.modifier as modifier,
+        date_format(t1.modified_time,'%Y-%m-%d %H:%i:%s') modifiedTime,
+        t1.delete_flag as deleteFlag,
+        t1.is_superuser as isSuperuser,
+        t1.token as token,
+        t1.work_status as workStatus,
+        date_format(t1.last_login_time,'%Y-%m-%d %H:%i:%s') lastLoginTime,
+        t1.last_login_ip lastLoginIp,
+        t2.job_name jobName,
+        t3.organization_name organizationName 
+        from tb_cpadmin_account t1
+        left join tb_cpadmin_job_type t2 on t1.job_type_id = t2.id
+        left join tb_cpadmin_organization t3 on t1.organization_id = t3.id
+        where t1.delete_flag != 1 
+        and t1.is_lock != 1 
+        and t1.work_status != 2 
+        <choose>
+        	<when test="id != null and id != ''">
+        		and t1.id = #{id}
+        	</when>
+        	<otherwise>
+        		and t1.account_name = #{accountName} 
+        		and t1.password = #{password} 
+        	</otherwise>
+        </choose>
+        limit 1
+	</select>
+	
+	<!-- 查询模块信息  -->
+	<select id="queryModules" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+		select 
+		id,
+		module_name moduleName,
+		module_code moduleCode,
+		module_type moduleType,
+		description,
+		parent_module_id parentModuleId,
+		module_url moduleUrl,
+		sort,
+		delete_flag deleteFlag,
+		iconfont
+		from tb_cpadmin_module
+		where parent_module_id != -1
+        <if test="queryAll != 1">
+            and delete_flag != 1
+        </if>
+		order by module_type,sort
+	</select>
+	
+</mapper>

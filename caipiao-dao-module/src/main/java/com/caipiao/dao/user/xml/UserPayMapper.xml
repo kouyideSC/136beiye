@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.user.UserPayMapper" >
+
+  <!--保存订单-->
+  <insert id="insertUserPay">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_user_pay (
+      payCode,payDesc,channelCode, channelDesc,
+      userId,payType, money,omoney, status,
+      payId, channelPayId, clientFrom, 
+      requestIp, createTime, doneTime
+      )
+    values (
+    #{payCode},#{payDesc},#{channelCode}, #{channelDesc},
+      #{userId},#{payType}, #{money,jdbcType=DECIMAL},#{omoney,jdbcType=DECIMAL}, #{status},
+      #{payId}, #{channelPayId}, #{clientFrom},
+      #{requestIp}, #{createTime}, #{doneTime}
+      )
+  </insert>
+
+  <!-- 查询订单 -->
+  <select id="queryUserPays" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.user.UserPay">
+    select t1.* from tb_user_pay t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="userId != null and userId != ''">
+          and t1.userId = #{userId}
+        </if>
+        <if test="payId != null and payId != ''">
+          and t1.payId = #{payId}
+        </if>
+        <if test="cpayId != null and cpayId != ''">
+          and t1.channelPayId = #{cpayId}
+        </if>
+        <if test="payType != null and payType != ''">
+          and t1.payType = #{payType}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="minStatus != null and minStatus != ''">
+          and t1.status &gt;= #{minStatus}
+        </if>
+        <if test="maxStatus != null and maxStatus != ''">
+          and t1.status &lt;= #{maxStatus}
+        </if>
+        <if test="minCreateTime != null and minCreateTime != ''">
+          and t1.createTime &gt;= #{minCreateTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+          and t1.createTime &lt; #{maxCreateTime}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.createTime desc
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询订单总记录条数 -->
+  <select id="queryUserPaysCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+    select count(0) from tb_user_pay t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="userId != null and userId != ''">
+          and t1.userId = #{userId}
+        </if>
+        <if test="payId != null and payId != ''">
+          and t1.payId = #{payId}
+        </if>
+        <if test="cpayId != null and cpayId != ''">
+          and t1.channelPayId = #{cpayId}
+        </if>
+        <if test="payType != null and payType != ''">
+          and t1.payType = #{payType}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="minStatus != null and minStatus != ''">
+          and t1.status &gt;= #{minStatus}
+        </if>
+        <if test="maxStatus != null and maxStatus != ''">
+          and t1.status &lt;= #{maxStatus}
+        </if>
+        <if test="minCreateTime != null and minCreateTime != ''">
+          and t1.createTime &gt;= #{minCreateTime}
+        </if>
+        <if test="maxCreateTime != null and maxCreateTime != ''">
+          and t1.createTime &lt; #{maxCreateTime}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询待发送支付结果通知的充值订单记录 -->
+  <select id="queryRechargeForNeedNotify" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.payId,
+    t1.channelPayId,
+    t1.userId,
+    t1.money,
+    t1.clientFrom,
+    t2.payCode,
+    t2.payDesc,
+    t3.channelCode,
+    t3.channelDesc,
+    t4.merchantNo,
+    t4.appNo,
+    t4.appName,
+    t4.apiUrl,
+    t4.notifyUrl,
+    t4.returnUrl,
+    t4.signType,
+    t4.secretKey,
+    t4.rsaPublicKey,
+    t4.rsaPrivateKey,
+    t4.deviceInfo,
+    t4.webAddress
+    from tb_user_pay t1,tb_payway t2,tb_paychannel t3,tb_payway_channel t4
+    where t1.payCode = t2.payCode and t1.channelCode = t3.channelCode
+    and t2.id = t4.paywayId and t3.id = t4.paychannelId
+    and t1.payType = 0
+    and TIMESTAMPDIFF(minute,t1.createTime,now()) &gt; 10
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="userId != null and userId != ''">
+          and t1.userId = #{userId}
+        </if>
+        <if test="payId != null and payId != ''">
+          and t1.payId = #{payId}
+        </if>
+        <if test="cpayId != null and cpayId != ''">
+          and t1.channelPayId = #{cpayId}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="minCreateTime != null and minCreateTime != ''">
+          and t1.createTime &gt;= #{minCreateTime}
+        </if>
+        order by t1.createTime asc
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 更新订单状态 -->
+  <update id="updateUserPay" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_user_pay set updateTime = now()
+    <if test="status != null and status != ''">
+      ,status = #{status}
+    </if>
+    <if test="remark != null and remark != ''">
+      ,remark = #{remark}
+    </if>
+    <if test="bankType != null and bankType != ''">
+      ,bankType = #{bankType}
+    </if>
+    <if test="bankTypeDesc != null and bankTypeDesc != ''">
+      ,bankTypeDesc = #{bankTypeDesc}
+    </if>
+    <if test="channelCode != null and channelCode != ''">
+      ,channelCode = #{channelCode}
+    </if>
+    <if test="channelDesc != null and channelDesc != ''">
+      ,channelDesc = #{channelDesc}
+    </if>
+    <if test="payCode != null and payCode != ''">
+      ,payCode = #{payCode}
+    </if>
+    <if test="payDesc != null and payDesc != ''">
+      ,payDesc = #{payDesc}
+    </if>
+    <if test="channelPayId != null and channelPayId != ''">
+      ,channelPayId = #{channelPayId}
+    </if>
+    <if test="status == 3">
+      ,doneTime = now()
+    </if>
+    <choose>
+      <when test="id != null and id != ''">
+        where id = #{id}
+      </when>
+      <when test="payId != null and payId != ''">
+        where payId = #{payId}
+      </when>
+      <when test="cpayId != null and cpayId != ''">
+        where channelPayId = #{cpayId}
+      </when>
+      <otherwise>
+        where 1 != 1
+      </otherwise>
+    </choose>
+  </update>
+
+  <!-- 充值 -->
+  <parameterMap id="doRechargeParameter" type="com.caipiao.domain.cpadmin.BaseDto">
+    <parameter property="payId" jdbcType="VARCHAR" mode="IN"></parameter><!-- 商户订单号 -->
+    <parameter property="cpayId" jdbcType="VARCHAR" mode="IN"></parameter><!-- 渠道流水号 -->
+    <parameter property="smoney" jdbcType="DECIMAL" mode="IN"></parameter><!-- 交易金额 -->
+    <parameter property="ptime" jdbcType="VARCHAR" mode="IN"></parameter><!-- 订单处理完成时间 -->
+    <parameter property="pbank" jdbcType="VARCHAR" mode="IN"></parameter><!-- 用户付款银行标识 -->
+    <parameter property="pbankDesc" jdbcType="VARCHAR" mode="IN"></parameter><!-- 用户付款银行描述 -->
+    <parameter property="pbankType" jdbcType="INTEGER" mode="IN"></parameter><!-- 用户付款银行卡类型(0-借记卡 1-信用卡) -->
+    <parameter property="dcode" jdbcType="INTEGER" mode="OUT"></parameter><!-- 处理结果编号( -->
+    <parameter property="dmsg" jdbcType="VARCHAR" mode="OUT"></parameter><!-- 处理结果描述 -->
+  </parameterMap>
+  <select id="doRecharge" parameterMap="doRechargeParameter" statementType="CALLABLE">
+      {call cp_recharge(?,?,?,?,?,?,?,?,?)}
+  </select>
+
+  <!-- 扣款 -->
+  <parameterMap id="doDeductParameter" type="com.caipiao.domain.cpadmin.BaseDto">
+    <parameter property="payId" jdbcType="VARCHAR" mode="IN"></parameter><!-- 商户订单号 -->
+    <parameter property="userId" jdbcType="VARCHAR" mode="IN"></parameter><!-- 用户编号 -->
+    <parameter property="smoney" jdbcType="DECIMAL" mode="IN"></parameter><!-- 交易金额 -->
+    <parameter property="clientFrom" jdbcType="INTEGER" mode="IN"></parameter><!-- 客户端来源 -->
+    <parameter property="requestIp" jdbcType="VARCHAR" mode="IN"></parameter><!-- 客户端ip -->
+    <parameter property="dcode" jdbcType="INTEGER" mode="OUT"></parameter><!-- 处理结果编号 -->
+    <parameter property="dmsg" jdbcType="VARCHAR" mode="OUT"></parameter><!-- 处理结果描述 -->
+  </parameterMap>
+  <select id="doDeduct" parameterMap="doDeductParameter" statementType="CALLABLE">
+    {call cp_deduct(?,?,?,?,?,?,?)}
+  </select>
+
+  <!-- 查询充值/提现流水(管理后台) -->
+  <select id="queryUserPayInfos" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    t1.id,
+    t1.channelCode,
+    t1.channelDesc,
+    t1.payCode,
+    t1.payDesc,
+    t1.userId,
+    t1.payType,
+    t1.money,
+    t1.status,
+    t1.remark,
+    t1.payId,
+    t1.channelPayId,
+    t1.bankType,
+    t1.bankTypeDesc,
+    t1.bankInfo,
+    t1.clientFrom,
+    t1.requestIp,
+    date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+    date_format(t1.doneTime,'%Y-%m-%d %H:%i:%s') doneTime,
+    date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime,
+    t2.nickName,
+    t2.mobile,
+    t2.realName
+    from tb_user_pay t1,tb_user t2 where t2.id = t1.userId
+    <if test="xsdlFlag == 1">
+      and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+      union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+      where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.userId)
+    </if>
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="payId != null and payId != ''">
+          and t1.payId = #{payId}
+        </if>
+        <if test="cpayId != null and cpayId != ''">
+          and t1.channelPayId = #{cpayId}
+        </if>
+        <if test="payType != null and payType != ''">
+          and t1.payType = #{payType}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+          and t1.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+          and t1.createTime &lt;= #{endTime}
+        </if>
+        <if test="clientFrom != null and clientFrom != ''">
+          and t1.clientFrom = #{clientFrom}
+        </if>
+        <if test="userId != null and userId != ''">
+          and t1.userId = #{userId}
+        </if>
+        <if test="channelCode != null and channelCode != ''">
+          and t1.channelCode = #{channelCode}
+        </if>
+        <if test="payCode != null and payCode != ''">
+          and t1.payCode = #{payCode}
+        </if>
+        <if test="minMoney != null and minMoney != ''">
+          and t1.money &gt;= #{minMoney}
+        </if>
+        <if test="maxMoney != null and maxMoney != ''">
+          and t1.money &lt;= #{maxMoney}
+        </if>
+        <if test="mobile != null and mobile != ''">
+          and t2.mobile = #{mobile}
+        </if>
+        <if test="nickName != null and nickName != ''">
+          and t2.nickName = #{nickName}
+        </if>
+        <if test="realName != null and realName != ''">
+          and t2.realName = #{realName}
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.createTime desc
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询充值/提现流水总计(管理后台) -->
+  <select id="queryUserPayInfosCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select count(0) as tsize,sum(money) as tmoney from tb_user_pay t1,tb_user t2 where t2.id = t1.userId
+    <if test="xsdlFlag == 1">
+      and exists(select tbu.id from (select tbs.id from tb_user tbs where tbs.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1)
+      union all select tbs.id from tb_user tbs where exists (select tbs2.id from tb_user tbs2
+      where tbs.higherUid = tbs2.id and tbs2.higherUid = (select id from tb_user where mobile = #{xsdlMobile} limit 1))) tbu where tbu.id = t1.userId)
+    </if>
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="payId != null and payId != ''">
+          and t1.payId = #{payId}
+        </if>
+        <if test="cpayId != null and cpayId != ''">
+          and t1.channelPayId = #{cpayId}
+        </if>
+        <if test="payType != null and payType != ''">
+          and t1.payType = #{payType}
+        </if>
+        <if test="status != null and status != ''">
+          and t1.status = #{status}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+          and t1.createTime &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+          and t1.createTime &lt;= #{endTime}
+        </if>
+        <if test="userId != null and userId != ''">
+          and t1.userId = #{userId}
+        </if>
+        <if test="channelCode != null and channelCode != ''">
+          and t1.channelCode = #{channelCode}
+        </if>
+        <if test="payCode != null and payCode != ''">
+          and t1.payCode = #{payCode}
+        </if>
+        <if test="minMoney != null and minMoney != ''">
+          and t1.money &gt;= #{minMoney}
+        </if>
+        <if test="maxMoney != null and maxMoney != ''">
+          and t1.money &lt;= #{maxMoney}
+        </if>
+        <if test="mobile != null and mobile != ''">
+          and t2.mobile = #{mobile}
+        </if>
+        <if test="nickName != null and nickName != ''">
+          and t2.nickName = #{nickName}
+        </if>
+        <if test="realName != null and realName != ''">
+          and t2.realName = #{realName}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+</mapper>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.caipiao.dao.jsbf.ScheduleMapper">
+
+	<!--根据期次区间统计查询场次数-->
+	<select id="queryPeriodNumList" resultType="com.caipiao.domain.jsbf.Schedule">
+		select period, COUNT(1) flag from zl_schedule where period &gt;= #{speid} and period &lt;= #{epeid} group by period order by period
+	</select>
+
+	<!--根据期次查询当前期及上期未打完的比赛对阵-->
+	<select id="queryScheduleAndLastNoEndList" resultType="com.caipiao.domain.jsbf.Schedule">
+		select * from (
+			select * from zl_schedule where period = #{period}
+			UNION
+			select * from zl_schedule where period = #{lastPeriod} and matchState &gt; 0
+		) tm order by period, jcId
+	</select>
+
+	<!--根据期次查询即时比分对阵-->
+	<select id="queryScheduleList" resultType="com.caipiao.domain.jsbf.Schedule">
+		select * from zl_schedule where period = #{period} order by jcId
+	</select>
+
+	<!--更新即时比分对阵信息-->
+	<update id="updateSchedule" parameterType="com.caipiao.domain.jsbf.Schedule">
+		update zl_schedule
+		<set>
+			<if test="league != null">
+				league = #{league},
+			</if>
+			<if test="period != null">
+				period = #{period},
+			</if>
+			<if test="speriod != null">
+				speriod = #{speriod},
+			</if>
+			<if test="jcId != null">
+				jcId = #{jcId},
+			</if>
+			<if test="week != null">
+				week = #{week},
+			</if>
+			<if test="homeTeamId != null">
+				homeTeamId = #{homeTeamId},
+			</if>
+			<if test="guestTeamId != null">
+				guestTeamId = #{guestTeamId},
+			</if>
+			<if test="homeTeam != null">
+				homeTeam = #{homeTeam},
+			</if>
+			<if test="guestTeam != null">
+				guestTeam = #{guestTeam},
+			</if>
+			<if test="matchTime != null">
+				matchTime = #{matchTime},
+			</if>
+			<if test="beginTime != null">
+				beginTime = #{beginTime},
+			</if>
+			<if test="matchState != null">
+				matchState = #{matchState},
+			</if>
+			<if test="homeScore != null">
+				homeScore = #{homeScore},
+			</if>
+			<if test="guestScore != null">
+				guestScore = #{guestScore},
+			</if>
+			<if test="homeHalfScore != null">
+				homeHalfScore = #{homeHalfScore},
+			</if>
+			<if test="guestHalfScore != null">
+				guestHalfScore = #{guestHalfScore},
+			</if>
+			<if test="homeRed != null">
+				homeRed = #{homeRed},
+			</if>
+			<if test="guestRed != null">
+				guestRed = #{guestRed},
+			</if>
+			<if test="homeYellow != null">
+				homeYellow = #{homeYellow},
+			</if>
+			<if test="guestYellow != null">
+				guestYellow = #{guestYellow},
+			</if>
+			<if test="neutrality != null">
+				neutrality = #{neutrality},
+			</if>
+			<if test="homeOrder != null">
+				homeOrder = #{homeOrder},
+			</if>
+			<if test="guestOrder != null">
+				guestOrder = #{guestOrder},
+			</if>
+			<if test="flag != null">
+				flag = #{flag},
+			</if>
+			<if test="remark != null">
+				remark = #{remark},
+			</if>
+			updatetime = now()
+		</set>
+		where scheduleId = #{scheduleId}
+	</update>
+
+	<!--插入即时比分对阵信息-->
+	<insert id="insertSchedule" parameterType="com.caipiao.domain.jsbf.Schedule" >
+		<selectKey keyProperty="id" resultType="java.lang.Long">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+		insert into zl_schedule (
+		scheduleId, league, period, speriod, jcId, week, homeTeamId, guestTeamId,
+		homeTeam, guestTeam, neutrality, matchTime, beginTime,
+		homeOrder, guestOrder, matchState, homeScore, guestScore,
+		homeHalfScore, guestHalfScore, homeRed, guestRed, homeYellow,
+		guestYellow, remark, flag, updateTime
+		)
+		values (
+		#{scheduleId}, #{league}, #{period},#{speriod}, #{jcId}, #{week},
+		#{homeTeamId}, #{guestTeamId}, #{homeTeam}, #{guestTeam},
+		#{neutrality}, #{matchTime}, #{beginTime}, #{homeOrder},
+		#{guestOrder}, #{matchState}, #{homeScore}, #{guestScore},
+		#{homeHalfScore}, #{guestHalfScore}, #{homeRed}, #{guestRed},
+		#{homeYellow}, #{guestYellow}, #{remark}, #{flag}, #{updateTime}
+		)
+	</insert>
+
+</mapper>

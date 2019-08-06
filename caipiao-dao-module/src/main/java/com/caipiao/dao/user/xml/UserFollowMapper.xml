@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.user.UserFollowMapper" >
+
+    <!--查询某场比赛已结算的神单用户编号-->
+    <select id="queryFollowUserIdForMatch" resultType="java.lang.Long">
+        select
+        DISTINCT(s.schemeUserId)
+        from tb_scheme s, tb_scheme_matches m
+        where
+        s.id = m.schemeId
+        and m.matchCode = #{matchCode}
+        and m.lotteryId = #{lotteryId}
+        and s.schemeType = 4
+        and s.schemeStatus = 3
+        and s.openStatus > 0
+    </select>
+
+    <!--查询某个用户最近一周的神单数据-->
+    <select id="queryUserFollowForWeek" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s.openStatus, s.schemeMoney, s.prizeTax
+        from tb_scheme s
+        where
+        s.schemeUserId = #{userId}
+        and s.lotteryId = #{lotteryId}
+        and s.schemeType = 4
+        and s.schemeStatus = 3
+        and s.openStatus > 0
+        and s.createTime > DATE_SUB(now(), INTERVAL 7 DAY)
+        order by s.openTime desc
+    </select>
+
+    <!--统计某个用户最近一月的神单数据-->
+    <select id="queryUserFollowStatisForMonth" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        COUNT(1) orderSums,
+        IFNULL(SUM(CASE WHEN s.openStatus = '2' THEN 1 ELSE 0 END),0) hitSums,
+        IFNULL(SUM(s.schemeMoney),0) buyMoney,
+        IFNULL(SUM(s.prizeTax),0) hitMoney
+        from tb_scheme s
+        where
+        s.schemeUserId = #{userId}
+        and s.lotteryId = #{lotteryId}
+        and s.schemeType = 4
+        and s.schemeStatus = 3 and s.openStatus > 0
+        and s.createTime > DATE_SUB(now(), INTERVAL 1 MONTH)
+    </select>
+
+    <!--查询某个用户最近10个已结算的神单数据-->
+    <select id="queryUserNearTenFollowScheme" resultType="java.lang.Long">
+        select
+        s.openStatus
+        from tb_scheme s
+        where
+        s.schemeUserId = #{userId}
+        and s.lotteryId = #{lotteryId}
+        and s.schemeType = 4
+        and s.schemeStatus = 3
+        and s.openStatus > 0
+        order by s.openTime desc
+        limit 10
+    </select>
+
+    <!--统计用户神单数,命中数,获取打赏总金额,总跟单金额,总投注金额,总中奖金额,总跟单人次-->
+    <select id="queryUserFollowRewardMoneyStatis" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        SELECT
+	    COUNT(1) orderSums,
+		IFNULL(SUM(CASE WHEN s.openStatus = '2' THEN 1 ELSE 0 END),0) hitSums,
+	    IFNULL(sum(s.rewardPrize), 0) redwardSum,
+	    IFNULL(sum(s.redSafeHuardMoney), 0) followSum,
+	    IFNULL(sum(s.schemeMoney), 0) buyMoney,
+	    IFNULL(sum(s.prizeTax), 0) hitMoney,
+	    (
+		    SELECT
+			count(1) followNum
+		    FROM
+			tb_scheme_follow f
+		    WHERE
+			f.senderUserId = #{userId}
+		    AND f.schemeStatus = 1
+		    AND f.awardState > 0
+	    ) followNum
+        FROM
+	    tb_scheme s
+        WHERE
+	    s.schemeUserId = #{userId}
+	    AND s.lotteryId = #{lotteryId}
+        AND s.schemeType = 4
+        AND s.schemeStatus = 3
+        AND s.openStatus > 0
+    </select>
+
+    <!--查询用户神单统计信息是否存在-->
+    <select id="queryUserFollowIsExists" resultType="java.lang.Integer">
+        select count(1)
+        from tb_user_follow_statis
+        where
+        userId = #{userId}
+        and lotteryId = #{lotteryId}
+    </select>
+
+    <!--初始化用户神单统计信息-->
+    <insert id="insertUserFollowStatis">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user_follow_statis (
+        userId,
+        lotteryId,
+        updateTime
+        )
+        values (
+        #{userId},
+        #{lotteryId},
+        now()
+        )
+    </insert>
+
+    <!-- 根据条件查询用户神单统计近7天盈利率榜单信息 -->
+    <select id="queryUserFollowStatisList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        s.userId, s.weekHitRate, s.weekWinRate, s.weekHitDescribe, s.weekRunRedSums, u.avatar
+        from tb_user_follow_statis s, tb_user u
+        where
+        s.userId = u.id
+        and u.status = 1
+        <if test="userId != null and userId != ''">
+            and s.userId = #{userId}
+        </if>
+        <if test="sortType != null and sortType = 1">
+            order by s.weekHitRate desc
+        </if>
+        <if test="sortType != null and sortType = 2">
+            order by s.weekWinRate desc
+        </if>
+        <if test="sortType != null and sortType = 3">
+            order by s.weekRunRedSums desc
+        </if>
+        limit 10
+    </select>
+
+    <!-- 更新用户神单统计信息 -->
+    <update id="updateUserFollowStatisInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user_follow_statis set
+        <if test="orderSums != null">
+            orderSums = #{orderSums},
+        </if>
+        <if test="hitSums != null">
+            hitSums = #{hitSums},
+        </if>
+        <if test="hitRate != null">
+            hitRate = #{hitRate},
+        </if>
+        <if test="buyMoney != null">
+            buyMoney = #{buyMoney},
+        </if>
+        <if test="hitMoney != null">
+            hitMoney = #{hitMoney},
+        </if>
+        <if test="winRate != null">
+            winRate = #{winRate},
+        </if>
+        <if test="runRedSums != null">
+            runRedSums = #{runRedSums},
+        </if>
+        <if test="hitDescribe != null and hitDescribe != ''">
+            hitDescribe = #{hitDescribe},
+        </if>
+        <if test="followSums != null">
+            followSums = #{followSums},
+        </if>
+        <if test="followMoneySums != null">
+            followMoneySums = #{followMoneySums},
+        </if>
+        <if test="weekOrderSums != null">
+            weekOrderSums = #{weekOrderSums},
+        </if>
+        <if test="weekHitSums != null">
+            weekHitSums = #{weekHitSums},
+        </if>
+        <if test="weekHitRate != null">
+            weekHitRate = #{weekHitRate},
+        </if>
+        <if test="weekBuyMoney != null">
+            weekBuyMoney = #{weekBuyMoney},
+        </if>
+        <if test="weekHitMoney != null">
+            weekHitMoney = #{weekHitMoney},
+        </if>
+        <if test="weekWinRate != null">
+            weekWinRate = #{weekWinRate},
+        </if>
+        <if test="weekHitDescribe != null and weekHitDescribe != ''">
+            weekHitDescribe = #{weekHitDescribe},
+        </if>
+        <if test="weekRunRedSums != null">
+            weekRunRedSums = #{weekRunRedSums},
+        </if>
+        <if test="monthOrderSums != null">
+            monthOrderSums = #{monthOrderSums},
+        </if>
+        <if test="monthHitSums != null">
+            monthHitSums = #{monthHitSums},
+        </if>
+        <if test="monthHitRate != null">
+            monthHitRate = #{monthHitRate},
+        </if>
+        <if test="monthBuyMoney != null">
+            monthBuyMoney = #{monthBuyMoney},
+        </if>
+        <if test="monthHitMoney != null">
+            monthHitMoney = #{monthHitMoney},
+        </if>
+        <if test="monthWinRate != null">
+            monthWinRate = #{monthWinRate},
+        </if>
+        <if test="monthHitDescribe != null and monthHitDescribe != ''">
+            monthHitDescribe = #{monthHitDescribe},
+        </if>
+        <if test="monthRunRedSums != null">
+            monthRunRedSums = #{monthRunRedSums},
+        </if>
+        <if test="tenOrderTrend != null and tenOrderTrend != ''">
+            tenOrderTrend = #{tenOrderTrend},
+        </if>
+        <if test="rewardMoney != null">
+            rewardMoney = #{rewardMoney},
+        </if>
+        updateTime = now()
+        where
+        userId = #{userId}
+        and lotteryId = #{lotteryId}
+    </update>
+
+    <!-- 查询有周榜数据但已经一周没有发神单的用户列表 -->
+    <select id="queryWeekNoFollowUserList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Long">
+        select s.userId
+        from tb_user_follow_statis s
+        where
+        s.lotteryId = #{lotteryId}
+        AND s.weekOrderSums > 0
+        AND NOT EXISTS
+        (
+        select 1 from tb_scheme c
+        where
+        c.schemeUserId = s.userId
+        and c.lotteryId = #{lotteryId}
+        and c.schemeStatus = 3
+        and c.schemeType = 4
+        and c.createTime &gt; DATE_SUB(NOW(), INTERVAL 7 DAY)
+        and c.createTime &lt; NOW()
+        )
+    </select>
+
+    <!-- 查询有月榜数据但已经一月没有发神单的用户列表 -->
+    <select id="queryMonthNoFollowUserList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="java.lang.Long">
+        select s.*
+        from tb_user_follow_statis s
+        where
+        s.lotteryId = #{lotteryId}
+        AND s.monthOrderSums > 0
+        AND NOT EXISTS
+        (
+        select 1 from tb_scheme c
+        where
+        c.schemeUserId = s.userId
+        and c.lotteryId = #{lotteryId}
+        and c.schemeStatus = 3
+        and c.schemeType = 4
+        and c.createTime &gt; DATE_SUB(NOW(), INTERVAL 31 DAY)
+        and c.createTime &lt; NOW()
+        )
+    </select>
+</mapper>

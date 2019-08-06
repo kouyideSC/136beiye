@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.BankMapper" >
+
+  <!-- 查询银行 -->
+  <select id="queryBanks" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.Bank">
+    select
+    t1.bankCode,
+    t1.bankName,
+    t1.abbreviation,
+    t1.logo,
+    t1.remark,
+    t1.status,
+    t1.needSub
+    from tb_bank t1 where 1 = 1
+    <if test="status != null and status != ''">
+      and t1.status = #{status}
+    </if>
+    <if test="bcode != null and bcode != ''">
+      and t1.bankCode = #{bcode}
+    </if>
+  </select>
+
+  <!-- 查询银行支行 -->
+  <select id="queryBankSubs" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.BankSub">
+    select
+    t1.subBankName,
+    t1.bankCode,
+    t1.cityCode,
+    t1.address,
+    t1.remark,
+    t1.status
+    from tb_bank_sub t1
+    where t1.status = #{status} and bankCode = #{bcode} and cityCode = #{acode}
+  </select>
+
+</mapper>

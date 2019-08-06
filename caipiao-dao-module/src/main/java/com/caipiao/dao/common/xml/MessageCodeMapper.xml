@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.MessageCodeMapper" >
+
+	<!--查询未发送的短信列表-->
+	<select id="queryNoSendMessageCode" resultType="com.caipiao.domain.common.MessageCode">
+		select * from tb_message_code
+		where state = 0 and isAuth = 0 and tryNumber &lt; 3 and expireTime > now() order by createTime
+	</select>
+
+	<!--根据手机号和类型查询消息-->
+	<select id="queryMessageCode" resultType="com.caipiao.domain.common.MessageCode">
+    	select * from tb_message_code
+    	where mobile = #{mobile} and type = #{type} and isAuth = 0 order by createTime desc limit 1
+  	</select>
+
+	<!--检查验证码是否正确-->
+  	<select id="checkMessageCode" resultType="java.lang.Long">
+    	select
+ 		CASE WHEN count(1) > 0 THEN id ELSE 0 END
+ 		from tb_message_code
+ 		where
+ 		mobile = #{mobile} and type = #{type} and content = #{content} and isAuth = 0 and expireTime > now() and state = 1
+  	</select>
+
+	<!--保存消息-->
+  	<insert id="insertMessageCode">
+    	<selectKey keyProperty="id" resultType="java.lang.Long">
+			select LAST_INSERT_ID() as id
+		</selectKey>
+		insert into tb_message_code (
+		userId, mobile, `type`, content, state, sendCode, sendInfo, beginTime, expireTime, tryNumber
+		)
+		values (
+		#{userId}, #{mobile}, #{type}, #{content}, #{state}, #{sendCode}, #{sendInfo},
+		#{beginTime}, #{expireTime}, #{tryNumber}
+		)
+  	</insert>
+
+	<!--更新消息-->
+  	<update id="updateMessageCode">
+		update tb_message_code
+		<set>
+			<if test="state != null">
+				state = #{state},
+			</if>
+			<if test="content != null">
+				content = #{content},
+			</if>
+			<if test="sendCode != null">
+				sendCode = #{sendCode},
+			</if>
+			<if test="sendInfo != null">
+				sendInfo = #{sendInfo},
+			</if>
+			<if test="beginTime != null">
+				beginTime = #{beginTime},
+			</if>
+			<if test="expireTime != null">
+				expireTime = #{expireTime},
+			</if>
+			<if test="isAuth != null">
+				isAuth = #{isAuth},
+			</if>
+			<if test="tryNumber != null">
+				tryNumber = #{tryNumber},
+			</if>
+		</set>
+		where id = #{id}
+  	</update>
+
+</mapper>

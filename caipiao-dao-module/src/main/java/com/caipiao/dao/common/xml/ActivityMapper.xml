@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.ActivityMapper" >
+
+  <!--根据条件查询活动列表-->
+  <select id="queryActivityList" resultType="com.caipiao.domain.common.Activity">
+    select
+    id, activityName, activityType, title, build, clientType, linkUrl, pictureUrl, isShow,
+    beginTime, expireTime, content
+    from tb_activity
+    where
+    (expireTime is null or expireTime &gt; now())
+    <if test="activityType != null">
+      <choose>
+        <when test="isbanner != null">
+          and (activityType = #{activityType} or isbanner = #{isbanner})
+        </when>
+        <otherwise>
+          and activityType = #{activityType}
+        </otherwise>
+      </choose>
+    </if>
+    <if test="build != null">
+      and build = #{build}
+    </if>
+    <if test="clientType != null">
+      and clientType = #{clientType}
+    </if>
+    <if test="isShow != null">
+      and isShow = #{isShow}
+    </if>
+    order by createTime desc
+  </select>
+
+  <!--保存活动记录-->
+  <insert id="insertActivity">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_activity (
+      activityName, activityType,isbanner,couponType,couponMode,couponIds,couponExpireTime,title,build,clientType, linkUrl, pictureUrl, isShow,
+      beginTime, expireTime, content
+      )
+    values (
+      #{activityName}, #{activityType},#{isbanner},#{couponType},#{couponMode},#{couponIds},#{couponExpireTime}, #{title}, #{build}, #{clientType},
+      #{linkUrl}, #{pictureUrl}, #{isShow},  #{beginTime}, #{expireTime}, #{content}
+      )
+  </insert>
+
+  <!-- 查询活动 -->
+  <select id="queryActivitys" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.Activity">
+    select
+    t1.id,
+    t1.activityName,
+    t1.activityType,
+    t1.isbanner,
+    t1.couponType,
+    t1.couponMode,
+    t1.couponIds,
+    t1.couponExpireTime,
+    t1.title,
+    t1.build,
+    t1.clientType,
+    t1.linkUrl,
+    t1.pictureUrl,
+    t1.isShow,
+    t1.content,
+    t1.beginTime,
+    t1.expireTime,
+    t1.createTime
+    from tb_activity t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="activityType != null and activityType != ''">
+          and t1.activityType = #{activityType}
+        </if>
+        <if test="couponType != null and couponType != ''">
+          and t1.couponType = #{couponType}
+        </if>
+        <if test="clientType != null and clientType != ''">
+          and t1.clientType = #{clientType}
+        </if>
+        <if test="isShow != null and isShow != ''">
+          and t1.isShow = #{isShow}
+        </if>
+        <if test="build != null and build != ''">
+          and t1.build = #{build}
+        </if>
+        <if test="currentTime != null and currentTime != ''">
+          and date_format(t1.beginTime,'%Y-%m-%d') &lt;= #{currentTime}
+          and (date_format(t1.expireTime,'%Y-%m-%d') &gt;= #{currentTime} or t1.expireTime is NULL)
+        </if>
+        <choose>
+          <when test="sorts != null and sorts != ''">
+            order by ${sorts}
+          </when>
+          <otherwise>
+            order by t1.id
+          </otherwise>
+        </choose>
+        <if test="psize != null and psize != ''">
+          limit ${pstart},${psize}
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 查询活动信息总记录数(管理后台) -->
+  <select id="queryActivitysCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+    select count(0) from tb_activity t1 where 1 = 1
+    <choose>
+      <when test="id != null and id != ''">
+        and t1.id = #{id}
+      </when>
+      <otherwise>
+        <if test="activityType != null and activityType != ''">
+          and t1.activityType = #{activityType}
+        </if>
+        <if test="couponType != null and couponType != ''">
+          and t1.couponType = #{couponType}
+        </if>
+        <if test="clientType != null and clientType != ''">
+          and t1.clientType = #{clientType}
+        </if>
+        <if test="isShow != null and isShow != ''">
+          and t1.isShow = #{isShow}
+        </if>
+        <if test="build != null and build != ''">
+          and t1.build = #{build}
+        </if>
+        <if test="currentTime != null and currentTime != ''">
+          and date_format(t1.beginTime,'%Y-%m-%d') &lt;= #{currentTime}
+          and (date_format(t1.expireTime,'%Y-%m-%d') &gt;= #{currentTime} or t1.expireTime is NULL)
+        </if>
+      </otherwise>
+    </choose>
+  </select>
+
+  <!-- 新增活动 -->
+  <insert id="addActivity" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    insert into tb_activity (activityName,activityType,isbanner,couponType,couponMode,couponIds,
+    couponExpireTime,title,build,clientType,linkUrl,pictureUrl,isShow,content,beginTime,expireTime,createTime)
+    values (#{activityName},#{activityType},#{isbanner},#{couponType},#{couponMode},#{couponIds},
+    #{couponExpireTime},#{title},#{build},#{clientType},#{linkUrl},#{pictureUrl},#{isShow},#{content},#{beginTime},#{expireTime},now())
+  </insert>
+
+  <!-- 更新活动 -->
+  <update id="updateActivity" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_activity set updateTime = now()
+    <if test="activityName != null">
+      ,activityName = #{activityName}
+    </if>
+    <if test="activityType != null">
+      ,activityType = #{activityType}
+    </if>
+    <if test="isbanner != null">
+      ,isbanner = #{isbanner}
+    </if>
+    <if test="couponType != null">
+      ,couponType = #{couponType}
+    </if>
+    <if test="couponMode != null">
+      ,couponMode = #{couponMode}
+    </if>
+    <if test="couponIds != null">
+      ,couponIds = #{couponIds}
+    </if>
+    <if test="couponExpireTime != null">
+      ,couponExpireTime = #{couponExpireTime}
+    </if>
+
+    <if test="title != null">
+      ,title = #{title}
+    </if>
+    <if test="build != null">
+      ,build = #{build}
+    </if>
+    <if test="clientType != null">
+      ,clientType = #{clientType}
+    </if>
+    <if test="linkUrl != null">
+      ,linkUrl = #{linkUrl}
+    </if>
+    <if test="pictureUrl != null">
+      ,pictureUrl = #{pictureUrl}
+    </if>
+    <if test="isShow != null">
+      ,isShow = #{isShow}
+    </if>
+    <if test="content != null">
+      ,content = #{content}
+    </if>
+    <if test="beginTime != null">
+      ,beginTime = #{beginTime}
+    </if>
+    <if test="expireTime != null">
+      ,expireTime = #{expireTime}
+    </if>
+    where id = #{id}
+  </update>
+
+  <!-- 删除活动 -->
+  <delete id="deleteActivity" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    delete from tb_activity where id = #{id}
+  </delete>
+
+  <!-- 根据彩种查询加奖活动列表 -->
+  <select id="queryAddPrizeActivityList" resultType="com.caipiao.domain.common.ActivityAddBonus">
+    select * from tb_activity_addbonus s
+    where
+    s.status = 1 and s.maxMoney > 0 and s.userDayLimit > 0
+    and s.balance &lt; s.maxMoney and s.outAccountUserId is not null
+    and s.lotteryLimit like CONCAT('%',#{lotteryId},'%')
+    and s.passType = #{passType}
+    and EXISTS
+    (
+      select 1 from tb_activity_user u where u.activityId = s.id and u.userId = #{userId}
+    )
+  </select>
+
+  <!-- 根据彩种查询加奖活动列表 -->
+  <select id="queryLotteryAddActivityList" resultType="com.caipiao.domain.common.ActivityAddBonus">
+    select * from tb_activity_addbonus s
+    where
+    s.status = 1 and s.maxMoney > 0 and s.userDayLimit > 0
+    and s.balance &lt; s.maxMoney and s.outAccountUserId is not null
+    and s.lotteryLimit like CONCAT('%',#{lotteryId},'%')
+    group by s.passType
+  </select>
+
+  <!-- 查询加奖活动列表 -->
+  <select id="queryAddBounsList" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    id,
+    activityName,
+    maxMoney,
+    balance,
+    userDayLimit,
+    lotteryLimit,
+    leagueNameLimit,
+    schemeMoneyLimit,
+    matchCode,
+    passType,
+    isWithDraw,
+    outAccountUserId,
+    status,
+    weekLimit,
+    date_format(beginTime,'%Y-%m-%d %H:%i:%s') beginTime,
+    date_format(endTime,'%Y-%m-%d %H:%i:%s') endTime,
+    addBonusRate,
+    date_format(createTime,'%Y-%m-%d %H:%i:%s') createTime
+    from tb_activity_addbonus where 1=1
+    <if test="id != null">
+      and id = #{id}
+    </if>
+  </select>
+
+  <!-- 更新活动已使用额度 -->
+  <update id="updateAddBounsBalance">
+    update tb_activity_addbonus set balance = balance+#{balance}, updateTime = now() where id = #{id}
+  </update>
+
+  <!-- 删除加奖活动 -->
+  <delete id="deleteAddBouns" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    delete from tb_activity_addbonus where id = #{id}
+  </delete>
+
+  <!-- 更新加奖活动 -->
+  <update id="updateAddBouns" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    update tb_activity_addbonus set updateTime = now()
+    <if test="activityName != null">
+      ,activityName = #{activityName}
+    </if>
+    <if test="maxMoney != null">
+      ,maxMoney = #{maxMoney}
+    </if>
+    <if test="userDayLimit != null">
+      ,userDayLimit = #{userDayLimit}
+    </if>
+    <if test="lotteryLimit != null">
+      ,lotteryLimit = #{lotteryLimit}
+    </if>
+    <if test="leagueNameLimit != null">
+      ,leagueNameLimit = #{leagueNameLimit}
+    </if>
+    <if test="schemeMoneyLimit != null">
+      ,schemeMoneyLimit = #{schemeMoneyLimit}
+    </if>
+    <if test="matchCode != null">
+      ,matchCode = #{matchCode}
+    </if>
+    <if test="passType != null">
+      ,passType = #{passType}
+    </if>
+    <if test="isWithDraw != null">
+      ,isWithDraw = #{isWithDraw}
+    </if>
+    <if test="outAccountUserId != null">
+      ,outAccountUserId = #{outAccountUserId}
+    </if>
+    <if test="status != null">
+      ,status = #{status}
+    </if>
+    <if test="weekLimit != null">
+      ,weekLimit = #{weekLimit}
+    </if>
+    <if test="beginTime != null">
+      ,beginTime = #{beginTime}
+    </if>
+    <if test="endTime != null">
+      ,endTime = #{endTime}
+    </if>
+    <if test="addBonusRate != null">
+      ,addBonusRate = #{addBonusRate}
+    </if>
+    where id = #{id}
+  </update>
+
+  <!-- 新增加奖活动 -->
+  <insert id="addAddBouns" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+    insert into tb_activity_addbonus (
+    activityName,
+    maxMoney,
+    userDayLimit,
+    lotteryLimit,
+    leagueNameLimit,
+    schemeMoneyLimit,
+    matchCode,
+    passType,
+    isWithDraw,
+    outAccountUserId,
+    status,
+    weekLimit,
+    beginTime,
+    endTime,
+    addBonusRate,
+    createTime
+    )
+    values (
+    #{activityName},
+    #{maxMoney},
+    #{userDayLimit},
+    #{lotteryLimit},
+    #{leagueNameLimit},
+    #{schemeMoneyLimit},
+    #{matchCode},
+    #{passType},
+    #{isWithDraw},
+    #{outAccountUserId},
+    #{status},
+    #{weekLimit},
+    #{beginTime},
+    #{endTime},
+    #{addBonusRate},
+    now()
+    )
+  </insert>
+
+  <!-- 查询用户当日已经加奖金额 -->
+  <select id="queryUserDayAddprizeSum" resultType="java.lang.Double">
+    select IFNULL(sum(addPrizeTax),0) money
+    from
+    tb_user_addbonus_detail
+    where userId = #{userId} and activityId = #{activityId} and addPrizeDateStr = #{matchCode}
+  </select>
+
+  <!-- 新增用户加奖流水 -->
+  <insert id="insertUserAddBounsDetail" parameterType="com.caipiao.domain.user.UserAddBonusDetail">
+    insert into tb_user_addbonus_detail (
+    userId,
+    lotteryId,
+    schemeOrderId,
+    schemeMoney,
+    prizeTax,
+    rateRange,
+    addPrizeTax,
+    lastBalance,
+    currBalance,
+    addPrizeDateStr,
+    activityId,
+    createTime
+    )
+    values (
+    #{userId},
+    #{lotteryId},
+    #{schemeOrderId},
+    #{schemeMoney},
+    #{prizeTax},
+    #{rateRange},
+    #{addPrizeTax},
+    #{lastBalance},
+    #{currBalance},
+    #{addPrizeDateStr},
+    #{activityId},
+    now()
+    )
+  </insert>
+
+  <!-- 查询用户加奖流水 -->
+  <select id="queryUserAddBonusInfo" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select d.prizeTax, d.addPrizeTax, a.isWithDraw, a.outAccountUserId
+    from
+    tb_user_addbonus_detail d, tb_activity_addbonus a
+    where
+    d.activityId = a.id
+    and d.userId = #{schemeUserId} and d.lotteryId = #{lotteryId} and d.schemeOrderId = #{schemeOrderId} limit 1
+  </select>
+
+  <!-- 用户领取活动-保存数据 -->
+  <insert id="insertActivityUser" parameterType="com.caipiao.domain.common.ActivityUser">
+    insert into tb_activity_user (
+    userId, activityType, activityId, createTime
+    )
+    values (
+    #{userId}, #{activityType}, #{activityId}, now()
+    )
+  </insert>
+
+  <!-- 查询活动参与的用户列表（后台管理） -->
+  <select id="queryActivityUserList" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+    select
+    a.userId,
+    a.activityType,
+    u.nickName,
+    b.activityName,
+    date_format(a.createTime,'%Y-%m-%d %H:%i:%s') createTime
+    from tb_activity_user a, tb_user u, tb_activity_addbonus b
+    where
+    a.activityId = b.id and a.userId = u.id
+    and a.activityType = 1
+    <if test="activityId != null">
+      and a.activityId = #{activityId}
+    </if>
+    <if test="userId != null">
+      and a.userId = #{userId}
+    </if>
+    order by a.createTime desc
+    <if test="psize != null and psize != ''">
+      limit ${pstart},${psize}
+    </if>
+  </select>
+
+  <!-- 查询用户是否参与某个活动 -->
+  <select id="isUserJoinActivity" resultType="java.lang.Integer">
+    select count(1) from tb_activity_user where activityId = #{activityId} and userId = #{userId}
+  </select>
+
+  <!-- 查询活动参与的所有用户 -->
+  <select id="queryActivityJoinUser" resultType="java.lang.Long">
+    select userId from tb_activity_user where activityId = #{activityId}
+  </select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.user.UserAccountMapper" >
+
+    <!--初始化用户账户信息-->
+    <insert id="insertUserAccount">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user_account (userId) values (#{userId})
+    </insert>
+
+    <!--根据用户编号查询账户信息-->
+    <select id="queryUserAccountInfoByUserId" resultType="com.caipiao.domain.user.UserAccount">
+        select * from tb_user_account where userId = #{userId}
+    </select>
+
+    <!-- 更新用户账户余额等信息 -->
+    <update id="updateUserAccount" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_user_account
+        set updateTime = now()
+        <if test="tbalance != null and tbalance != ''">
+            ,balance = balance + #{tbalance}
+        </if>
+        <if test="trecharge != null and trecharge != ''">
+            ,totalRecharge = totalRecharge + #{trecharge}
+        </if>
+        <if test="twithDraw != null and twithDraw != ''">
+            ,totalWithDraw = totalWithDraw + #{twithDraw}
+        </if>
+        <if test="tconsume != null and tconsume != ''">
+            ,totalConsume = totalConsume + #{tconsume}
+        </if>
+        <if test="taward != null and taward != ''">
+            ,totalAward = totalAward + #{taward}
+        </if>
+        <if test="offsetWithDraw != null and offsetWithDraw != ''">
+            ,withDraw = withDraw + #{offsetWithDraw}
+        </if>
+        <if test="offsetUnWithDraw != null and offsetUnWithDraw != ''">
+            ,unWithDraw = unWithDraw + #{offsetUnWithDraw}
+        </if>
+        <if test="offsetFrozen != null and offsetFrozen != ''">
+            ,frozen = frozen + #{offsetFrozen}
+        </if>
+        where userId = #{userId}
+    </update>
+
+</mapper>

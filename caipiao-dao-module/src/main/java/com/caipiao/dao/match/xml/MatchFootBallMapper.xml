@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.match.MatchFootBallMapper" >
+  <!--查询计奖状态为未处理的比赛-截止前5分钟-->
+  <select id="queryJczqStatusNoHandlerList" resultType="com.caipiao.domain.match.MatchFootBall">
+    select
+      id, matchCode, lose, status, halfScore, score, matchTime, endTime, state
+      from tb_match_football
+      where
+      endTime &lt; DATE_ADD(now(),INTERVAL 5 MINUTE) and state &gt;= 0 and state &lt; 99 order by matchCode
+  </select>
+
+  <!--根据竞彩场次号-查询竞彩足球对阵信息-->
+  <select id="queryMatchFootBallByMatchCode" resultType="com.caipiao.domain.match.MatchFootBall">
+    select
+    id, leagueName, leagueColor, jcId, jcWebId, matchCode, period, weekDay, lose, hostTeamId,
+    hostName, guestTeamId, guestName, matchTime, status, halfScore, score, singleSpfStatus,
+    singleRqspfStatus, singleZjqStatus, singleBfStatus, singleBqcStatus, spfStatus, rqspfStatus,
+    zjqStatus, bfStatus, bqcStatus, endTime, updateFlag, state, stateTime, isHot
+    from tb_match_football where matchCode = #{matchCode}
+  </select>
+
+  <!--查询开赛时间在3天内且至少105分钟前，无赛果和等待抓取赛果的-竞彩足球对阵列表-->
+  <select id="queryMatchFootBallNoResultList" resultType="com.caipiao.domain.match.MatchFootBall">
+    select
+    id, leagueName, leagueColor, jcId, jcWebId, matchCode, period, weekDay, lose, hostTeamId,
+    hostName, guestTeamId, guestName, matchTime, status, halfScore, score, singleSpfStatus,
+    singleRqspfStatus, singleZjqStatus, singleBfStatus, singleBqcStatus, spfStatus, rqspfStatus,
+    zjqStatus, bfStatus, bqcStatus, endTime, updateFlag, state, stateTime, isHot
+    from tb_match_football
+    where
+    state = 2 and status = 2 and matchTime &gt; date_sub(now(),interval 3 day) and matchTime &lt; date_sub(now(),interval 105 MINUTE)
+    UNION
+    select
+    m.id, m.leagueName, m.leagueColor, m.jcId, m.jcWebId, m.matchCode, m.period, m.weekDay, m.lose, m.hostTeamId,
+    m.hostName, m.guestTeamId, m.guestName, m.matchTime, m.status, m.halfScore, m.score, m.singleSpfStatus,
+    m.singleRqspfStatus, m.singleZjqStatus, m.singleBfStatus, m.singleBqcStatus, m.spfStatus, m.rqspfStatus,
+    m.zjqStatus, m.bfStatus, m.bqcStatus, m.endTime, m.updateFlag, m.state, m.stateTime, m.isHot
+    from tb_match_football m LEFT JOIN tb_match_football_result r on m.id = r.matchId
+    where
+    m.state > 1 and m.status = 2 and m.matchTime &gt; date_sub(now(),interval 3 day) and m.matchTime &lt; date_sub(now(),interval 105 MINUTE)
+    and r.id is null
+  </select>
+
+  <!--根据参数-查询竞彩足球可售对阵列表-前端接口展示使用-->
+  <select id="queryJczqSaleMatchList" resultType="com.caipiao.domain.vo.JczqMatchVo">
+    select
+    f.leagueName name, f.leagueColor color, f.period, CONCAT(f.weekday,f.jcId) mid, f.matchCode mcode,
+    f.hostName hname, f.guestName gname, f.lose rq, f.endTime etime, f.singleSpfStatus s1, f.singleRqspfStatus s2,
+    f.singleBfStatus s3, f.singleZjqStatus s4, f.singleBqcStatus s5, f.outMatchId oid, f.isHot hot,f.matchTime,
+    CASE WHEN spfStatus=1 then CONCAT(s.sheng,',',s.ping,',', s.fu) else '--,--,--' end spf,
+	CASE WHEN rqspfStatus=1 then CONCAT(s.rsheng,',',s.rping,',',s.rfu) else '--,--,--' end rqspf,
+    CASE WHEN bfStatus=1 then CONCAT(s.s10,',',s.s20,',',s.s21,',', s.s30,',',s.s31,',',s.s32,',',s.s40,',',s.s41,',',s.s42,
+    ',',s.s50,',',s.s51,',',s.s52,',',s.sother,',',s.p00,',',s.p11,',',s.p22,',',s.p33,',',s.pother,
+    ',',s.f01,',',s.f02,',',s.f12,',',s.f03,',',s.f13,',',s.f23,',',s.f04,',',s.f14,',',s.f24,
+    ',',s.f05,',',s.f15,',',s.f25,',',s.fother) else '' end cbf,
+    CASE WHEN zjqStatus=1 then CONCAT(s.t0,',',s.t1,',',s.t2,',',s.t3,',',s.t4,',',s.t5,',',s.t6,',',s.t7) else '' end jqs,
+    CASE WHEN bqcStatus=1 then CONCAT(s.ss,',',s.sp,',',s.sf,',',s.ps,',',s.pp,',',s.pf,',',s.fs,',',s.fp,',',s.ff) else '' end bqc
+    from tb_match_football f, tb_match_football_sp s
+    where
+    f.id = s.matchId and f.endTime > now() and f.status = 1 and f.state = 0 order by f.matchCode
+  </select>
+
+  <!--根据传入参数-查询竞彩足球对阵列表-->
+  <select id="queryMatchFootBallList" resultType="com.caipiao.domain.match.MatchFootBall">
+    select
+    id, leagueName, leagueColor, jcId, jcWebId, matchCode, period, weekDay, lose, hostTeamId,
+    hostName, guestTeamId, guestName, matchTime, status, halfScore, score, singleSpfStatus,
+    singleRqspfStatus, singleZjqStatus, singleBfStatus, singleBqcStatus, spfStatus, rqspfStatus,
+    zjqStatus, bfStatus, bqcStatus, endTime, updateFlag, state, stateTime, isHot
+    from tb_match_football
+    where
+    1=1
+    <if test="period != null">
+      and period = #{period}
+    </if>
+    <if test="leagueName != null">
+      and leagueName = #{leagueName}
+    </if>
+    <if test="status != null">
+      and status = #{status}
+    </if>
+    <if test="state != null">
+      and state = #{state}
+    </if>
+    <!--查询比赛时间大于matchTime-->
+    <if test="matchTime != null">
+      and matchTime &gt; #{matchTime}
+    </if>
+    <!--查询截止时间小于endTime-->
+    <if test="endTime != null">
+      and endTime &lt; #{endTime}
+    </if>
+  </select>
+
+  <!--抓取任务-更新竞彩足球让球数-->
+  <update id="updateMatchFootBallLose">
+    update tb_match_football set lose = #{lose}, updateTime=now() where id = #{id}
+  </update>
+
+  <!--抓取任务-更新竞彩足球赛果(使用状态条件是为了保证手动输入赛果后 抓取不再覆盖)-->
+  <update id="updateMatchFootBallResult">
+    update tb_match_football set halfScore = #{halfScore}, score = #{score}, state = #{state}, stateTime=now()
+    where id = #{id} and state = 2 and status = 2
+  </update>
+
+  <!--计奖业务-根据比赛唯一编号-更新比赛状态-->
+  <update id="updateMatchStatusById">
+    update tb_match_football
+      <set>
+      <if test="state != null and state == 1">
+          status = #{status},
+      </if>
+      state = #{state},
+      stateTime = now()
+      </set>
+      where id = #{id}
+  </update>
+
+  <!--抓取任务-更新竞彩场次数据(更新标记为可更新)-->
+  <update id="updateMatchFootBall">
+    update tb_match_football
+    <set>
+      <if test="leagueName != null">
+        leagueName = #{leagueName},
+      </if>
+      <if test="leagueColor != null">
+        leagueColor = #{leagueColor},
+      </if>
+      <if test="jcId != null">
+        jcId = #{jcId},
+      </if>
+      <if test="jcWebId != null">
+        jcWebId = #{jcWebId},
+      </if>
+      <if test="matchCode != null">
+        matchCode = #{matchCode},
+      </if>
+      <if test="weekDay != null">
+        weekDay = #{weekDay},
+      </if>
+      <if test="hostName != null">
+        hostName = #{hostName},
+      </if>
+      <if test="guestName != null">
+        guestName = #{guestName},
+      </if>
+      <if test="matchTime != null">
+        matchTime = #{matchTime},
+      </if>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="singleSpfStatus != null">
+        singleSpfStatus = #{singleSpfStatus},
+      </if>
+      <if test="singleRqspfStatus != null">
+        singleRqspfStatus = #{singleRqspfStatus},
+      </if>
+      <if test="singleZjqStatus != null">
+        singleZjqStatus = #{singleZjqStatus},
+      </if>
+      <if test="singleBfStatus != null">
+        singleBfStatus = #{singleBfStatus},
+      </if>
+      <if test="singleBqcStatus != null">
+        singleBqcStatus = #{singleBqcStatus},
+      </if>
+      <if test="spfStatus != null">
+        spfStatus = #{spfStatus},
+      </if>
+      <if test="rqspfStatus != null">
+        rqspfStatus = #{rqspfStatus},
+      </if>
+      <if test="zjqStatus != null">
+        zjqStatus = #{zjqStatus},
+      </if>
+      <if test="bfStatus != null">
+        bfStatus = #{bfStatus},
+      </if>
+      <if test="bqcStatus != null">
+        bqcStatus = #{bqcStatus},
+      </if>
+      <if test="endTime != null">
+        endTime = #{endTime},
+      </if>
+        updateTime = now()
+    </set>
+    where id = #{id} and updateFlag = 0
+  </update>
+
+  <!--新增足球对阵场次-->
+  <insert id="insertMatchFootBall">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_match_football (
+      leagueName, leagueColor, jcId, jcWebId, matchCode, period, weekDay, hostName,
+      guestName, matchTime, status, singleSpfStatus, singleRqspfStatus,
+      singleZjqStatus, singleBfStatus, singleBqcStatus, spfStatus, rqspfStatus, zjqStatus,
+      bfStatus, bqcStatus, endTime, stateTime, updateTime
+    )
+    values (
+      #{leagueName}, #{leagueColor}, #{jcId}, #{jcWebId}, #{matchCode}, #{period}, #{weekDay},
+      #{hostName}, #{guestName}, #{matchTime}, #{status}, #{singleSpfStatus}, #{singleRqspfStatus},
+      #{singleZjqStatus}, #{singleBfStatus}, #{singleBqcStatus}, #{spfStatus}, #{rqspfStatus},
+      #{zjqStatus}, #{bfStatus}, #{bqcStatus}, #{endTime}, now(), now()
+    )
+  </insert>
+
+    <!-- 查询最新开奖的对阵信息 -->
+    <select id="queryLatestKjMatch" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.vo.KaiJiangVo">
+        select
+        t1.*,t2.orderValue xh,t2.shortName lname
+        from
+        (select ${lotteryId} as lid,period pid,hostName hname,guestName gname,score bf
+        from tb_match_football where state &gt;= 5 and score is not NULL and score != '' order by period desc,matchCode desc limit 1
+        )t1,tb_lottery t2
+        where t2.id = t1.lid
+        <if test="appStatus != null and appStatus != ''">
+            and t2.appStatus = #{appStatus}
+        </if>
+    </select>
+
+    <!-- 查询足球对阵信息(管理后台) -->
+    <select id="queryFootBallMatchs" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select
+        t1.id,
+        t1.leagueName,
+        t1.leagueId,
+        t1.leagueColor,
+        t1.jcId,
+        t1.jcWebId,
+        t1.matchCode,
+        t1.period,
+        t1.weekday,
+        t1.hostTeamId,
+        t1.hostName,
+        t1.guestTeamId,
+        t1.guestName,
+        t1.lose,
+        date_format(t1.matchTime,'%Y-%m-%d %H:%i:%s') matchTime,
+        t1.halfScore,
+        t1.score,
+        t1.status,
+        t1.updateFlag,
+        t1.singleSpfStatus,
+        t1.singleRqspfStatus,
+        t1.singleZjqStatus,
+        t1.singleBfStatus,
+        t1.singleBqcStatus,
+        t1.spfStatus,
+        t1.rqspfStatus,
+        t1.zjqStatus,
+        t1.bfStatus,
+        t1.bqcStatus,
+        t1.outMatchId,
+        t1.isHot,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        t1.state,
+        date_format(t1.stateTime,'%Y-%m-%d %H:%i:%s') stateTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+        from tb_match_football t1 where 1 = 1
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="status != null and status != ''">
+                    and t1.status = #{status}
+                </if>
+                <if test="state != null and state != ''">
+                    and t1.state = #{state}
+                </if>
+                <if test="states != null and states != ''">
+                    and t1.state in (${states})
+                </if>
+                <if test="period != null and period != ''">
+                    and t1.period = #{period}
+                </if>
+                <if test="attrValue != null and attrValue != ''">
+                    and (t1.period = #{attrValue} or t1.matchCode = #{attrValue})
+                </if>
+                <if test="isHot != null and isHot != ''">
+                    and t1.isHot = #{isHot}
+                </if>
+                <if test="ids != null and ids != ''">
+                    and t1.id in (${ids})
+                </if>
+                <if test="leagueName != null and leagueName != ''">
+                    and t1.leagueName = #{leagueName}
+                </if>
+                <if test="minMatchTime != null and minMatchTime != ''">
+                    and t1.matchTime &gt;= #{minMatchTime}
+                </if>
+                <choose>
+                    <when test="orderBySorts != null and orderBySorts != ''">
+                        order by ${orderBySorts}
+                    </when>
+                    <otherwise>
+                        order by t1.period desc,t1.matchTime,t1.matchCode
+                    </otherwise>
+                </choose>
+                <if test="psize != null and psize != ''">
+                    limit ${pstart},${psize}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 查询足球对阵总记录条数(管理后台) -->
+    <select id="queryFootBallMatchsCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+        select count(0) from tb_match_football t1 where 1 = 1
+        <if test="status != null and status != ''">
+            and t1.status = #{status}
+        </if>
+        <if test="state != null and state != ''">
+            and t1.state = #{state}
+        </if>
+        <if test="states != null and states != ''">
+            and t1.state in (${states})
+        </if>
+        <if test="period != null and period != ''">
+            and t1.period = #{period}
+        </if>
+        <if test="attrValue != null and attrValue != ''">
+            and (t1.period = #{attrValue} || t1.matchCode = #{attrValue})
+        </if>
+        <if test="isHot != null and isHot != ''">
+            and t1.isHot = #{isHot}
+        </if>
+        <if test="ids != null and ids != ''">
+            and t1.id in (${ids})
+        </if>
+        <if test="leagueName != null and leagueName != ''">
+            and t1.leagueName = #{leagueName}
+        </if>
+        <if test="minMatchTime != null and minMatchTime != ''">
+            and t1.matchTime &gt;= #{minMatchTime}
+        </if>
+    </select>
+
+    <!-- 查询足球赛事审核信息(管理后台) -->
+    <select id="queryFootBallAudit" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.cpadmin.BaseDto">
+        select t.* from
+        (select
+        1 as qtype,
+        t1.id,
+        t1.leagueName,
+        t1.leagueId,
+        t1.leagueColor,
+        t1.jcId,
+        t1.jcWebId,
+        t1.matchCode,
+        t1.period,
+        t1.weekday,
+        t1.hostTeamId,
+        t1.hostName,
+        t1.guestTeamId,
+        t1.guestName,
+        t1.lose,
+        date_format(t1.matchTime,'%Y-%m-%d %H:%i:%s') matchTime,
+        t1.halfScore,
+        t1.score,
+        t1.status,
+        t1.updateFlag,
+        t1.singleSpfStatus,
+        t1.singleRqspfStatus,
+        t1.singleZjqStatus,
+        t1.singleBfStatus,
+        t1.singleBqcStatus,
+        t1.spfStatus,
+        t1.rqspfStatus,
+        t1.zjqStatus,
+        t1.bfStatus,
+        t1.bqcStatus,
+        t1.outMatchId,
+        t1.isHot,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        t1.state,
+        date_format(t1.stateTime,'%Y-%m-%d %H:%i:%s') stateTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+        from tb_match_football t1 where t1.state in (2,3,4)
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="status != null and status != ''">
+                    and t1.status = #{status}
+                </if>
+                <if test="state != null and state != ''">
+                    and t1.state = #{state}
+                </if>
+                <if test="states != null and states != ''">
+                    and t1.state in (${states})
+                </if>
+                <if test="period != null and period != ''">
+                    and t1.period = #{period}
+                </if>
+                <if test="attrValue != null and attrValue != ''">
+                    and (t1.period = #{attrValue} or t1.matchCode = #{attrValue})
+                </if>
+            </otherwise>
+        </choose>
+        union all select
+        2 as qtype,
+        t1.id,
+        t1.leagueName,
+        t1.leagueId,
+        t1.leagueColor,
+        t1.jcId,
+        t1.jcWebId,
+        t1.matchCode,
+        t1.period,
+        t1.weekday,
+        t1.hostTeamId,
+        t1.hostName,
+        t1.guestTeamId,
+        t1.guestName,
+        t1.lose,
+        date_format(t1.matchTime,'%Y-%m-%d %H:%i:%s') matchTime,
+        t1.halfScore,
+        t1.score,
+        t1.status,
+        t1.updateFlag,
+        t1.singleSpfStatus,
+        t1.singleRqspfStatus,
+        t1.singleZjqStatus,
+        t1.singleBfStatus,
+        t1.singleBqcStatus,
+        t1.spfStatus,
+        t1.rqspfStatus,
+        t1.zjqStatus,
+        t1.bfStatus,
+        t1.bqcStatus,
+        t1.outMatchId,
+        t1.isHot,
+        date_format(t1.endTime,'%Y-%m-%d %H:%i:%s') endTime,
+        t1.state,
+        date_format(t1.stateTime,'%Y-%m-%d %H:%i:%s') stateTime,
+        date_format(t1.createTime,'%Y-%m-%d %H:%i:%s') createTime,
+        date_format(t1.updateTime,'%Y-%m-%d %H:%i:%s') updateTime
+        from tb_match_football t1 where t1.state not in (2,3,4)
+        <choose>
+            <when test="id != null and id != ''">
+                and t1.id = #{id}
+            </when>
+            <otherwise>
+                <if test="status != null and status != ''">
+                    and t1.status = #{status}
+                </if>
+                <if test="state != null and state != ''">
+                    and t1.state = #{state}
+                </if>
+                <if test="states != null and states != ''">
+                    and t1.state in (${states})
+                </if>
+                <if test="period != null and period != ''">
+                    and t1.period = #{period}
+                </if>
+                <if test="attrValue != null and attrValue != ''">
+                    and (t1.period = #{attrValue} or t1.matchCode = #{attrValue})
+                </if>
+            </otherwise>
+        </choose>
+        )t
+        order by t.qtype,t.period desc,t.matchTime,t.matchCode
+        <if test="psize != null and psize != ''">
+            limit ${pstart},${psize}
+        </if>
+    </select>
+
+    <!-- 查询足球赛事审核总记录条数(管理后台) -->
+    <select id="queryFootBallAuditCount" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="int">
+        select count(0) from tb_match_football t1 where 1 = 1
+        <if test="status != null and status != ''">
+            and t1.status = #{status}
+        </if>
+        <if test="state != null and state != ''">
+            and t1.state = #{state}
+        </if>
+        <if test="states != null and states != ''">
+            and t1.state in (${states})
+        </if>
+        <if test="period != null and period != ''">
+            and t1.period = #{period}
+        </if>
+        <if test="attrValue != null and attrValue != ''">
+            and (t1.period = #{attrValue} || t1.matchCode = #{attrValue})
+        </if>
+    </select>
+
+    <!-- 编辑比赛热门状态(管理后台) -->
+    <update id="editHot" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_match_football t1
+        set t1.isHot = #{isHot},
+        t1.updateTime = now()
+        where t1.id = #{id}
+    </update>
+
+    <!-- 编辑销售状态(管理后台) -->
+    <update id="editSellStatus" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_match_football t1
+        set t1.status = #{status},
+        t1.updateFlag = 1,
+        t1.updateTime = now()
+        where 1 = 1
+        <choose>
+            <when test="ids != null and ids != ''">
+                and t1.id in(${ids})
+            </when>
+            <otherwise>
+                and t1.id = #{id}
+            </otherwise>
+        </choose>
+    </update>
+
+    <!-- 编编玩法销售状态(管理后台) -->
+    <update id="editPlaySellStatus" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_match_football t1
+        set t1.singleSpfStatus = #{singleSpfStatus},
+        t1.singleRqspfStatus = #{singleRqspfStatus},
+        t1.singleZjqStatus = #{singleZjqStatus},
+        t1.singleBfStatus = #{singleBfStatus},
+        t1.singleBqcStatus = #{singleBqcStatus},
+        t1.spfStatus = #{spfStatus},
+        t1.rqspfStatus = #{rqspfStatus},
+        t1.zjqStatus = #{zjqStatus},
+        t1.bfStatus = #{bfStatus},
+        t1.bqcStatus = #{bqcStatus},
+        t1.updateFlag = 1,
+        t1.updateTime = now()
+        where t1.id = #{id}
+    </update>
+
+    <!-- 编辑赛果(管理后台) -->
+    <update id="editMatchResult" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_match_football t1
+        set t1.state = 4,
+        <if test="status != null and status != ''">
+            t1.status = #{status},
+        </if>
+        t1.halfScore = #{halfScore},
+        t1.score = #{score},
+        t1.stateTime = now(),
+        t1.updateTime = now()
+        where t1.id = #{id}
+    </update>
+
+    <!-- 编辑sp(管理后台) -->
+    <update id="editSp" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_match_football_sp t1
+        set t1.f01 = #{f01},
+        t1.f02 = #{f02},
+        t1.f03 = #{f03},
+        t1.f04 = #{f04},
+        t1.f05 = #{f05},
+        t1.f12 = #{f12},
+        t1.f13 = #{f13},
+        t1.f14 = #{f14},
+        t1.f15 = #{f15},
+        t1.f23 = #{f23},
+        t1.f24 = #{f24},
+        t1.f25 = #{f25},
+        t1.fother = #{fother},
+        t1.p00 = #{p00},
+        t1.p11 = #{p11},
+        t1.p22 = #{p22},
+        t1.p33 = #{p33},
+        t1.pother = #{pother},
+        t1.s10 = #{s10},
+        t1.s20 = #{s20},
+        t1.s30 = #{s30},
+        t1.s40 = #{s40},
+        t1.s50 = #{s50},
+        t1.s21 = #{s21},
+        t1.s31 = #{s31},
+        t1.s41 = #{s41},
+        t1.s51 = #{s51},
+        t1.s32 = #{s32},
+        t1.s42 = #{s42},
+        t1.s52 = #{s52},
+        t1.sother = #{sother},
+        t1.ff = #{ff},
+        t1.fp = #{fp},
+        t1.fs = #{fs},
+        t1.pf = #{pf},
+        t1.pp = #{pp},
+        t1.ps = #{ps},
+        t1.sf = #{sf},
+        t1.sp = #{sp},
+        t1.ss = #{ss},
+        t1.sheng = #{ss},
+        t1.ping = #{ss},
+        t1.fu = #{ss},
+        t1.rsheng = #{ss},
+        t1.rping = #{ss},
+        t1.rfu = #{ss},
+        t1.t0 = #{t0},
+        t1.t1 = #{t1},
+        t1.t2 = #{t2},
+        t1.t3 = #{t3},
+        t1.t4 = #{t4},
+        t1.t5 = #{t5},
+        t1.t6 = #{t6},
+        t1.t7 = #{t7},
+        t1.updateTime = now()
+        where t1.id = #{id}
+    </update>
+
+    <!-- 重置比赛计奖状态-回退至赛果获取中 -->
+    <update id="updateMatchRebackState" parameterType="com.caipiao.domain.cpadmin.BaseDto">
+        update tb_match_football
+        set
+        halfScore = '', score = '', state = 2, stateTime = now()
+        where
+        matchCode = #{matchCode}
+    </update>
+
+</mapper>

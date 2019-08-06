@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.user.UserTokenMapper" >
+
+    <!--根据用户编号查询用户Token信息-->
+    <select id="queryUserTokenInfoByToken" resultType="com.caipiao.domain.user.UserToken">
+        select t.userId, t.expiresin, t.device, t.lastTime,
+        u.status id
+        from tb_user_token t, tb_user u
+        where
+        t.userId = u.id
+        and t.mobile = u.mobile
+        and t.password = u.password
+        and t.token = #{token} and t.tkey = #{tkey}
+    </select>
+
+    <!--初始化用户Token信息-->
+    <insert id="insertUserToken">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user_token (
+        userId, mobile, password, token, tkey, expiresin, device
+        )
+        values (
+        #{userId},#{mobile},#{password},#{token},#{tkey},#{expiresin},#{device}
+        )
+    </insert>
+
+    <!--更新用户Token信息-->
+    <update id="updateUserToken">
+        update
+        tb_user_token t, tb_user u
+        <set>
+            <if test="device != null">
+                t.device = #{device},
+            </if>
+            t.mobile=u.mobile, t.`password`=u.`password`, t.token=#{token}, t.tkey=#{tkey}
+        </set>
+        where
+        t.userId = u.id and t.userId=#{userId}
+    </update>
+</mapper>

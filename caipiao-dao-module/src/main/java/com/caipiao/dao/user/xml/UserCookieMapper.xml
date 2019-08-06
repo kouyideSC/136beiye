@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.caipiao.dao.user.UserCookieMapper" >
+
+    <!--根据用户编号查询用户Cookie信息-->
+    <select id="queryUserCookieInfoByCookie" resultType="com.caipiao.domain.user.UserCookie">
+        select t.userId, t.expiresin, t.device, t.lastTime, u.status id
+        from tb_user_cookie t, tb_user u
+        where
+        t.userId = u.id
+        and t.mobile = u.mobile
+        and t.cookie = #{cookie} and t.ckey = #{ckey}
+    </select>
+
+    <!--初始化用户Cookie信息-->
+    <insert id="insertUserCookie">
+        <selectKey keyProperty="id" resultType="java.lang.Long">
+            select LAST_INSERT_ID() as id
+        </selectKey>
+        insert into tb_user_cookie (
+        userId, mobile, cookie, ckey, expiresin, device
+        )
+        values (
+        #{userId},#{mobile},#{cookie},#{ckey},#{expiresin},#{device}
+        )
+    </insert>
+
+    <!--更新用户Cookie信息-->
+    <update id="updateUserCookie">
+        update
+        tb_user_cookie t, tb_user u
+        <set>
+            <if test="device != null">
+                t.device = #{device},
+            </if>
+            t.mobile=u.mobile, t.cookie=#{cookie}, t.ckey=#{ckey}
+        </set>
+        where
+        t.userId = u.id and t.userId=#{userId}
+    </update>
+</mapper>

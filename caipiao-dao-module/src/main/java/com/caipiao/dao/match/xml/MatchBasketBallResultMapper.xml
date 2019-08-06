@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.match.MatchBasketBallResultMapper" >
+
+  <!--根据场次号-查询竞彩篮球赛果信息-->
+  <select id="queryJclqResultInfo" resultType="com.caipiao.domain.match.MatchBasketBallResult">
+    select * from tb_match_basketball_result where matchCode = #{matchCode}
+  </select>
+
+  <!--根据参数-查询竞彩篮球赛果列表-前端接口展示使用-->
+  <select id="queryJclqResultList" resultType="com.caipiao.domain.vo.JclqResultVo">
+    select
+    leagueName name, period, jcId mid, hostName hname, guestName gname, matchTime mtime,
+    score, sfResult sfr, sfSp sfs, rfsfResult rfsfr, rfsfSp rfsfs, sfcResult sfcr,
+    sfcSp sfcs, dxfResult dxfr, dxfSp dxfs
+    from tb_match_basketball_result
+    where
+    period &gt;= #{begin} and period &lt;= #{end} order by matchCode desc
+  </select>
+
+  <!--更新竞彩场次赛果数据-->
+  <update id="updateJclqResult">
+    update tb_match_basketball_result
+    <set>
+      <if test="status != null">
+        status = #{status},
+      </if>
+      <if test="matchTime != null">
+        matchTime = #{matchTime},
+      </if>
+      <if test="halfScore != null">
+        halfScore = #{halfScore},
+      </if>
+      <if test="score != null">
+        score = #{score},
+      </if>
+      <if test="sfResult != null">
+        sfResult = #{sfResult},
+      </if>
+      <if test="sfSp != null">
+        sfSp = #{sfSp},
+      </if>
+      <if test="rfsfResult != null">
+        rfsfResult = #{rfsfResult},
+      </if>
+      <if test="rfsfSp != null">
+        rfsfSp = #{rfsfSp},
+      </if>
+      <if test="sfcResult != null">
+        sfcResult = #{sfcResult},
+      </if>
+      <if test="sfcSp != null">
+        sfcSp = #{sfcSp},
+      </if>
+      <if test="dxfResult != null">
+        dxfResult = #{dxfResult},
+      </if>
+      <if test="dxfSp != null">
+        dxfSp = #{dxfSp},
+      </if>
+      <if test="dxf != null">
+        dxf = #{dxf},
+      </if>
+      <if test="lose != null">
+        lose = #{lose},
+      </if>
+      updateTime = now()
+    </set>
+    where id = #{id}
+  </update>
+
+  <!--新增篮球赛果记录-->
+  <insert id="insertBasketBallResult">
+    <selectKey keyProperty="id" resultType="java.lang.Long">
+      select LAST_INSERT_ID() as id
+    </selectKey>
+    insert into tb_match_basketball_result (
+    leagueName, matchId, matchCode, jcId, period, hostName, guestName, lose, dxf, matchTime, halfScore, score,
+    status, sfResult, sfSp, rfsfResult, rfsfSp, sfcResult, sfcSp, dxfResult, dxfSp, updateTime)
+    values (
+    #{leagueName}, #{matchId}, #{matchCode}, #{jcId}, #{period}, #{hostName}, #{guestName}, #{lose}, #{dxf},
+    #{matchTime}, #{halfScore}, #{score}, #{status}, #{sfResult}, #{sfSp}, #{rfsfResult}, #{rfsfSp},
+    #{sfcResult}, #{sfcSp}, #{dxfResult}, #{dxfSp}, now()
+    )
+  </insert>
+
+</mapper>

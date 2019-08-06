@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.caipiao.dao.common.AreaMapper" >
+
+  <!-- 查询省份 -->
+  <select id="queryProvinces" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.Province">
+    select
+    t1.provinceCode,
+    t1.provinceName,
+    t1.shortName,
+    t1.remark,
+    t1.areaName,
+    t1.createTime,
+    t1.updateTime
+    from tb_province t1 where 1= 1
+    <choose>
+      <when test="pcode != null and pcode != ''">
+        and t1.provinceCode = #{pcode}
+      </when>
+    </choose>
+  </select>
+
+  <!-- 查询城市 -->
+  <select id="queryCitys" parameterType="com.caipiao.domain.cpadmin.BaseDto" resultType="com.caipiao.domain.common.City">
+    select
+    t1.cityCode,
+    t1.cityName,
+    t1.provinceCode,
+    t1.remark,
+    t1.createTime,
+    t1.updateTime
+    from tb_city t1 where 1 = 1
+    <choose>
+      <when test="acode != null and acode != ''">
+        and t1.cityCode = #{acode}
+      </when>
+      <when test="pcode != null and pcode != ''">
+        and t1.provinceCode = #{pcode}
+      </when>
+    </choose>
+  </select>
+
+</mapper>
