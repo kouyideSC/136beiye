@@ -1,0 +1,454 @@
+.knowledge-card {
+    width: 60%;
+    height: 100%;
+    background: #fff;
+    position: absolute;
+    top: 0;
+    right: -100%;
+    padding: 28px 28px 28px 60px;
+    -webkit-box-shadow: 0 0 26px 1px rgba(0, 0, 0, 0.16);
+    -moz-box-shadow: 0 0 26px 1px rgba(0, 0, 0, 0.16);
+    box-shadow: 0 0 26px 1px rgba(0, 0, 0, 0.16);
+    overflow: auto;
+    z-index: 9999;
+}
+
+#dialogue-mod, #invite-mod {
+    z-index: 10000;
+}
+
+.knowledge-card-show {
+    right: 0;
+    transition: all 0.5s;
+}
+
+.knowledge-content-tags {
+    color: #a4b1c1;
+    font-size: 12px;
+}
+
+.knowledge-content-tags .knowledge-tag {
+    margin-left: 10px;
+}
+
+.knowledge-tags-icon {
+    position: relative;
+    top: 3px;
+}
+
+.knowledge-content-main {
+    margin-top: 15px;
+}
+
+h3 {
+    font-size: 18px;
+    color: #333a4c;
+    font-weight: 600;
+}
+
+.knowledge-content-main-txt {
+    color: #333a4c;
+    font-size: 14px;
+}
+
+.knowledge-main-attachmentList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 0 -5px;
+}
+
+.knowledge-main-attachmentItem {
+    width: 33.3333%;
+    padding: 0 5px;
+    margin-bottom: 10px;
+}
+
+.attachmentItem-inner {
+    width: 100%;
+    /*height: 100%;*/
+    position: relative;
+}
+
+.attachmentItem-inner > img {
+    width: 100%;
+    height: auto;
+}
+
+.attachmentItem-operate {
+    width: 100%;
+    height: 34px;
+    background: rgba(0, 0, 0, .5);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    text-align: center;
+}
+
+.attachmentItem-operate > a {
+    display: inline-block;
+    line-height: 34px;
+    height: 100%;
+    color: #fff;
+    padding: 0 10px;
+}
+
+.knowledge-content-discuss {
+    margin-top: 10px;
+    background: #f4f5f6;
+}
+
+.knowledge-content-discuss-edit {
+    padding: 15px;
+    border-bottom: 1px solid #d4dee8;
+}
+
+.discuss-textarea {
+    width: 100%;
+    height: 78px;
+    resize: none;
+    border: 1px solid #d4dee8;
+    background: #fff;
+    padding: 5px;
+    color: #666;
+}
+
+.knowledge-content-discuss-edit .discuss-btn {
+    padding: 2px 15px;
+    margin-top: 10px;
+}
+
+.knowledge-content-discuss-list {
+    padding: 0 15px 15px;
+}
+
+#dialogue-mod .modal-body {
+    padding: 15px;
+}
+
+.discuss-item {
+    padding: 18px 0;
+    border-bottom: 1px solid #d4dee8;
+    position: relative;
+}
+
+.modal-body .discuss-item {
+    border-bottom: none;
+    padding: 10px 0;
+}
+
+.modal-body .knowledge-content-discuss-list {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.users-face {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background: red;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.users-face > img {
+    width: 100%;
+    height: 100%;
+
+}
+
+.discuss-item-main {
+    width: calc(100% - 45px);
+    font-size: 12px;
+    color: #333a4c;
+}
+
+.discuss-item-txt {
+
+}
+
+.comment-time {
+    color: #ccc;
+}
+
+.discuss-item-func {
+
+}
+
+.discuss-item-func > span {
+    margin-top: 5px;
+    margin-right: 10px;
+    float: left;
+}
+
+.comment-tag {
+    color: #fff;
+    background: #26bdbf;
+    padding: 0 5px;
+    transform: scale(0.9);
+}
+
+.comment-more {
+    display: block;
+    margin-top: 15px;
+    margin-left: 50px;
+}
+
+.knowledge-card .close {
+    color: #999;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+}
+
+.more-opreation-btn {
+    width: 16px;
+    height: 22px;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+}
+
+.knowledge-more-opreation {
+    background: #fff;
+    position: absolute;
+    color: #999;
+
+}
+
+.more-opreation-list {
+    width: 100px;
+    border: 1px solid #d4dee8;
+    position: absolute;
+    top: 20px;
+    right: 0;
+    background: #fff;
+    display: none;
+    z-index: 10001;
+}
+
+.more-opreation-item > a {
+    padding: 8px 15px;
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: #333a4c;
+}
+
+.knowledge-card .more-opreation-item > a:hover, .more-opreation-item > a:active {
+    background: #f6f6f6;
+}
+
+.knowledge-card .info-desc {
+    font-size: 12px;
+    margin-top: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #d4dee8;
+}
+
+.knowledge-card .name-desc .info-desc {
+    width: 162px;
+    margin-top: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.handle-item {
+    float: left;
+    margin-left: 10px;
+    line-height: 30px;
+    color: #808c98;
+    padding: 0 5px;
+}
+
+.handle-item > a {
+    display: inline-block;
+    /*height: 100%;*/
+    color: #808c98;
+    font-size: 12px;
+}
+
+.knowledge-card .handle-item > a.text-info {
+    color: #03a9f3;
+}
+
+.handle-item > a.plus-icon {
+    font-size: 20px;
+}
+
+.knowledge-card .info-desc .users-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 0;
+}
+
+.knowledge-card .desc-inner-left {
+    padding-left: 40px;
+    line-height: 30px;
+}
+
+.knowledge-card .info-desc {
+    position: relative;
+}
+
+.name {
+    margin-right: 10px;
+}
+
+.knowledge-card .personal-information {
+    position: relative;
+    cursor: pointer;
+    color: #03a9f3;
+    margin-left: 2px;
+}
+
+.knowledge-card .personal-information .name:hover .name-desc {
+    display: block;
+}
+
+.knowledge-card .personal-information .users-face:hover .name-desc {
+    display: block;
+    top: 23px;
+}
+
+.knowledge-card .personal-information .name-desc {
+    display: none;
+    position: absolute;
+    top: 14px;
+    padding-top: 6px;
+    width: 300px;
+    cursor: default;
+    z-index: 1;
+}
+
+.knowledge-card .personal-information .name-desc .sanjiao {
+    position: relative;
+    width: 0px;
+    left: 15px;
+    top: 5px;
+    border-top: 5px solid #fff;
+    border-left: 5px solid #fff;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    transform: rotate(45deg);
+    box-shadow: -1px -1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.knowledge-card .personal-information .name-desc .name-desc-in {
+    width: 100%;
+    padding: 10px;
+    background: #fff;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+.knowledge-card .personal-information .name-desc .name-desc-in .head-img {
+    width: 100px;
+    height: 100px;
+    background: #000;
+}
+
+.knowledge-card .personal-information .name-desc .name-desc-in .info-desc .title {
+    height: 40px;
+    margin-bottom: 0px;
+}
+
+.knowledge-card .personal-information .name-desc .name-desc-in .info-desc .title .desc-name {
+    font-size: 16px;
+    height: 40px;
+    line-height: 40px;
+    color: #03a9f3;
+    cursor: pointer;
+}
+
+.knowledge-card .personal-information .name-desc .name-desc-in .info-desc .title .desc-guanzhu {
+    padding: 0px 10px;
+    background: #03a9f3;
+    color: #fff;
+    margin-top: 8px;
+    cursor: pointer;
+}
+
+.knowledge-card .personal-information .name-desc .name-desc-in .info-desc .zhiwei,
+.knowledge-card .personal-information .name-desc .name-desc-in .info-desc .tel-num {
+    height: 30px;
+    line-height: 30px;
+    margin-bottom: 0px;
+    color: #a9a9a9;
+}
+
+.discuss-item-main .discuss-textarea-wrap {
+    margin-top: 10px;
+    display: none;
+}
+
+.discuss-textarea-wrap .btn-reply {
+    padding: 2px 15px;
+    margin-top: 10px;
+}
+
+.btn-votebar {
+    position: absolute;
+    top: 0;
+    left: -66px;
+}
+
+.btn-votebar button {
+    width: 48px;
+    text-align: center;
+    display: block;
+    margin-bottom: 2px;
+    outline: none;
+    border: none;
+    background: #eef6f9;
+    color: #6b90c5;
+    font-size: 12px;
+    padding: 3px 0;
+}
+
+.btn-votebar button.active, .btn-votebar button:hover {
+    color: #fff;
+    background: #6b90c5;
+}
+
+.btn-votebar button > span {
+    display: block;
+    font-size: 14px;
+}
+
+.discuss-reply-list {
+    margin-top: 20px;
+    display: none;
+}
+
+.discuss-reply-list > li {
+    padding: 20px 0;
+    border-top: 1px solid #d4dee8;
+}
+
+.discuss-reply-list > li:last-child {
+    padding-bottom: 0;
+}
+
+.retract-reply {
+    display: none;
+}
+
+.knowledge-content-title .label{
+    font-size:12px;
+    font-weight:normal;
+    position: relative;
+    top: -5px;
+    margin-left:10px;
+    padding:.2em;
+}
+.knowledge-content-title .label-default{
+    background: #c0c0c0;
+}
+.knowledge-list-content h5{
+    font-size:16px;
+}
+.curriculum-suggestions li{
+    margin-bottom:10px;
+}

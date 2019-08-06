@@ -1,0 +1,737 @@
+//工作台任务模块
+.title-option-left
+  height 100%
+  vertical-align center
+  .btn-group-ms
+    margin-top 10px
+    .dropdown-menu
+      left inherit
+      right 0
+  .title-option-left
+    &>div
+      display inline-block
+      vertical-align middle
+      &.data-picker
+        margin -4px 20px 0px 20px
+        &>div
+          display inline-block
+          vertical-align top
+.whitebox
+  position relative
+.main-item
+  width 100%
+  height calc(100% - 58px)
+  padding 10px
+  .item-wrapper-view
+    height 100%
+    width 100%
+    overflow-x auto
+    .item-wrapper
+      height 100%
+      min-width 1000px
+      .to-do-item
+        background #efeff4
+        padding 10px 10px 20px 10px
+        overflow-y auto
+        width calc(25% - 12px)
+        min-width 238px
+        margin-right 15px
+        display inline-block
+        &:last-child
+          margin-right 0
+        .item-title
+          font-size 16px
+          margin-bottom 10px
+          .history
+            font-size 14px
+            color #00aaef
+            cursor pointer
+        .box
+          background #FFFFFF
+          padding 10px
+          margin-bottom 10px
+          .box-info
+            margin-bottom 0
+            li
+              padding 2px 0
+              width 100%
+              font-size 0
+              position relative
+              span
+                display inline-block
+                vertical-align top
+                font-size 14px
+                &:first-child
+                  width 72px
+                  white-space nowrap
+                &:last-child
+                  width calc(100% - 75px)
+      .to-do-item
+        height 100%
+        .box-wrapper
+          height calc(100% - 32px)
+          overflow-y auto
+          .sort-icon
+            color #26bf8c
+            font-size 24px
+            margin-right 10px
+            &.p-shangji1
+              color #26bf8c
+            &.p-hetong1
+              color #ff3366
+          .box-info
+            width calc(100% - 34px)
+            .opportunities-number,.opportunities-name
+              color #00aaef
+              cursor pointer
+            .btn-info
+              margin-top 10px
+          .loading-wrapper
+            text-align center
+            .p-loading
+              display inline-block
+              font-size 24px
+              animation rotation 2s linear infinite
+@keyframes rotation
+  to
+    transform: rotate(360deg)
+
+//工作台文件模块
+  .file-address
+    height 40px
+    span
+      display inline-block
+      height 100%
+      line-height 40px
+      &.address-info
+        color #00aaef
+        cursor pointer
+  .file-wrapper
+    padding 0 30px 0 10px
+    height calc(100% - 40px)
+    overflow auto
+    &.modal-inner
+      overflow hidden
+    .file-item
+      height 60px
+      line-height 60px
+      border-bottom 1px solid #efeff4
+      .file-name
+        margin-left 10px
+        cursor pointer
+        &:hover
+          color #00aaef
+          text-decoration underline
+      .features-wrapper
+        margin-bottom 0
+        height 100%
+        .p-fenxiang,.glyphicon-pencil
+          margin-right 10px
+          font-size 14px
+          cursor pointer
+        .p-xiazai,.glyphicon-trash
+          cursor pointer
+          font-size 14px
+//日程表样式
+.calendar-wrap
+  position relative
+  overflow hidden
+  height 100%
+  #calendar,.schedule-alendar-panel
+    position absolute
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: -17px
+    height 100%
+    overflow-y scroll
+    padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
+
+
+//仪表盘样式
+.main-item
+  position relative
+  .page-button-wrapper
+    margin 10px 0 20px 0
+    font-size 0
+    .page-button
+      display inline-block
+      vertical-align top
+      width 25px
+      height 25px
+      line-height 23px
+      text-align center
+      cursor pointer
+      font-size 14px
+      border-radius 4px
+      margin-right 8px
+      border 1px solid #d9d9d9
+      &.active,&:hover
+        color #fff
+        background #D9D9D9
+    .page-text
+      font-size 14px
+      line-height 23px
+  .dash-board-wrapper
+    height calc(100% - 55px)
+    width 100%
+    overflow auto
+    .dash-board-inner
+      width 100%
+      min-width 1000px
+      .dash-board
+        width calc(50% - 20px)
+        height 390px
+        position relative
+        border 1px solid #D9D9D9
+        &:nth-child(2n+1)
+          margin-right 40px
+        &:nth-child(-n+2)
+          margin-bottom 50px
+        .title
+          height 40px
+          padding 10px
+          margin-bottom 0px
+          .glyphicon-question-sign
+            color #00aaef
+        .zoom-icon
+          position absolute
+          right 0
+          top 0
+          width 30px
+          height 30px
+          line-height 30px
+          font-size 18px
+          color #D9D9D9
+          text-align center
+          border-left 1px solid #D9D9D9
+          border-bottom 1px solid #D9D9D9
+          &:hover
+            background #00aaef
+            color #ffffff
+        .time-choose
+          height 20px
+          padding 0 10px
+          .time-item
+            float left
+            padding 0 10px
+            font-size 12px
+            color #5a5a5a
+            border-right 1px solid  #D9D9D9
+            &:last-child
+              border none
+            span
+              cursor pointer
+              &.active
+                color #00aaef
+        .dash-board-table
+          position absolute
+          top 70px
+          left 0
+          bottom 0
+          right 0
+          width 100%
+          .table-content
+            width 100%
+            padding 50px
+            text-align center
+            color #a7a7a7
+            .glyphicon
+              font-size 100px
+            .text
+              margin-top 20px
+        .handle-wrapper
+          display none
+          position absolute
+          padding 10px 15px
+          margin-bottom 0
+          bottom 0
+          left 0
+          width 100%
+          background rgba(0,0,0,0.15)
+          span
+            margin-right 10px
+            font-size 14px
+            color #00aaef
+            cursor pointer
+            &:hover
+              text-decoration underline
+        &:hover
+          .handle-wrapper
+            display block
+.zoom-dash-board-wrapper
+  position absolute
+  display none
+  height 100%
+  width 100%
+  padding 20px
+  top 0
+  left 0
+  background #ffffff
+  overflow auto
+  z-index 100
+  &.show
+    display block
+  .zoom-dash-board
+    position relative
+    .title
+      .glyphicon-question-sign
+        color #00aaef
+      .glyphicon-edit
+        color #9a9a9a
+        cursor pointer
+        margin-left 20px
+    .small-icon
+      position absolute
+      right 0
+      top 0
+      width 30px
+      height 30px
+      line-height 30px
+      font-size 18px
+      color #D9D9D9
+      text-align center
+      border 1px solid #D9D9D9
+      &:hover
+        background #00aaef
+        color #ffffff
+    .time-choose
+      height 20px
+      padding 0 10px
+      text-align center
+      .time-item
+        display inline-block
+        vertical-align top
+        padding 0 10px
+        font-size 12px
+        color #5a5a5a
+        border-right 1px solid  #D9D9D9
+        &:last-child
+          border none
+        span
+          cursor pointer
+          &.active
+            color #00aaef
+    .dash-board-table
+      width 100%
+      height 270px
+      .table-content
+        width 100%
+        padding 50px
+        text-align center
+        color #a7a7a7
+        .glyphicon
+          font-size 100px
+        .text
+          margin-top 20px
+
+
+.work-back
+  position fixed
+  top 0
+  right 0
+  bottom 0
+  left 0
+  background-color rgba(0,0,0,.5)
+  display none
+  &.z-index-css
+    z-index 5
+//任务详情弹出层
+.mission-wrap,.tips-wrap
+  display none
+  position fixed
+  top 50px
+  right 0
+  width 400px
+  height calc(100% - 50px)
+  background #FFFFFF
+  z-index 5
+  .mission-header,.tips-header
+    background #333a4b
+    height 50px
+    padding 0 10px
+    color #FFFFFF
+    .mission-title,.tips-title
+      line-height 50px
+      margin-bottom 0
+      &.tips-title
+        font-size 16px
+    .mission-option,.tips-option
+      margin-bottom 0
+      .mission-item,.tips-item
+        margin-left 10px
+        float left
+        height 50px
+        line-height 50px
+        position relative
+        color #FFFFFF
+        cursor pointer
+        &:hover
+          color #00aaef
+        .active
+          color #00aaef
+        .upload-option
+          position absolute
+          background #FFFFFF
+          top 50px
+          left 0
+          width 120px
+          height auto
+          color #5a5a5a
+          margin-left 0
+          font-size 12px
+          line-height 1.2
+          &.display
+            display none
+          p
+            margin 0
+            padding 5px
+            border-bottom 1px solid #AAAAAA
+            border-right 1px solid #AAAAAA
+            border-left 1px solid #AAAAAA
+            &:hover
+              background #EEEEEE
+
+  .mission-inner
+    width 100%
+    height 100%
+    padding 0 20px
+    overflow auto
+    ul
+      width 100%
+      li
+        padding 10px 0
+        span:first-child
+          display inline-block
+          width 30%
+        .distribution-wrapper
+          margin-top 10px
+          .img-wrapper-box
+            position relative
+            display inline-block
+            .p-guanbi
+              position absolute
+              top -5px
+              right 0
+              display inline-block
+              font-size 12px
+              transform scale(0.8)
+              cursor pointer
+          .img-wrapper
+            vertical-align top
+            display inline-block
+            width 40px
+            height 40px
+            border-radius 20px
+            margin-right 10px
+            overflow hidden
+            img
+              vertical-align top
+              width 100%
+          .add-person
+            line-height 40px
+            text-align center
+            background #CCCCCC
+            color #FFFFFF
+            font-size 28px
+            font-weight 700
+            cursor pointer
+            &:hover
+              opacity 0.6
+
+        .add-upload
+          color #00aaef
+          cursor pointer
+        .added-upload
+          margin-top 10px
+          .added-item
+            background #f9fafb
+            padding 10px 20px
+            .icon-wrapper
+              display inline-block
+              width 80px
+              height 80px
+              background #FFFFFF
+              text-align center
+              line-height 80px
+              margin-right 20px
+              .plus-icon
+                font-size 36px
+                width 100%
+            .added-info
+              display inline-block
+              vertical-align top
+              p
+                margin 5px 0
+                &:last-child>*
+                  margin-right 5px
+                  color #333333
+                  cursor pointer
+  .tips-inner
+    padding 0px 40px
+    overflow auto
+    width 100%
+    height calc(100% - 50px)
+    .system-push,.mentioned-me,.announcement
+      border-bottom 1px solid #CCCCCC
+      padding 20px 0
+      margin 10px 0
+      p
+        margin 0 0 0 0
+    .system-push
+      p.system-push-title
+        position relative
+        font-size 14px
+        cursor pointer
+        .sanjiao-mark
+          display none
+          position absolute
+          top 3px
+          left -12px
+          font-size 12px
+          color #00aaef
+        .system-push-number
+          display inline-block
+          vertical-align middle
+          width 18px
+          height 18px
+          line-height 18px
+          text-align center
+          border-radius 9px
+          font-size 12px
+          background #aaaaaa
+          color #FFFFFF
+        &.active
+          color #00aaef
+          .sanjiao-mark
+            display block
+          .system-push-number
+            display none
+      .system-push-inner
+        padding 20px 0
+        border-bottom 1px solid #CCCCCC
+        &:last-child
+          padding-bottom 0px
+          border-bottom none
+        .sort-icon
+          font-size 24px
+          color #00aaef
+          margin-right 10px
+        .system-push-content
+          display inline-block
+          width calc(100% - 34px)
+          .system-push-content-header
+            .system-name
+              font-size 16px
+              margin-right 5px
+            .system-person
+              color #00aaef
+              margin-right 5px
+              cursor pointer
+            .system-date
+              font-size 12px
+              margin-right 5px
+              color #a9a9a9
+
+          .system-push-content-text
+            font-size 12px
+            color #a9a9a9
+    .mentioned-me
+      p.mentioned-me-title
+        position relative
+        font-size 14px
+        cursor pointer
+        .sanjiao-mark
+          display none
+          position absolute
+          top 3px
+          left -12px
+          font-size 12px
+          color #00aaef
+        .mentioned-me-number
+          display inline-block
+          vertical-align middle
+          width 18px
+          height 18px
+          line-height 18px
+          text-align center
+          border-radius 9px
+          font-size 12px
+          background #aaaaaa
+          color #FFFFFF
+        &.active
+          color #00aaef
+          .sanjiao-mark
+            display block
+          .mentioned-me-number
+            display none
+    .announcement
+      p.announcement-title
+        position relative
+        font-size 14px
+        cursor pointer
+        .sanjiao-mark
+          display none
+          position absolute
+          top 3px
+          left -12px
+          font-size 12px
+          color #00aaef
+        .announcement-number
+          display inline-block
+          vertical-align middle
+          width 16px
+          height 16px
+          line-height 16px
+          text-align center
+          border-radius 8px
+          font-size 12px
+          background #aaaaaa
+          color #FFFFFF
+        &.active
+          color #00aaef
+          .sanjiao-mark
+            display block
+          .announcement-number
+            display none
+      .announcement-inner
+        padding 20px 0
+        border-bottom 1px solid #CCCCCC
+        &:last-child
+          padding-bottom 0px
+          border-bottom none
+        .dropdown
+          display inline-block
+          margin-bottom 10px
+        .announcement-content-header
+          .announcement-name
+            font-size 16px
+            margin-right 5px
+          .announcement-person
+            color #00aaef
+            margin-right 5px
+            cursor pointer
+          .announcement-date
+            font-size 12px
+            margin-right 5px
+            color #a9a9a9
+        .announcement-text
+          font-size 12px
+          color #a9a9a9
+.p-wenjian
+  color #FFB951
+  font-size 24px
+.p-excel
+  font-size 24px
+  color #00a23f
+.p-word
+  font-size 24px
+  color #0a6cd6
+.p-pptx
+  font-size 24px
+  color #ff3333
+.p-pdf
+  font-size 24px
+  color #cc4b4c
+.p-txt
+  font-size 24px
+  color #000
+.p-file
+  font-size 24px
+  color #CCCCCC
+.box>.radio-wrapper
+  display block
+  text-align right
+
+.tooltips-wrapper
+  position absolute
+  font-size 12px
+  padding-bottom 14px
+  left 10px
+  top 10px
+  transform translateY(-100%)
+  z-index 1000
+  &.hide
+    visibility hidden
+  #tooltips
+    width 330px
+    background #FFFFFF
+    padding 10px
+    border 1px solid #CCCCCC
+    box-shadow 3px -2px 4px rgba(204,204,204,.5)
+    .title
+      margin-bottom 0px
+      padding-bottom 10px
+      border-bottom 1px solid #eeeeee
+      .title-name
+        font-size 14px
+        color #00aaef
+      .tooltips-options-wrapper
+        margin-top 2px
+        .tooltips-edit
+          cursor pointer
+          margin-right 5px
+        .tooltips-delete
+          cursor pointer
+    .tooltips-info
+      margin-bottom 0px
+      padding-top 10px
+      .desc-item
+        padding 2px 0
+        .desc
+          display inline-block
+          color #a3a3a3
+          width 50px
+        .description,.time,.remind
+          color #5a5a5a
+          display inline-block
+          width calc(100% - 55px)
+          vertical-align top
+        .person
+          display inline-block
+          vertical-align top
+          .person-list
+            text-align center
+            .person-name
+              color #a3a3a3
+              transform scale(0.8)
+              margin-bottom 0px
+  .sanjiao-down
+    position absolute
+    bottom 0px
+    left 5px
+    width 0
+    border-top 8px solid #CCCCCC
+    border-right 6px solid transparent
+    border-left 6px solid transparent
+    border-bottom 6px solid transparent
+    &:after
+      content ''
+      position absolute
+      width 0
+      bottom -3px
+      left -5px
+      border-top 7px solid #FFFFFF
+      border-right 5px solid transparent
+      border-left 5px solid transparent
+      border-bottom 5px solid transparent
+
+.height100
+  height 100%
+.date-wrapper
+  position relative
+  top 2px
+  width 120px
+  font-size 12px
+  margin-right 5px
+  .glyphicon-calendar
+    position absolute
+    top 10px
+    left 5px
+  .delete-date
+    position absolute
+    top 5px
+    right 5px
+  .dateEnd,.dateStart
+    padding 2px 20px
+    height 34px

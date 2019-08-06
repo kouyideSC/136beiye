@@ -1,0 +1,227 @@
+.main-content
+  overflow auto
+  .side-tag-wrapper
+    width 30px
+    .tag
+      color #FFFFFF
+      display inline-block
+      position relative
+      width 100%
+      text-align center
+      padding 20px 5px
+      cursor pointer
+      &.c03a9f3
+        background #03A9F3
+      &.cff3366
+        background #ff3366
+      &.c26bdbf
+        background #26bdbf
+      &.cffcc33
+        background #ffcc33
+      &.c3e4359
+        background #3e4359
+      &.active,&:hover
+        transform scaleX(1.1)
+        left -1px
+  .knowledge-content
+    background #FFFFFF
+    width 70%
+    margin-right 10px
+    .knowledge-title-box
+      padding 0 10px
+      height 54px
+      .knowledge-title-item
+        height 100%
+        span
+          display inline-block
+          line-height 54px
+          height 100%
+          padding 0 10px
+          cursor pointer
+          &.active
+            border-bottom 2px solid #03a9f3
+          &:hover
+            background #03a9f3
+            color #fff
+      .knowledge-title-features
+        .search-wrapper
+          position relative
+          display inline-block
+          height 54px
+          line-height 54px
+          margin-right 10px
+          .search-box
+            vertical-align middle
+            font-size 14px
+            height 30px
+            width 220px
+            border-radius 15px
+            padding 0 20px
+            border 1px solid #CCCCCC
+          .p-search
+            position absolute
+            font-size 16px
+            right 15px
+            top 2px
+    .knowledge-list-wrapper
+      padding 0 10px 10px 10px
+      border-top 1px solid #03a9f3
+      height calc(100% - 54px)
+      overflow-y auto
+      &.about-me-wrapper
+        height calc(100% - 96px)
+      li
+        display block
+        padding 10px
+        border-bottom 1px solid #CCCCCC
+        .img-wrapper
+          width 110px
+          height 80px
+          display inline-block
+          background #00aaef
+          margin-right 10px
+          img
+            vertical-align middle
+        .info-wrapper
+          .info-header
+            font-size 20px
+            font-weight 700
+            height 36px
+            line-height 40px
+            margin-bottom 0px
+          .info-text
+            font-size 14px
+            margin-bottom 0px
+            height 22px
+            line-height 22px
+            white-space nowrap
+            overflow hidden
+            text-overflow ellipsis
+          .info-desc
+            height 22px
+            line-height 22px
+            .desc-inner-left
+              .author
+                vertical-align sub
+              .name
+                position relative
+                cursor pointer
+                color #03A9F3
+                margin-left 2px
+                .name-desc
+                  display none
+                  position absolute
+                  top 14px
+                  padding-top 6px
+                  width 300px
+                  cursor default
+                  z-index 1
+                  .sanjiao
+                    position relative
+                    width 0px
+                    left 30px
+                    top 5px
+                    border-top 5px solid #FFFFFF
+                    border-left 5px solid #FFFFFF
+                    border-right 5px solid transparent
+                    border-bottom 5px solid transparent
+                    transform rotate(45deg)
+                    box-shadow -1px -1px 1px rgba(0,0,0,.5)
+                  .name-desc-in
+                    width 100%
+                    padding 10px
+                    background #FFFFFF
+                    box-shadow 0px 0px 5px rgba(0,0,0,.5)
+                    .head-img
+                      width 100px
+                      height 100px
+                      background #000000
+                    .info-desc-card
+                      width calc(100% - 110px)
+                      .title
+                        height 40px
+                        margin-bottom 0px
+                        .desc-name
+                          font-size 16px
+                          height 40px
+                          line-height 40px
+                          color #03A9F3
+                          cursor pointer
+                        .desc-guanzhu
+                          padding 0px 10px
+                          background #03A9F3
+                          color #FFFFFF
+                          margin-top 8px
+                          cursor pointer
+                      .zhiwei,.tel-num
+                        height 30px
+                        line-height 30px
+                        margin-bottom 0px
+                        color #a9a9a9
+              .time
+                margin-left 2px
+                font-size 12px
+            .desc-inner-right>*
+              font-size 12px
+              color #a9a9a9
+              vertical-align bottom
+              &.zan-num
+                margin-right 5px
+              &.collection
+                margin-right 5px
+    .click-to-more
+      background #f7f7f7
+      text-align center
+      display block
+      color #03A9F3
+      padding 10px
+      &:hover
+        background #eeeeee
+    .knowledge-loading-wrapper
+      text-align center
+      .p-loading
+        display inline-block
+        font-size 36px
+        animation rotation 2s linear infinite
+  .hot-tag-wrapper
+    width calc(30% - 40px)
+    background #FFFFFF
+    .hot-tag-title
+      height 54px
+      line-height 54px
+      margin-bottom 0px
+      border-bottom 1px solid #CCCCCC
+      padding 0 10px
+      .p-fire
+        color #ffcc33
+        font-size 16px
+      .hot-tag-text
+        margin-left 5px
+        font-size 16px
+    .hot-tag-content
+      display inline-block
+      width 100%
+      padding 10px 20px
+      margin-bottom 0px
+      li
+        float left
+        min-width 33.3%
+        height 30px
+        line-height 30px
+        a
+          color #43495A
+          font-size 14px
+          &:hover
+            color #03A9F3
+@keyframes rotation
+  to
+    transform: rotate(360deg)
+p.about-me
+  margin-bottom 0px
+  padding 10px 20px
+  a
+    margin-right 10px
+    color #000
+    &.active
+      font-size 16px
+      font-weight 700

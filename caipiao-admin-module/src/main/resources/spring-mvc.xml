@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context-3.2.xsd
+      http://www.springframework.org/schema/mvc
+      http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+
+    <!-- 扫描指定的包中注解 -->
+    <context:component-scan base-package="com.caipiao.admin" />
+
+    <!-- 静态资源拦截筛选 -->
+    <mvc:default-servlet-handler />
+
+    <!-- 自定义用户登录验证拦截器 -->
+    <mvc:interceptors>
+        <!-- 登录拦截 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**/*"/>
+            <mvc:exclude-mapping path="/**/login"/>
+            <mvc:exclude-mapping path="/**/logout"/>
+            <mvc:exclude-mapping path="/**/*.js"/>
+            <mvc:exclude-mapping path="/**/*.css"/>
+            <mvc:exclude-mapping path="/**/*.png"/>
+            <mvc:exclude-mapping path="/**/*.jpg"/>
+            <mvc:exclude-mapping path="/**/*.icon"/>
+            <mvc:exclude-mapping path="/**/*.gif"/>
+            <mvc:exclude-mapping path="/**/*.html"/>
+            <mvc:exclude-mapping path="/**/*.eot"/>
+            <mvc:exclude-mapping path="/**/*.svg"/>
+            <mvc:exclude-mapping path="/**/*.ttf"/>
+            <mvc:exclude-mapping path="/**/*.woff"/>
+            <mvc:exclude-mapping path="/**/*.map"/>
+            <mvc:exclude-mapping path="/**/*.json"/>
+            <mvc:exclude-mapping path="/**/*.mp3"/>
+            <bean class="com.caipiao.admin.interceptor.LoginInterceptor"></bean>
+        </mvc:interceptor>
+        <!-- 功能权限拦截 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**/*"/>
+            <mvc:exclude-mapping path="/**/*.js"/>
+            <mvc:exclude-mapping path="/**/*.css"/>
+            <mvc:exclude-mapping path="/**/*.png"/>
+            <mvc:exclude-mapping path="/**/*.jpg"/>
+            <mvc:exclude-mapping path="/**/*.icon"/>
+            <mvc:exclude-mapping path="/**/*.gif"/>
+            <mvc:exclude-mapping path="/**/*.html"/>
+            <mvc:exclude-mapping path="/**/*.eot"/>
+            <mvc:exclude-mapping path="/**/*.svg"/>
+            <mvc:exclude-mapping path="/**/*.ttf"/>
+            <mvc:exclude-mapping path="/**/*.woff"/>
+            <mvc:exclude-mapping path="/**/*.map"/>
+            <mvc:exclude-mapping path="/**/*.json"/>
+            <mvc:exclude-mapping path="/**/*.mp3"/>
+            <bean class="com.caipiao.admin.interceptor.AuthorityInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <ref bean="stringHttpMessageConverter" />
+            <ref bean="fastJsonHttpMessageConverter" />
+            <ref bean="xmlHttpMessageConverter" />
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!-- 使用文本格式输出数据 -->
+    <bean id="stringHttpMessageConverter"
+          class="org.springframework.http.converter.StringHttpMessageConverter">
+        <constructor-arg value="UTF-8" index="0"></constructor-arg>
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/plain;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 使用json格式输出数据 如避免IE出现下载JSON文件 -->
+    <bean id="fastJsonHttpMessageConverter"
+          class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/json;charset=UTF-8</value>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+        <property name="features">
+            <list>
+                <value>QuoteFieldNames</value>
+                <value>WriteDateUseDateFormat</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 使用XML格式输出数据 -->
+    <bean id="xmlHttpMessageConverter" class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
+        <constructor-arg>
+            <bean class="org.springframework.oxm.xstream.XStreamMarshaller">
+                <property name="streamDriver">
+                    <bean class="com.thoughtworks.xstream.io.xml.StaxDriver"/>
+                </property>
+            </bean>
+        </constructor-arg>
+        <property name="supportedMediaTypes" value="application/xml"></property>
+    </bean>
+
+    <!-- 定义跳转的文件的前后缀 ，视图模式配置 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <!-- 这里的配置我的理解是自动给后面action的方法return的字符串加上前缀和后缀，变成一个 可用的url地址 -->
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!-- 设置上传文件的最大尺寸为10MB -->
+        <property name="maxUploadSize">
+            <value>104857600</value>
+        </property>
+        <property name="defaultEncoding">
+            <value>utf-8</value>
+        </property>
+    </bean>
+</beans>

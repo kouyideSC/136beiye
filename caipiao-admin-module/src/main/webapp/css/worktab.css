@@ -1,0 +1,1190 @@
+.title-option-left {
+  height: 100%;
+  vertical-align: center;
+}
+.title-option-left .btn-group-ms .dropdown-menu {
+  left: inherit;
+  right: 0;
+}
+.title-option-left .title-option-left>div {
+  display: inline-block;
+  vertical-align: middle;
+}
+.title-option-left .title-option-left>div.data-picker {
+  margin: -4px 20px 0px 20px;
+}
+.title-option-left .title-option-left>div.data-picker>div {
+  display: inline-block;
+  vertical-align: top;
+}
+.whitebox {
+  position: relative;
+}
+.main-item {
+  width: 100%;
+  height: calc(100% - 58px);
+  padding: 10px;
+}
+.main-item.task {
+  padding: 0;
+}
+.main-item .task-wrapper-view {
+  height: 100%;
+  width: 100%;
+  min-width: 900px;
+  overflow-x: auto;
+}
+.main-item .task-wrapper-view .task-list .task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px 10px 40px;
+}
+.main-item .task-wrapper-view .task-list .task-item:nth-child(even) {
+  background: #f7f8fa;
+}
+.main-item .task-wrapper-view .task-list .task-item>* {
+  float: left\9;
+}
+.main-item .task-wrapper-view .task-list .task-item .icon-wrapper>.plus-icon {
+  width: 22px;
+  font-size: 22px;
+}
+.main-item .task-wrapper-view .task-list .task-item .task-title {
+  width: 140px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.main-item .task-wrapper-view .task-list .task-item .task-title p {
+  margin-bottom: 0;
+}
+.main-item .task-wrapper-view .task-list .task-item .task-detail {
+  width: calc(100% - 450px);
+  padding: 5px;
+}
+.main-item .task-wrapper-view .task-list .task-item .task-detail p {
+  margin-bottom: 0;
+}
+.main-item .task-wrapper-view .task-list .task-item .task-time {
+  width: 180px;
+  font-size: 12px;
+}
+.main-item .task-wrapper-view .task-list .task-item button.follow {
+  background: #00aaef;
+  color: #fff;
+  padding: 2px;
+  width: 80px;
+  border: none;
+  border-radius: 5px;
+}
+.main-item .task-wrapper-view .loading-wrapper {
+  text-align: center;
+  padding: 20px;
+}
+.main-item .task-wrapper-view .loading-wrapper .p-loading {
+  display: inline-block;
+  font-size: 24px;
+  animation: rotation 2s linear infinite;
+}
+.main-item .task-wrapper-empty {
+  position: relative;
+  height: 100%;
+}
+.main-item .task-wrapper-empty .content-center {
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 250px;
+  height: 150px;
+  text-align: center;
+}
+.main-item .task-wrapper-empty .content-center .plus-icon {
+  font-size: 100px;
+  color: #b7b7b7;
+}
+.main-item .task-wrapper-empty .content-center p {
+  font-size: 14px;
+  color: #ccc;
+}
+.file-address {
+  height: 40px;
+}
+.file-address span {
+  display: inline-block;
+  height: 100%;
+  line-height: 40px;
+}
+.file-address span.address-info {
+  color: #00aaef;
+  cursor: pointer;
+}
+.file-wrapper {
+  padding: 0 30px 0 10px;
+  height: calc(100% - 40px);
+  overflow: auto;
+}
+.file-wrapper.modal-inner {
+  overflow: hidden;
+}
+.file-wrapper .file-item {
+  height: 60px;
+  line-height: 60px;
+  border-bottom: 1px solid #efeff4;
+}
+.file-wrapper .file-item .file-name {
+  margin-left: 10px;
+  cursor: pointer;
+}
+.file-wrapper .file-item .file-name:hover {
+  color: #00aaef;
+  text-decoration: underline;
+}
+.file-wrapper .file-item .features-wrapper {
+  margin-bottom: 0;
+  height: 100%;
+}
+.file-wrapper .file-item .features-wrapper .p-fenxiang,
+.file-wrapper .file-item .features-wrapper .glyphicon-pencil {
+  margin-right: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.file-wrapper .file-item .features-wrapper .p-xiazai,
+.file-wrapper .file-item .features-wrapper .glyphicon-trash {
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 10px;
+}
+.file-wrapper .file-item .features-wrapper .p-preview{
+	cursor: pointer;
+	font-size: 14px;
+}
+.calendar-wrap {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+.calendar-wrap #calendar,
+.calendar-wrap .schedule-alendar-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: -17px;
+  height: 100%;
+  overflow-y: scroll;
+  padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
+}
+.main-item {
+  position: relative;
+}
+.main-item .page-button-wrapper {
+  margin: 10px 0 20px 0;
+  font-size: 0;
+}
+.main-item .page-button-wrapper .page-button {
+  display: inline-block;
+  vertical-align: top;
+  width: 25px;
+  height: 25px;
+  line-height: 23px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  margin-right: 8px;
+  border: 1px solid #d9d9d9;
+}
+.main-item .page-button-wrapper .page-button.active,
+.main-item .page-button-wrapper .page-button:hover {
+  color: #fff;
+  background: #d9d9d9;
+}
+.main-item .page-button-wrapper .page-text {
+  font-size: 14px;
+  line-height: 23px;
+}
+.main-item .dash-board-wrapper {
+  height: calc(100% - 55px);
+  width: 100%;
+  overflow: auto;
+}
+.main-item .dash-board-wrapper .dash-board-inner {
+  width: 100%;
+  min-width: 1000px;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board {
+  width: calc(50% - 20px);
+  height: 390px;
+  position: relative;
+  border: 1px solid #d9d9d9;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board:nth-child(2n+1) {
+  margin-right: 40px;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board:nth-child(-n+2) {
+  margin-bottom: 50px;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .title {
+  padding: 10px 20px;
+  margin-bottom: 0px;
+}
+.title h3{
+  display: inline-block;
+  font-size:16px;
+  margin: 0 ;
+  color: #3a3a3a;
+}
+.annual-return em{
+  font-style: normal;
+}
+.subtitle{
+  padding: 0 20px;
+}
+.subtitle label{
+  line-height:26px;
+  float: left;
+  margin-bottom: 0;
+}
+.subtitle .btn{
+  padding: 2px 4px;
+}
+.collection-situation{
+  display: block;
+  padding: 0  20px;
+  margin-top:10px;
+}
+.subtitle-form{
+  margin-right:15px;
+}
+.subtitle-form:last-child{
+  margin-right:0;
+}
+.collection-situation li{
+  float: left;
+  margin-right: 15px;
+}
+.unpaid-amount{
+  margin-left:15px;
+}
+.m-l-0{
+  margin-left:0;
+}
+.unpaid-amount em{
+  font-style: normal;
+}
+.collection-situation li:last-child{
+  margin-right:0;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .title .glyphicon-question-sign {
+  color: #00aaef;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .zoom-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 18px;
+  color: #d9d9d9;
+  text-align: center;
+  border-left: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .zoom-icon:hover {
+  background: #00aaef;
+  color: #fff;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .time-choose {
+  height: 20px;
+  padding: 0 10px;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .time-choose .time-item {
+  float: left;
+  padding: 0 10px;
+  font-size: 12px;
+  color: #5a5a5a;
+  border-right: 1px solid #d9d9d9;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .time-choose .time-item:last-child {
+  border: none;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .time-choose .time-item span {
+  cursor: pointer;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .time-choose .time-item span.active {
+  color: #00aaef;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .dash-board-table {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .dash-board-table .table-content {
+  width: 100%;
+  padding: 50px;
+  text-align: center;
+  color: #a7a7a7;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .dash-board-table .table-content .glyphicon {
+  font-size: 100px;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .dash-board-table .table-content .text {
+  margin-top: 20px;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .handle-wrapper {
+  display: none;
+  position: absolute;
+  padding: 10px 15px;
+  margin-bottom: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.15);
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .handle-wrapper span {
+  margin-right: 10px;
+  font-size: 14px;
+  color: #00aaef;
+  cursor: pointer;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board .handle-wrapper span:hover {
+  text-decoration: underline;
+}
+.main-item .dash-board-wrapper .dash-board-inner .dash-board:hover .handle-wrapper {
+  display: block;
+}
+.zoom-dash-board-wrapper {
+  position: absolute;
+  display: none;
+  height: 100%;
+  width: 100%;
+  padding: 20px;
+  top: 0;
+  left: 0;
+  background: #fff;
+  overflow: auto;
+  z-index: 100;
+}
+.zoom-dash-board-wrapper.show {
+  display: block;
+}
+.zoom-dash-board-wrapper .zoom-dash-board {
+  position: relative;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .title .glyphicon-question-sign {
+  color: #00aaef;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .title .glyphicon-edit {
+  color: #9a9a9a;
+  cursor: pointer;
+  margin-left: 20px;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .small-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 18px;
+  color: #d9d9d9;
+  text-align: center;
+  border: 1px solid #d9d9d9;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .small-icon:hover {
+  background: #00aaef;
+  color: #fff;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .time-choose {
+  height: 20px;
+  padding: 0 10px;
+  text-align: center;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .time-choose .time-item {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0 10px;
+  font-size: 12px;
+  color: #5a5a5a;
+  border-right: 1px solid #d9d9d9;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .time-choose .time-item:last-child {
+  border: none;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .time-choose .time-item span {
+  cursor: pointer;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .time-choose .time-item span.active {
+  color: #00aaef;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .dash-board-table {
+  width: 100%;
+  height: 270px;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .dash-board-table .table-content {
+  width: 100%;
+  padding: 50px;
+  text-align: center;
+  color: #a7a7a7;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .dash-board-table .table-content .glyphicon {
+  font-size: 100px;
+}
+.zoom-dash-board-wrapper .zoom-dash-board .dash-board-table .table-content .text {
+  margin-top: 20px;
+}
+.work-back {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: none;
+}
+.work-back.z-index-css {
+  z-index: 5;
+}
+.mission-wrap,
+.tips-wrap {
+  display: none;
+  position: fixed;
+  top: 50px;
+  right: 0;
+  width: 400px;
+  height: calc(100% - 50px);
+  background: #fff;
+  z-index: 5;
+}
+.mission-wrap .mission-header,
+.tips-wrap .mission-header,
+.mission-wrap .tips-header,
+.tips-wrap .tips-header {
+  background: #333a4b;
+  height: 50px;
+  padding: 0 10px;
+  color: #fff;
+}
+.mission-wrap .mission-header .mission-title,
+.tips-wrap .mission-header .mission-title,
+.mission-wrap .tips-header .mission-title,
+.tips-wrap .tips-header .mission-title,
+.mission-wrap .mission-header .tips-title,
+.tips-wrap .mission-header .tips-title,
+.mission-wrap .tips-header .tips-title,
+.tips-wrap .tips-header .tips-title {
+  line-height: 50px;
+  margin-bottom: 0;
+}
+.mission-wrap .mission-header .mission-title.tips-title,
+.tips-wrap .mission-header .mission-title.tips-title,
+.mission-wrap .tips-header .mission-title.tips-title,
+.tips-wrap .tips-header .mission-title.tips-title,
+.mission-wrap .mission-header .tips-title.tips-title,
+.tips-wrap .mission-header .tips-title.tips-title,
+.mission-wrap .tips-header .tips-title.tips-title,
+.tips-wrap .tips-header .tips-title.tips-title {
+  font-size: 16px;
+}
+.mission-wrap .mission-header .mission-option,
+.tips-wrap .mission-header .mission-option,
+.mission-wrap .tips-header .mission-option,
+.tips-wrap .tips-header .mission-option,
+.mission-wrap .mission-header .tips-option,
+.tips-wrap .mission-header .tips-option,
+.mission-wrap .tips-header .tips-option,
+.tips-wrap .tips-header .tips-option {
+  margin-bottom: 0;
+}
+.mission-wrap .mission-header .mission-option .mission-item,
+.tips-wrap .mission-header .mission-option .mission-item,
+.mission-wrap .tips-header .mission-option .mission-item,
+.tips-wrap .tips-header .mission-option .mission-item,
+.mission-wrap .mission-header .tips-option .mission-item,
+.tips-wrap .mission-header .tips-option .mission-item,
+.mission-wrap .tips-header .tips-option .mission-item,
+.tips-wrap .tips-header .tips-option .mission-item,
+.mission-wrap .mission-header .mission-option .tips-item,
+.tips-wrap .mission-header .mission-option .tips-item,
+.mission-wrap .tips-header .mission-option .tips-item,
+.tips-wrap .tips-header .mission-option .tips-item,
+.mission-wrap .mission-header .tips-option .tips-item,
+.tips-wrap .mission-header .tips-option .tips-item,
+.mission-wrap .tips-header .tips-option .tips-item,
+.tips-wrap .tips-header .tips-option .tips-item {
+  margin-left: 10px;
+  float: left;
+  height: 50px;
+  line-height: 50px;
+  position: relative;
+  color: #fff;
+  cursor: pointer;
+}
+.mission-wrap .mission-header .mission-option .mission-item:hover,
+.tips-wrap .mission-header .mission-option .mission-item:hover,
+.mission-wrap .tips-header .mission-option .mission-item:hover,
+.tips-wrap .tips-header .mission-option .mission-item:hover,
+.mission-wrap .mission-header .tips-option .mission-item:hover,
+.tips-wrap .mission-header .tips-option .mission-item:hover,
+.mission-wrap .tips-header .tips-option .mission-item:hover,
+.tips-wrap .tips-header .tips-option .mission-item:hover,
+.mission-wrap .mission-header .mission-option .tips-item:hover,
+.tips-wrap .mission-header .mission-option .tips-item:hover,
+.mission-wrap .tips-header .mission-option .tips-item:hover,
+.tips-wrap .tips-header .mission-option .tips-item:hover,
+.mission-wrap .mission-header .tips-option .tips-item:hover,
+.tips-wrap .mission-header .tips-option .tips-item:hover,
+.mission-wrap .tips-header .tips-option .tips-item:hover,
+.tips-wrap .tips-header .tips-option .tips-item:hover {
+  color: #00aaef;
+}
+.mission-wrap .mission-header .mission-option .mission-item .active,
+.tips-wrap .mission-header .mission-option .mission-item .active,
+.mission-wrap .tips-header .mission-option .mission-item .active,
+.tips-wrap .tips-header .mission-option .mission-item .active,
+.mission-wrap .mission-header .tips-option .mission-item .active,
+.tips-wrap .mission-header .tips-option .mission-item .active,
+.mission-wrap .tips-header .tips-option .mission-item .active,
+.tips-wrap .tips-header .tips-option .mission-item .active,
+.mission-wrap .mission-header .mission-option .tips-item .active,
+.tips-wrap .mission-header .mission-option .tips-item .active,
+.mission-wrap .tips-header .mission-option .tips-item .active,
+.tips-wrap .tips-header .mission-option .tips-item .active,
+.mission-wrap .mission-header .tips-option .tips-item .active,
+.tips-wrap .mission-header .tips-option .tips-item .active,
+.mission-wrap .tips-header .tips-option .tips-item .active,
+.tips-wrap .tips-header .tips-option .tips-item .active {
+  color: #00aaef;
+}
+.mission-wrap .mission-header .mission-option .mission-item .upload-option,
+.tips-wrap .mission-header .mission-option .mission-item .upload-option,
+.mission-wrap .tips-header .mission-option .mission-item .upload-option,
+.tips-wrap .tips-header .mission-option .mission-item .upload-option,
+.mission-wrap .mission-header .tips-option .mission-item .upload-option,
+.tips-wrap .mission-header .tips-option .mission-item .upload-option,
+.mission-wrap .tips-header .tips-option .mission-item .upload-option,
+.tips-wrap .tips-header .tips-option .mission-item .upload-option,
+.mission-wrap .mission-header .mission-option .tips-item .upload-option,
+.tips-wrap .mission-header .mission-option .tips-item .upload-option,
+.mission-wrap .tips-header .mission-option .tips-item .upload-option,
+.tips-wrap .tips-header .mission-option .tips-item .upload-option,
+.mission-wrap .mission-header .tips-option .tips-item .upload-option,
+.tips-wrap .mission-header .tips-option .tips-item .upload-option,
+.mission-wrap .tips-header .tips-option .tips-item .upload-option,
+.tips-wrap .tips-header .tips-option .tips-item .upload-option {
+  position: absolute;
+  background: #fff;
+  top: 50px;
+  left: 0;
+  width: 120px;
+  height: auto;
+  color: #5a5a5a;
+  margin-left: 0;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.mission-wrap .mission-header .mission-option .mission-item .upload-option.display,
+.tips-wrap .mission-header .mission-option .mission-item .upload-option.display,
+.mission-wrap .tips-header .mission-option .mission-item .upload-option.display,
+.tips-wrap .tips-header .mission-option .mission-item .upload-option.display,
+.mission-wrap .mission-header .tips-option .mission-item .upload-option.display,
+.tips-wrap .mission-header .tips-option .mission-item .upload-option.display,
+.mission-wrap .tips-header .tips-option .mission-item .upload-option.display,
+.tips-wrap .tips-header .tips-option .mission-item .upload-option.display,
+.mission-wrap .mission-header .mission-option .tips-item .upload-option.display,
+.tips-wrap .mission-header .mission-option .tips-item .upload-option.display,
+.mission-wrap .tips-header .mission-option .tips-item .upload-option.display,
+.tips-wrap .tips-header .mission-option .tips-item .upload-option.display,
+.mission-wrap .mission-header .tips-option .tips-item .upload-option.display,
+.tips-wrap .mission-header .tips-option .tips-item .upload-option.display,
+.mission-wrap .tips-header .tips-option .tips-item .upload-option.display,
+.tips-wrap .tips-header .tips-option .tips-item .upload-option.display {
+  display: none;
+}
+.mission-wrap .mission-header .mission-option .mission-item .upload-option p,
+.tips-wrap .mission-header .mission-option .mission-item .upload-option p,
+.mission-wrap .tips-header .mission-option .mission-item .upload-option p,
+.tips-wrap .tips-header .mission-option .mission-item .upload-option p,
+.mission-wrap .mission-header .tips-option .mission-item .upload-option p,
+.tips-wrap .mission-header .tips-option .mission-item .upload-option p,
+.mission-wrap .tips-header .tips-option .mission-item .upload-option p,
+.tips-wrap .tips-header .tips-option .mission-item .upload-option p,
+.mission-wrap .mission-header .mission-option .tips-item .upload-option p,
+.tips-wrap .mission-header .mission-option .tips-item .upload-option p,
+.mission-wrap .tips-header .mission-option .tips-item .upload-option p,
+.tips-wrap .tips-header .mission-option .tips-item .upload-option p,
+.mission-wrap .mission-header .tips-option .tips-item .upload-option p,
+.tips-wrap .mission-header .tips-option .tips-item .upload-option p,
+.mission-wrap .tips-header .tips-option .tips-item .upload-option p,
+.tips-wrap .tips-header .tips-option .tips-item .upload-option p {
+  margin: 0;
+  padding: 5px;
+  border-bottom: 1px solid #aaa;
+  border-right: 1px solid #aaa;
+  border-left: 1px solid #aaa;
+}
+.mission-wrap .mission-header .mission-option .mission-item .upload-option p:hover,
+.tips-wrap .mission-header .mission-option .mission-item .upload-option p:hover,
+.mission-wrap .tips-header .mission-option .mission-item .upload-option p:hover,
+.tips-wrap .tips-header .mission-option .mission-item .upload-option p:hover,
+.mission-wrap .mission-header .tips-option .mission-item .upload-option p:hover,
+.tips-wrap .mission-header .tips-option .mission-item .upload-option p:hover,
+.mission-wrap .tips-header .tips-option .mission-item .upload-option p:hover,
+.tips-wrap .tips-header .tips-option .mission-item .upload-option p:hover,
+.mission-wrap .mission-header .mission-option .tips-item .upload-option p:hover,
+.tips-wrap .mission-header .mission-option .tips-item .upload-option p:hover,
+.mission-wrap .tips-header .mission-option .tips-item .upload-option p:hover,
+.tips-wrap .tips-header .mission-option .tips-item .upload-option p:hover,
+.mission-wrap .mission-header .tips-option .tips-item .upload-option p:hover,
+.tips-wrap .mission-header .tips-option .tips-item .upload-option p:hover,
+.mission-wrap .tips-header .tips-option .tips-item .upload-option p:hover,
+.tips-wrap .tips-header .tips-option .tips-item .upload-option p:hover {
+  background: #eee;
+}
+.mission-wrap .mission-inner,
+.tips-wrap .mission-inner {
+  width: 100%;
+  height: 100%;
+  padding: 0 20px;
+  overflow: auto;
+}
+.mission-wrap .mission-inner ul,
+.tips-wrap .mission-inner ul {
+  width: 100%;
+}
+.mission-wrap .mission-inner ul li,
+.tips-wrap .mission-inner ul li {
+  padding: 10px 0;
+}
+.mission-wrap .mission-inner ul li span:first-child,
+.tips-wrap .mission-inner ul li span:first-child {
+  display: inline-block;
+  width: 30%;
+}
+.mission-wrap .mission-inner ul li .distribution-wrapper,
+.tips-wrap .mission-inner ul li .distribution-wrapper {
+  margin-top: 10px;
+}
+.mission-wrap .mission-inner ul li .distribution-wrapper .img-wrapper-box,
+.tips-wrap .mission-inner ul li .distribution-wrapper .img-wrapper-box {
+  position: relative;
+  display: inline-block;
+}
+.mission-wrap .mission-inner ul li .distribution-wrapper .img-wrapper-box .p-guanbi,
+.tips-wrap .mission-inner ul li .distribution-wrapper .img-wrapper-box .p-guanbi {
+  position: absolute;
+  top: -5px;
+  right: 0;
+  display: inline-block;
+  font-size: 12px;
+  transform: scale(0.8);
+  cursor: pointer;
+}
+.mission-wrap .mission-inner ul li .distribution-wrapper .img-wrapper,
+.tips-wrap .mission-inner ul li .distribution-wrapper .img-wrapper {
+  vertical-align: top;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  margin-right: 10px;
+  overflow: hidden;
+}
+.mission-wrap .mission-inner ul li .distribution-wrapper .img-wrapper img,
+.tips-wrap .mission-inner ul li .distribution-wrapper .img-wrapper img {
+  vertical-align: top;
+  width: 100%;
+}
+.mission-wrap .mission-inner ul li .distribution-wrapper .add-person,
+.tips-wrap .mission-inner ul li .distribution-wrapper .add-person {
+  line-height: 40px;
+  text-align: center;
+  background: #ccc;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.mission-wrap .mission-inner ul li .distribution-wrapper .add-person:hover,
+.tips-wrap .mission-inner ul li .distribution-wrapper .add-person:hover {
+  opacity: 0.6;
+}
+.mission-wrap .mission-inner ul li .add-upload,
+.tips-wrap .mission-inner ul li .add-upload {
+  color: #00aaef;
+  cursor: pointer;
+}
+.mission-wrap .mission-inner ul li .added-upload,
+.tips-wrap .mission-inner ul li .added-upload {
+  margin-top: 10px;
+}
+.mission-wrap .mission-inner ul li .added-upload .added-item,
+.tips-wrap .mission-inner ul li .added-upload .added-item {
+  background: #f9fafb;
+  padding: 10px 20px;
+}
+.mission-wrap .mission-inner ul li .added-upload .added-item .icon-wrapper,
+.tips-wrap .mission-inner ul li .added-upload .added-item .icon-wrapper {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  background: #fff;
+  text-align: center;
+  line-height: 80px;
+  margin-right: 20px;
+}
+.mission-wrap .mission-inner ul li .added-upload .added-item .icon-wrapper .plus-icon,
+.tips-wrap .mission-inner ul li .added-upload .added-item .icon-wrapper .plus-icon {
+  font-size: 36px;
+  width: 100%;
+}
+.mission-wrap .mission-inner ul li .added-upload .added-item .added-info,
+.tips-wrap .mission-inner ul li .added-upload .added-item .added-info {
+  display: inline-block;
+  vertical-align: top;
+}
+.mission-wrap .mission-inner ul li .added-upload .added-item .added-info p,
+.tips-wrap .mission-inner ul li .added-upload .added-item .added-info p {
+  margin: 5px 0;
+}
+.mission-wrap .mission-inner ul li .added-upload .added-item .added-info p:last-child>*,
+.tips-wrap .mission-inner ul li .added-upload .added-item .added-info p:last-child>* {
+  margin-right: 5px;
+  color: #333;
+  cursor: pointer;
+}
+.mission-wrap .tips-inner,
+.tips-wrap .tips-inner {
+  padding: 0px 40px;
+  overflow: auto;
+  width: 100%;
+  height: calc(100% - 50px);
+}
+.mission-wrap .tips-inner .system-push,
+.tips-wrap .tips-inner .system-push,
+.mission-wrap .tips-inner .mentioned-me,
+.tips-wrap .tips-inner .mentioned-me,
+.mission-wrap .tips-inner .announcement,
+.tips-wrap .tips-inner .announcement {
+  border-bottom: 1px solid #ccc;
+  padding: 20px 0;
+  margin: 10px 0;
+}
+.mission-wrap .tips-inner .system-push p,
+.tips-wrap .tips-inner .system-push p,
+.mission-wrap .tips-inner .mentioned-me p,
+.tips-wrap .tips-inner .mentioned-me p,
+.mission-wrap .tips-inner .announcement p,
+.tips-wrap .tips-inner .announcement p {
+  margin: 0 0 0 0;
+}
+.mission-wrap .tips-inner .system-push p.system-push-title,
+.tips-wrap .tips-inner .system-push p.system-push-title {
+  position: relative;
+  font-size: 14px;
+  cursor: pointer;
+}
+.mission-wrap .tips-inner .system-push p.system-push-title .sanjiao-mark,
+.tips-wrap .tips-inner .system-push p.system-push-title .sanjiao-mark {
+  display: none;
+  position: absolute;
+  top: 3px;
+  left: -12px;
+  font-size: 12px;
+  color: #00aaef;
+}
+.mission-wrap .tips-inner .system-push p.system-push-title .system-push-number,
+.tips-wrap .tips-inner .system-push p.system-push-title .system-push-number {
+  display: inline-block;
+  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 9px;
+  font-size: 12px;
+  background: #aaa;
+  color: #fff;
+}
+.mission-wrap .tips-inner .system-push p.system-push-title.active,
+.tips-wrap .tips-inner .system-push p.system-push-title.active {
+  color: #00aaef;
+}
+.mission-wrap .tips-inner .system-push p.system-push-title.active .sanjiao-mark,
+.tips-wrap .tips-inner .system-push p.system-push-title.active .sanjiao-mark {
+  display: block;
+}
+.mission-wrap .tips-inner .system-push p.system-push-title.active .system-push-number,
+.tips-wrap .tips-inner .system-push p.system-push-title.active .system-push-number {
+  display: none;
+}
+.mission-wrap .tips-inner .system-push .system-push-inner,
+.tips-wrap .tips-inner .system-push .system-push-inner {
+  padding: 20px 0;
+  border-bottom: 1px solid #ccc;
+}
+.mission-wrap .tips-inner .system-push .system-push-inner:last-child,
+.tips-wrap .tips-inner .system-push .system-push-inner:last-child {
+  padding-bottom: 0px;
+  border-bottom: none;
+}
+.mission-wrap .tips-inner .system-push .system-push-inner .sort-icon,
+.tips-wrap .tips-inner .system-push .system-push-inner .sort-icon {
+  font-size: 24px;
+  color: #00aaef;
+  margin-right: 10px;
+}
+.mission-wrap .tips-inner .system-push .system-push-inner .system-push-content,
+.tips-wrap .tips-inner .system-push .system-push-inner .system-push-content {
+  display: inline-block;
+  width: calc(100% - 34px);
+}
+.mission-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-header .system-name,
+.tips-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-header .system-name {
+  font-size: 16px;
+  margin-right: 5px;
+}
+.mission-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-header .system-person,
+.tips-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-header .system-person {
+  color: #00aaef;
+  margin-right: 5px;
+  cursor: pointer;
+}
+.mission-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-header .system-date,
+.tips-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-header .system-date {
+  font-size: 12px;
+  margin-right: 5px;
+  color: #a9a9a9;
+}
+.mission-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-text,
+.tips-wrap .tips-inner .system-push .system-push-inner .system-push-content .system-push-content-text {
+  font-size: 12px;
+  color: #a9a9a9;
+}
+.mission-wrap .tips-inner .mentioned-me p.mentioned-me-title,
+.tips-wrap .tips-inner .mentioned-me p.mentioned-me-title {
+  position: relative;
+  font-size: 14px;
+  cursor: pointer;
+}
+.mission-wrap .tips-inner .mentioned-me p.mentioned-me-title .sanjiao-mark,
+.tips-wrap .tips-inner .mentioned-me p.mentioned-me-title .sanjiao-mark {
+  display: none;
+  position: absolute;
+  top: 3px;
+  left: -12px;
+  font-size: 12px;
+  color: #00aaef;
+}
+.mission-wrap .tips-inner .mentioned-me p.mentioned-me-title .mentioned-me-number,
+.tips-wrap .tips-inner .mentioned-me p.mentioned-me-title .mentioned-me-number {
+  display: inline-block;
+  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 9px;
+  font-size: 12px;
+  background: #aaa;
+  color: #fff;
+}
+.mission-wrap .tips-inner .mentioned-me p.mentioned-me-title.active,
+.tips-wrap .tips-inner .mentioned-me p.mentioned-me-title.active {
+  color: #00aaef;
+}
+.mission-wrap .tips-inner .mentioned-me p.mentioned-me-title.active .sanjiao-mark,
+.tips-wrap .tips-inner .mentioned-me p.mentioned-me-title.active .sanjiao-mark {
+  display: block;
+}
+.mission-wrap .tips-inner .mentioned-me p.mentioned-me-title.active .mentioned-me-number,
+.tips-wrap .tips-inner .mentioned-me p.mentioned-me-title.active .mentioned-me-number {
+  display: none;
+}
+.mission-wrap .tips-inner .announcement p.announcement-title,
+.tips-wrap .tips-inner .announcement p.announcement-title {
+  position: relative;
+  font-size: 14px;
+  cursor: pointer;
+}
+.mission-wrap .tips-inner .announcement p.announcement-title .sanjiao-mark,
+.tips-wrap .tips-inner .announcement p.announcement-title .sanjiao-mark {
+  display: none;
+  position: absolute;
+  top: 3px;
+  left: -12px;
+  font-size: 12px;
+  color: #00aaef;
+}
+.mission-wrap .tips-inner .announcement p.announcement-title .announcement-number,
+.tips-wrap .tips-inner .announcement p.announcement-title .announcement-number {
+  display: inline-block;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 8px;
+  font-size: 12px;
+  background: #aaa;
+  color: #fff;
+}
+.mission-wrap .tips-inner .announcement p.announcement-title.active,
+.tips-wrap .tips-inner .announcement p.announcement-title.active {
+  color: #00aaef;
+}
+.mission-wrap .tips-inner .announcement p.announcement-title.active .sanjiao-mark,
+.tips-wrap .tips-inner .announcement p.announcement-title.active .sanjiao-mark {
+  display: block;
+}
+.mission-wrap .tips-inner .announcement p.announcement-title.active .announcement-number,
+.tips-wrap .tips-inner .announcement p.announcement-title.active .announcement-number {
+  display: none;
+}
+.mission-wrap .tips-inner .announcement .announcement-inner,
+.tips-wrap .tips-inner .announcement .announcement-inner {
+  padding: 20px 0;
+  border-bottom: 1px solid #ccc;
+}
+.mission-wrap .tips-inner .announcement .announcement-inner:last-child,
+.tips-wrap .tips-inner .announcement .announcement-inner:last-child {
+  padding-bottom: 0px;
+  border-bottom: none;
+}
+.mission-wrap .tips-inner .announcement .announcement-inner .dropdown,
+.tips-wrap .tips-inner .announcement .announcement-inner .dropdown {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.mission-wrap .tips-inner .announcement .announcement-inner .announcement-content-header .announcement-name,
+.tips-wrap .tips-inner .announcement .announcement-inner .announcement-content-header .announcement-name {
+  font-size: 16px;
+  margin-right: 5px;
+}
+.mission-wrap .tips-inner .announcement .announcement-inner .announcement-content-header .announcement-person,
+.tips-wrap .tips-inner .announcement .announcement-inner .announcement-content-header .announcement-person {
+  color: #00aaef;
+  margin-right: 5px;
+  cursor: pointer;
+}
+.mission-wrap .tips-inner .announcement .announcement-inner .announcement-content-header .announcement-date,
+.tips-wrap .tips-inner .announcement .announcement-inner .announcement-content-header .announcement-date {
+  font-size: 12px;
+  margin-right: 5px;
+  color: #a9a9a9;
+}
+.mission-wrap .tips-inner .announcement .announcement-inner .announcement-text,
+.tips-wrap .tips-inner .announcement .announcement-inner .announcement-text {
+  font-size: 12px;
+  color: #a9a9a9;
+}
+.p-wenjian {
+  color: #ffb951;
+  font-size: 24px;
+}
+.p-excel {
+  font-size: 24px;
+  color: #00a23f;
+}
+.p-word {
+  font-size: 24px;
+  color: #0a6cd6;
+}
+.p-pptx {
+  font-size: 24px;
+  color: #f33;
+}
+.p-pdf {
+  font-size: 24px;
+  color: #cc4b4c;
+}
+.p-txt {
+  font-size: 24px;
+  color: #000;
+}
+.p-file {
+  font-size: 24px;
+  color: #ccc;
+}
+/* .p-zhixinglei {
+  color: #03a9f3;
+}
+.p-shenpilei {
+  color: #26bf8c;
+}
+.p-huiyilei {
+  color: #3e4359;
+}
+.p-shenhelei {
+  color: #f36;
+} */
+.bg-orange{
+	background:#ff9900;
+}
+.bg-red{
+	background:#ff3366;
+}
+.bg-blue{
+	background:#0099ff;
+}
+.bg-pink{
+	background:#ff6699;
+}
+.bg-yellowgreen{
+	background:#26bdbf;
+}
+.box>.radio-wrapper {
+  display: block;
+  text-align: right;
+}
+.tooltips-wrapper {
+  position: absolute;
+  font-size: 12px;
+  padding-bottom: 14px;
+  left: 10px;
+  top: 10px;
+  transform: translateY(-100%);
+  z-index: 1000;
+}
+.tooltips-wrapper.hide {
+  visibility: hidden;
+}
+.tooltips-wrapper #tooltips {
+  width: 330px;
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  box-shadow: 3px -2px 4px rgba(204,204,204,0.5);
+}
+.tooltips-wrapper #tooltips .title {
+  margin-bottom: 0px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+.tooltips-wrapper #tooltips .title .title-name {
+  font-size: 14px;
+  color: #00aaef;
+}
+.tooltips-wrapper #tooltips .title .tooltips-options-wrapper {
+  margin-top: 2px;
+}
+.tooltips-wrapper #tooltips .title .tooltips-options-wrapper .tooltips-edit {
+  cursor: pointer;
+  margin-right: 5px;
+}
+.tooltips-wrapper #tooltips .title .tooltips-options-wrapper .tooltips-delete {
+  cursor: pointer;
+}
+.tooltips-wrapper #tooltips .tooltips-info {
+  margin-bottom: 0px;
+  padding-top: 10px;
+}
+.tooltips-wrapper #tooltips .tooltips-info .desc-item {
+  padding: 2px 0;
+}
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .desc {
+  display: inline-block;
+  color: #a3a3a3;
+  width: 50px;
+}
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .description,
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .time,
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .place,
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .remind {
+  color: #5a5a5a;
+  display: inline-block;
+  width: calc(100% - 55px);
+  vertical-align: top;
+}
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .person {
+  display: inline-block;
+  vertical-align: top;
+}
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .person .person-list {
+  text-align: center;
+  width:40px;
+}
+.tooltips-wrapper #tooltips .tooltips-info .desc-item .person .person-list .person-name {
+  color: #a3a3a3;
+  transform: scale(0.8);
+  margin-bottom: 0px;
+  display:block;
+  white-space:nowrap; 
+  overflow:hidden; 
+  text-overflow:ellipsis;
+}
+.tooltips-wrapper .sanjiao-down {
+  position: absolute;
+  bottom: 0px;
+  left: 5px;
+  width: 0;
+  border-top: 8px solid #ccc;
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+}
+.tooltips-wrapper .sanjiao-down:after {
+  content: '';
+  position: absolute;
+  width: 0;
+  bottom: -3px;
+  left: -5px;
+  border-top: 7px solid #fff;
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+.height100 {
+  height: 100%;
+}
+.date-wrapper {
+  position: relative;
+  top: 2px;
+  width: 120px;
+  font-size: 12px;
+  margin-right: 5px;
+}
+.date-wrapper .glyphicon-calendar {
+  position: absolute;
+  top: 10px;
+  left: 5px;
+}
+.date-wrapper .delete-date {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.date-wrapper .dateEnd,
+.date-wrapper .dateStart {
+  padding: 2px 20px;
+  height: 34px;
+}
+@-moz-keyframes rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotation {
+  to {
+    transform: rotate(360deg);
+  }
+}

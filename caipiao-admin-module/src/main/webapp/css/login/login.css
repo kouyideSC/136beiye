@@ -1,0 +1,56 @@
+/* Login- register pages */
+.login-register {
+  background: url(../../img/login-register.jpg) no-repeat center center / cover !important;
+  height: 100%;
+  position: fixed;
+}
+.login-box {
+  background: rgba(0,0,0,.2);
+  width: 550px;
+  margin: 0 auto;
+  margin-top: 10%;
+}
+.login-box .footer {
+  width: 100%;
+  left: 0px;
+  right: 0px;
+}
+.login-box .social {
+  display: block;
+  margin-bottom: 30px;
+}
+#recoverform {
+  display: none;
+}
+.login-box{
+	padding: 40px 0;
+}
+.login-box-in{
+	width: 50%;
+	margin: 0 auto;
+}
+.login-box-in h3{
+	font-size: 62px;
+	color: #fff;
+	margin-bottom: 35px !important;
+}
+.login-box-in .form-control{
+	position: relative;
+	padding: 0 15px 0 54px; 
+}
+.form-txt{
+	position: absolute;
+	top: 50%;
+	left: 20px;
+	transform: translateY(-50%);
+	-webkit-transform: translateY(-50%);
+	-moz-transform: translateY(-50%);
+	-ms-transform: translateY(-50%);
+	color: #333;
+	z-index: 100;
+}
+.tips-waring{
+	font-size: 14px;
+	color: #ff3333;
+	margin: -10px 0 0;
+}
