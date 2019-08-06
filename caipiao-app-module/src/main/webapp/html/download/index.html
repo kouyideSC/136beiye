@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="telephone=no,email=no" name="format-detection">
+	<meta name="author" content="down.sqgoing.com">
+	<meta name="description" content="专业好用的体育彩票、福利彩票预约购买App~彩种我最全，体彩福彩全部彩种我都有；购彩我最快，支付宝、微信支付购彩，一键购买，安全快捷；工具我最多，历史开奖、走势图、智能追号专家推荐、奖金优化...">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+    <!-- <script src="js/flexible.js"></script> -->
+    <!-- <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script> -->
+    <title>136彩票-让你好运连连</title>
+    <script src="../js/flexibleCss.js"></script>
+    <script src="../js/flexible.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.0/jquery.min.js"></script>
+	<meta name="description" itemprop="description" content="专业好用的体育彩票、福利彩票预约购买App~彩种我最全，体彩福彩全部彩种我都有；购彩我最快，支付宝、微信支付购彩，一键购买，安全快捷；工具我最多，历史开奖、走势图、智能追号专家推荐、奖金优化..." />
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<style>
+#downloadDiv{
+    width:100%;
+    height:100%;
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:1000;
+    background-color:rgba(0,0,0,.8);
+    background-repeat:no-repeat;
+    background-position:top right;
+    background-size:304px;
+    display:none
+}
+.download_android{
+    background-image:url(images/download_android.png);
+}
+.download_ios{
+    background-image:url(images/download_iphone.png);
+}
+body>a{
+	display:none;
+}
+</style>
+
+<body>
+<!--<div class="down-wrap">
+    <div class="top">
+        <img class="logo" src="../images/logo2.png" alt="">
+        <p class="fz16">136彩票</p>
+    </div>
+
+    <p class="fz14">好用、专业的体彩、福彩约单APP</p>
+    <img src="../images/an-img1.jpg" class="img" alt="">
+    <p class="fz18">浮夸不是我个性<br>来这儿就要玩的开心</p>
+    <img src="../images/an-img2.jpg" class="img" alt="">
+    <p class="fz18 mbot">专注专业更专心<br>你的需要是我的坚持</p>
+    <a class="down fz16" id="download_b">立即下载</a>
+    <div class="copyRight fz12">
+        Copyright ©️ 2017 136彩票版权所有
+    </div>
+</div>-->
+<script src="../js/jquery-1.9.1.min.js"  type="text/javascript"></script>
+<script>
+	var Index = {
+        download:{ // 下载地址
+          android:'http://down.sqgoing.com/android_down.html?r=' + Math.random(),
+          ios:"http://down.sqgoing.com/ios_down.html?r=" + Math.random(),
+          WindowP:"http://down.sqgoing.com/ios_down.html?r=" + Math.random()
+        },
+        showDownload : function(){ //微信提示
+            if(!$("#downloadDiv").length){
+            	var ua = navigator.userAgent;
+                var _d = document;
+                var _b = _d.body;
+                var downloadDiv = _d.createElement("div");
+                downloadDiv.setAttribute("id","downloadDiv");
+                _b.appendChild(downloadDiv);
+                $(downloadDiv).addClass("download_android");
+                if(ua.indexOf('Android') > -1 || ua.indexOf('Linux') > -1){ //android
+            	   $(downloadDiv).addClass("download_android");
+                } else if(ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1 || ua.indexOf('iPod') > -1){ // ios
+                	 $(downloadDiv).addClass("download_iphone");
+                }
+            }
+            $("#downloadDiv").fadeIn(function(){
+                $(this).bind("click",function(){
+                    $(this).fadeOut();
+                });
+            });
+        },
+        naUserAgent:function(){ // 浏览器版本判断 下载地址
+          var ua = navigator.userAgent;
+          if(ua.toLowerCase().indexOf("micromessenger") != -1){//微信
+            $("#download_b").removeAttr("target");
+            Index.showDownload();
+          }else{
+            if(ua.indexOf('Android') > -1 || ua.indexOf('Linux') > -1){ //android
+              $("#download_a").removeAttr("target");
+              setTimeout(function(){
+                 location.href = Index.download.android;
+              } , 100)
+            } else if(ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1 || ua.indexOf('iPod') > -1){ // ios
+              count++;
+              if(count==2){
+                location.reload()
+              }
+              url = Index.download.ios;
+              window.location.href=url;
+            }else if(ua.indexOf("Windows Phone") > -1 || ua.indexOf('Trident') > -1){ //  Window Phone
+              $("#download_a").removeAttr("target");
+              url = Index.download.WindowP;
+              window.location.href= url;
+            }else {
+              $("#download_a").removeAttr("target");
+                setTimeout(function(){
+                location.href = Index.download.android;
+              } , 100)
+            }
+          }
+        },
+        init : function(){
+             var ua = navigator.userAgent;
+             if(ua.indexOf('iPhone') > -1 || ua.indexOf('iPad') > -1 || ua.indexOf('iPod') > -1){ // ios
+                window.location.href= Index.download.ios;
+             }
+             else if(ua.indexOf('Android') > -1 || ua.indexOf('Linux') > -1)
+             {
+                 window.location.href= Index.download.android;
+             }
+             else if(ua.indexOf("Windows Phone") > -1 || ua.indexOf('Trident') > -1)
+             {
+                 window.location.href= Index.download.WindowP;
+             }
+        	$("#download_a").click(function(event){
+          	Index.naUserAgent()
+        	})
+        	$("#download_b").click(function(){
+          	Index.naUserAgent()
+        	})
+          window.onscroll = function(){
+              var t = document.documentElement.scrollTop || document.body.scrollTop; 
+              var oDown = document.getElementById( "down" );
+              if( t >= 50 ) { 
+              oDown.style.display="none";  
+            }else{
+              setTimeout(function(){
+                oDown.style.display = "block";
+                  $("#down").css({"-webkit-animation-delay":"0s","animation-delay":"0s"});
+              } , 100)
+            }
+          };
+          document.addEventListener('touchmove', function(event){ //微信出现遮罩层后禁止冒泡
+            if(navigator.userAgent.toLowerCase().indexOf("micromessenger") != -1 && ($("#downloadDiv").css('display') == 'block')){
+              var ev = event || window.event;
+            ev.preventDefault();
+            document.body.style.overflow=" hidden";
+              }
+          });
+		  /*$.ajax({
+			url: "http://api.szmpyd.com/api/market/getVersion?appId=100222&marketFrom=gfb&version=101",
+			dataType: "json",
+			success: function (data) {
+				Index.download.android=data.data.downUrl;
+			}
+		 });*/
+        }
+    }
+    $(function(){
+        Index.init();
+        $("#down").click(function() {
+            $("html, body").animate({
+            scrollTop: $("#abc").offset().top }, {duration: 500,easing: "swing"});
+            return false;
+        });
+    });
+		
+</script>
+</body>
+
+</html>

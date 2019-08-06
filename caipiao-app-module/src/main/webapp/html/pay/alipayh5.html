@@ -1,0 +1,105 @@
+<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>支付宝网页充值</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=0">
+</head>
+<body>
+    <p id="errmsg" style="color: red;"></p>
+    <form id="payform111" action="" method="post">
+        <input name="pay_memberid" type="hidden" value="">
+        <input name="pay_orderid" type="hidden" value="">
+        <input name="pay_amount" type="hidden" value="">
+        <input name="pay_applydate" type="hidden" value="">
+        <input name="pay_bankcode" type="hidden" value="">
+        <input name="pay_notifyurl" type="hidden" value="">
+        <input name="pay_callbackurl" type="hidden" value="">
+        <input name="pay_md5sign" type="hidden" value="">
+        <input name="pay_attach" type="hidden" value="">
+        <input name="pay_productname" type="hidden" value="">
+    </form>
+    <form id="payform114" action="" method="post">
+        <input name="p1_yingyongnum" type="hidden" value="">
+        <input name="p2_ordernumber" type="hidden" value="">
+        <input name="p3_money" type="hidden" value="">
+        <input name="p6_ordertime" type="hidden" value="">
+        <input name="p7_productcode" type="hidden" value="">
+        <input name="p9_signtype" type="hidden" value="">
+        <input name="p14_customname" type="hidden" value="">
+        <input name="p16_customip" type="hidden" value="">
+        <input name="p25_terminal" type="hidden" value="">
+        <input name="p8_sign"type="hidden" value="">
+    </form>
+</body>
+<script src="http://mobile.szmpyd.com/js/jquery.min.js"></script>
+<script>
+//提取并设置表单参数
+var flag = false;
+var url = location.href;
+url = url.substring(url.indexOf("?") + 1);
+var pccode = "";
+if(url.indexOf('pccode=') > -1 && url.indexOf('action=') > -1)
+{
+    var pccode = decodeURIComponent(url.match(new RegExp("(^|&)pccode=([^&]*)(&|$)"))[2]);
+    var $form = $('#payform' + pccode);
+    if(pccode == 111)
+    {
+        if(url.indexOf('pay_memberid=') > -1 && url.indexOf('pay_orderid=') > -1 && url.indexOf('pay_amount=') > -1
+            && url.indexOf('pay_applydate=') > -1 && url.indexOf('pay_bankcode=') > -1 && url.indexOf('pay_notifyurl=') > -1
+            && url.indexOf('pay_callbackurl=') > -1 && url.indexOf('pay_md5sign=') > -1 && url.indexOf('pay_productname=') > -1)
+        {
+            //设置必填表单参数
+            flag = true;
+            $form.find('input[name="pay_memberid"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_memberid=([^&]*)(&|$)"))[2]));//设置商户号
+            $form.find('input[name="pay_orderid"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_orderid=([^&]*)(&|$)"))[2]));//设置商户订单号
+            $form.find('input[name="pay_amount"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_amount=([^&]*)(&|$)"))[2]));//设置订单金额
+            $form.find('input[name="pay_applydate"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_applydate=([^&]*)(&|$)"))[2]));//设置订单时间
+            $form.find('input[name="pay_bankcode"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_bankcode=([^&]*)(&|$)"))[2]));//设置网关代码
+            $form.find('input[name="pay_notifyurl"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_notifyurl=([^&]*)(&|$)"))[2]));//设置支付异步通知地址
+            $form.find('input[name="pay_callbackurl"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_callbackurl=([^&]*)(&|$)"))[2]));//设置支付成功后跳转的地址
+            $form.find('input[name="pay_md5sign"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_md5sign=([^&]*)(&|$)"))[2]));//设置签名
+            $form.find('input[name="pay_productname"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_productname=([^&]*)(&|$)"))[2]));//设置商品名称
+            if(url.indexOf('pay_attach=') > -1)
+            {
+                $form.find('input[name="pay_attach"]').val(decodeURIComponent(url.match(new RegExp("(^|&)pay_attach=([^&]*)(&|$)"))[2]));//设置附附加信息
+            }
+            $form.attr('action',decodeURIComponent(url.match(new RegExp("(^|&)action=([^&]*)(&|$)"))[2]));//设置表单提交地址
+        }
+    }
+    else if(pccode == 114)
+    {
+        if(url.indexOf('p1_yingyongnum=') > -1 && url.indexOf('p2_ordernumber=') > -1 && url.indexOf('p3_money=') > -1
+            && url.indexOf('p6_ordertime=') > -1 && url.indexOf('p7_productcode=') > -1 && url.indexOf('p9_signtype=') > -1
+            && url.indexOf('p14_customname=') > -1 && url.indexOf('p16_customip=') > -1 && url.indexOf('p25_terminal=') > -1
+            && url.indexOf('p8_sign=') > -1)
+        {
+            //设置必填表单参数
+            flag = true;
+            $form.find('input[name="p1_yingyongnum"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p1_yingyongnum=([^&]*)(&|$)"))[2]));//设置商户号
+            $form.find('input[name="p2_ordernumber"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p2_ordernumber=([^&]*)(&|$)"))[2]));//设置商户订单号
+            $form.find('input[name="p3_money"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p3_money=([^&]*)(&|$)"))[2]));//设置订单金额
+            $form.find('input[name="p6_ordertime"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p6_ordertime=([^&]*)(&|$)"))[2]));//设置订单时间
+            $form.find('input[name="p7_productcode"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p7_productcode=([^&]*)(&|$)"))[2]));//设置网关代码
+            $form.find('input[name="p9_signtype"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p9_signtype=([^&]*)(&|$)"))[2]));//设置支付异步通知地址
+            $form.find('input[name="p14_customname"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p14_customname=([^&]*)(&|$)"))[2]));//设置支付成功后跳转的地址
+            $form.find('input[name="p16_customip"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p16_customip=([^&]*)(&|$)"))[2]));//设置签名
+            $form.find('input[name="p25_terminal"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p25_terminal=([^&]*)(&|$)"))[2]));//设置商品名称
+            $form.find('input[name="p8_sign"]').val(decodeURIComponent(url.match(new RegExp("(^|&)p8_sign=([^&]*)(&|$)"))[2]));//设置商品名称
+            $form.attr('action',decodeURIComponent(url.match(new RegExp("(^|&)action=([^&]*)(&|$)"))[2]));//设置表单提交地址
+        }
+    }
+}
+//提交表单
+if(flag)
+{
+    $('#payform' + pccode).submit();
+}
+else
+{
+    $('#errmsg').html('参数错误，请返回重试.');
+}
+</script>
+</html>

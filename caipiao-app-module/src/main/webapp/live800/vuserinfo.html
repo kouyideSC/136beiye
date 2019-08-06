@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>访客信息</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+<script src="http://mobile.szmpyd.com/js/jquery.min.js"></script>
+</head>
+<body>
+用户昵称：<span id="name"></span>
+</body>
+<script type="text/javascript">
+//提取参数
+var url = location.href;
+url = url.substring(url.indexOf("?") + 1);
+var name = unescape(url.match(new RegExp("(^|&)name=([^&]*)(&|$)"))[2]);//提取客户名称
+$('#name').html(name);
+</script>
+</html>

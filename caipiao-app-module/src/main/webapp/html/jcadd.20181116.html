@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta content="yes" name="apple-mobile-web-app-capable">
+  <meta content="yes" name="apple-touch-fullscreen">
+  <meta content="telephone=no,email=no" name="format-detection">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="App-Config" content="fullscreen=yes,useHistoryState=yes,transition=yes">
+  <!-- <script src="js/flexible.js"></script> -->
+  <!-- <script src="http://g.tbcdn.cn/mtb/lib-flexible/0.3.4/??flexible_css.js,flexible.js"></script> -->
+  <title>竞彩加奖</title>
+  <script src="../js/flexibleCss.js"></script>
+  <script src="../js/flexible.js"></script>
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+<div class="jcaddWrap" style="background-color: #27254D;">
+  <div class="banner">
+    <img src="/images/jcadd/20181116/banner.png" alt="">
+    <div class="botBox" style="margin-top: -80px;position: relative;background-image: url('../images/jcadd/20181116/background.png');width: 100%;">
+        <span class="go" style="text-align: center;">
+          <img src="/images/jcadd/20181116/goAdd.png" alt="" style="width: 400px;height: 80px;">
+        </span>
+      <p style="margin-left: 30px;margin-right: 30px;">
+        联赛欧冠日益激烈，NBA大戏竞彩纷呈，176为您送上一份竞彩好礼，中奖就送您丰厚的加奖，最高可达8%，祝您一路发发。
+        <!--<em>12%的最高加奖，</em>一起狂欢吧。</p>-->
+    </div>
+  </div>
+  <div class="rulerBox" style="width: 90%;">
+    <div class="topTitle">
+      <img src="../images/arr.png" alt="">
+    </div>
+    <ul>
+      <li>
+        <span>单个方案中奖金额（元）</span>
+        <span>加奖奖金比例（元）</span>
+      </li>
+      <li>
+        <span>100-499</span>
+        <span>2%</span>
+      </li>
+      <li>
+        <span>500-999</span>
+        <span>3%</span>
+      </li>
+      <li>
+        <span>1000-4999</span>
+        <span>5%</span>
+      </li>
+      <li>
+        <span>5000-9999</span>
+        <span>6%</span>
+      </li>
+      <li>
+        <span>10000以上</span>
+        <span>8%</span>
+      </li>
+    </ul>
+  </div>
+  <div class="textRuler">
+    <div class="title">
+      <img src="../images/jcadd/20181116/ruler.png" alt="">
+    </div>
+    <ul>
+      <li>
+        <p>1</p>
+        <p>活动时间：11月15日-11月30日</p>
+      </li>
+      <li>
+        <p>2</p>
+        <p>需在本界面领取资格后，方可参与本次加奖。</p>
+      </li>
+      <li>
+        <p>3</p>
+        <p>仅针对竞彩足球和篮球的2串1玩法进行加奖，不限玩法，但仅支持单个2串1过关方式的方案，组合过关不参与加奖。</p>
+      </li>
+      <li>
+        <p>4</p>
+        <p>单个用户单日加奖金额上限为4999元（以方案中包含的最晚场次的场次编号所在日期为准）。</p>
+      </li>
+      <li>
+        <p>5</p>
+        <p>中奖方案中，赠送的奖金部分不可提现，支持继续投注，再次投注命中的奖金可提现。</p>
+      </li>
+      <li>
+        <p>6</p>
+        <p>如遇特殊情况和不可抗力，平台有权调整或提前终止本次活动。</p>
+      </li>
+    </ul>
+    <!--<img src="../images/newAdd/bot.jpg" class="bot" alt="">-->
+  </div>
+  <div class="tips">
+    <div class="inner">
+      <div class="content">
+      </div>
+      <img src="../images/newAdd/iknow.png" class="iknow" alt="">
+    </div>
+  </div>
+</div>
+
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.3.0/jquery.min.js"></script>
+<script src="../js/common.js"></script>
+<script>
+  $(function () {
+    var uid = common.GetQueryString('uid') || '';
+    $('.go').click(function (param) {
+      if (!uid) {
+        //通知app未收到uid，做其他操作
+        window.location.href = 'http://mobile.szmpyd.com/html/jcadd.20181116.html?uid=checkLogin';
+        return false
+      }
+      $.ajax({
+        type: 'post',
+        url: 'http://api.szmpyd.com/api/acp/applyBonus',
+        data: {
+          uid: uid,
+          aid: 4
+        }
+      }).then(function (resp) {
+          if (resp.errorCode == 200) {
+            $('.tips .content').html('领取成功！<br/>您已具备加奖资格');
+          } else {
+            $('.tips .content').html(resp.errorDesc);
+          }
+      }).catch(function (er) {
+          $('.tips .content').html('系统异常，请稍后重试...')
+        })
+      $('.tips').show();
+    })
+
+    $('.iknow').click(function () {
+      $('.tips').hide();
+    });
+  })
+</script>
+
+</html>
