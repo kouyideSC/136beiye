@@ -1,0 +1,326 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder charset="UTF-8">
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--执行任务表数据日志文件-->
+	<appender name="task"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/task/task.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/task/task_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--执行任务表错误日志文件-->
+	<appender name="taskError"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/task/task_error.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/task/task_error_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--执行计奖日志文件-->
+	<appender name="award"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/award/award.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/award/award_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--执行计奖错误日志文件-->
+	<appender name="awardError"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/award/award_error.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/award/award_error_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--执行出票扫描日志文件-->
+	<appender name="ticket"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/ticket/ticket.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/ticket/ticket_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--执行出票扫描错误日志文件-->
+	<appender name="ticketError"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/ticket/ticket_error.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/ticket/ticket_error_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--定义提现付款请求日志输出 -->
+	<appender name="pay" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/pay/pay.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/pay/pay_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--定义提现付款请求错误日志输出 -->
+	<appender name="payError" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/pay/pay_error.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/pay/pay_error_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--定义彩票对账请求日志输出 -->
+	<appender name="check" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/check/check.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/check/check_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--定义彩票对账请求错误日志输出 -->
+	<appender name="checkError" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/check/check_error.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/check/check_error_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--定义渠道请求日志输出 -->
+	<appender name="channel" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/channel/channel.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>TRACE</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/channel/channel_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!--定义渠道错误日志输出 -->
+	<appender name="channelError" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/web/tomcat/logs/task/channel/channel_error.log</file>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>ERROR</level>
+		</filter>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				/web/tomcat/logs/task/channel/channel_error_%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<pattern>
+				%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 执行任务表日志输出 -->
+	<logger name="com.caipiao.taskcenter.task" level="INFO" additivity="false">
+		<appender-ref ref="task" />
+		<appender-ref ref="taskError" />
+	</logger>
+	<!-- 计奖日志输出 -->
+	<logger name="com.caipiao.taskcenter.code" level="INFO" additivity="false">
+		<appender-ref ref="award" />
+		<appender-ref ref="awardError" />
+	</logger>
+	<!-- 计奖日志输出 -->
+	<logger name="com.caipiao.taskcenter.award" level="INFO" additivity="false">
+		<appender-ref ref="award" />
+		<appender-ref ref="awardError" />
+	</logger>
+	<!-- 出票日志输出 -->
+	<logger name="com.caipiao.taskcenter.ticket" level="INFO" additivity="false">
+		<appender-ref ref="ticket" />
+		<appender-ref ref="ticketError" />
+	</logger>
+	<!-- 用户日志输出 -->
+	<logger name="com.caipiao.taskcenter.user" level="INFO" additivity="false">
+		<appender-ref ref="ticket" />
+		<appender-ref ref="ticketError" />
+	</logger>
+	<!-- 提现付款请求日志输出 -->
+	<logger name="com.caipiao.taskcenter.pay" level="INFO" additivity="false">
+		<appender-ref ref="pay" />
+		<appender-ref ref="payError" />
+	</logger>
+	<!-- 提现付款请求日志输出 -->
+	<logger name="com.caipiao.common.pay" level="INFO" additivity="false">
+		<appender-ref ref="pay" />
+		<appender-ref ref="payError" />
+	</logger>
+	<!-- 彩票对账请求日志输出 -->
+	<logger name="com.caipiao.taskcenter.check" level="INFO" additivity="false">
+		<appender-ref ref="check" />
+		<appender-ref ref="checkError" />
+	</logger>
+	<!-- 渠道日志输出 -->
+	<logger name="com.caipiao.taskcenter.channel" level="INFO" additivity="false">
+		<appender-ref ref="channel" />
+		<appender-ref ref="channelError" />
+	</logger>
+</configuration>

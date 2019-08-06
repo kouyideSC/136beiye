@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="false" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+
+	<task:scheduler id="taskTask" pool-size="50" />
+	<task:scheduled-tasks scheduler="taskTask">
+		<!-- 更新生成首页数据文件任务 -->
+		<task:scheduled ref="createUpdateHomeTask" method="homeDataFileTask" fixed-delay="3000" />
+		<!-- 期次文件任务 -->
+		<task:scheduled ref="createUpdatePeriodTask" method="createUpdatePeriodFile" fixed-delay="3000" />
+		<!-- 历史期次文件任务 -->
+		<task:scheduled ref="createUpdateHistoryPeriodTask" method="createUpdateHistoryPeriodFile" fixed-delay="3000" />
+		<!-- 快三期次文件任务 -->
+		<!--<task:scheduled ref="createUpdatePeriodTask" method="createUpdateK3PeriodFile" fixed-delay="5000" />-->
+		<!-- 方案相关任务 -->
+		<task:scheduled ref="userSchemeTask" method="schemeOutTicketStatus" fixed-delay="5000" />
+		<!-- 票表相关任务 -->
+		<task:scheduled ref="userTicketTask" method="insideOutTicketStatus" fixed-delay="5000" />
+		<!-- 用户返利任务 -->
+		<task:scheduled ref="userRebateTask" method="userRebateHandle" fixed-delay="60000" />
+		<!-- 用户日报表统计-每个整点执行 -->
+		<task:scheduled ref="userTask" method="userDayDateStatis" cron="0 0 0/1 * * ?" />
+		<!-- 更新有周榜数据但已经一周没有发神单的用户统计数据-每个整点执行 -->
+		<task:scheduled ref="userTask" method="userFollowWeekDateStatis" cron="0 0 0/1 * * ?" />
+		<!-- 查询有月榜数据但已经一月没有发神单的用户列表-每个整点执行 -->
+		<task:scheduled ref="userTask" method="userFollowMonthDateStatis" cron="0 0 0/1 * * ?" />
+		<!-- 短消息自动发送任务 -->
+		<task:scheduled ref="smsTask" method="autoSmsSendTask" fixed-delay="3000" />
+		<!-- 渠道合作出票通知任务 -->
+		<task:scheduled ref="channelTask" method="channelOutTicketNotify" fixed-delay="5000" />
+		<!-- 销售销量统计任务-每月1号凌晨1点执行 -->
+		<task:scheduled ref="userSellTask" method="userSellMoneyCommissionStatis" cron="0 0 1 1 * ?" />
+
+		<!-- 用户优惠券过期维护 -->
+		<task:scheduled ref="userCouponTask" method="doUserCouponExpire" fixed-delay="300000" />
+
+		<!-- app启动页文件任务 -->
+		<task:scheduled ref="createAppStartTask" method="createOrUpdateAppStartFile" fixed-delay="3000" />
+
+	</task:scheduled-tasks>
+</beans>

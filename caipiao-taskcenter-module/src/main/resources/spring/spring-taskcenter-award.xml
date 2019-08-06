@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="false" xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task-3.2.xsd">
+
+	<task:scheduler id="awardTask" pool-size="50" />
+	<task:scheduled-tasks scheduler="awardTask">
+		<!-- 快频期次维护及计奖任务 -->
+		<!--<task:scheduled ref="kpPeriodTask" method="kpPeriodProcessTask" fixed-delay="10000" />-->
+		<!-- 慢频期次维护及计奖任务 -->
+		<task:scheduled ref="mpPeriodTask" method="mpPeriodProcessTask" fixed-delay="60000" />
+		<!-- 老足彩期次维护及计奖任务 -->
+		<task:scheduled ref="zcPeriodTask" method="zcPeriodProcessTask" fixed-delay="60000" />
+		<!-- 竞彩足球场次维护及计奖任务 -->
+		<task:scheduled ref="jczqMatchTask" method="jinCaiZqMatchTask" fixed-delay="30000" />
+		<!-- 竞彩篮球场次维护及计奖任务 -->
+		<task:scheduled ref="jclqMatchTask" method="jinCaiLqMatchTask" fixed-delay="30000" />
+		<!-- 冠亚军场次维护及计奖任务 -->
+		<!--<task:scheduled ref="gyjMatchTask" method="gyjProcessTask" fixed-delay="60000" />-->
+
+	</task:scheduled-tasks>
+</beans>
